@@ -11,7 +11,7 @@
    ⚠️  لما تضيف صفحة جديدة: زوّد CACHE_VERSION تحت + ضيف مسارها في PRECACHE.
    ========================================================================== */
 
-const CACHE_VERSION = 'v2.0.0';
+const CACHE_VERSION = 'v2.0.1';
 const CACHE_NAME = `uni-planner-${CACHE_VERSION}`;
 
 /* الملفات اللي لازم تتحفظ عشان التطبيق يفتح بدون نت */
@@ -35,22 +35,10 @@ const PRECACHE = [
   './modules/cs-stat/index.html',
   './modules/cs-special/index.html',
 
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
-  './assets/icons/maskable-512.png',
-  './assets/icons/apple-touch-icon.png',
   './assets/icons/favicon.svg',
-  './assets/icons/og.png',
+  './assets/icons/icon.svg',
+  './assets/icons/maskable.svg',
 
-  './assets/fonts/Almarai-400-arabic.woff2',
-  './assets/fonts/Almarai-400-latin.woff2',
-  './assets/fonts/Almarai-700-arabic.woff2',
-  './assets/fonts/Almarai-700-latin.woff2',
-  './assets/fonts/Almarai-800-arabic.woff2',
-  './assets/fonts/Almarai-800-latin.woff2',
-  './assets/fonts/Cairo-variable-arabic.woff2',
-  './assets/fonts/Cairo-variable-latin.woff2',
-  './assets/fonts/JetBrainsMono-variable-latin.woff2',
 ];
 
 /* ------------------------------------------------------------- INSTALL */

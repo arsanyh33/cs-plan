@@ -96,8 +96,8 @@ body{
 .bg-veil{
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 120% 80% at 50% 0%, transparent 30%, rgba(0,0,0,.55) 78%, #000 100%),
-    linear-gradient(to bottom, rgba(0,0,0,.35), transparent 26%, transparent 62%, rgba(0,0,0,.62));
+    radial-gradient(ellipse 140% 95% at 50% 8%, transparent 46%, rgba(0,0,0,.30) 82%, rgba(0,0,0,.66) 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.42) 0%, transparent 18%, transparent 74%, rgba(0,0,0,.5) 100%);
 }
 /* بقعة ضوء بتتبع المؤشر */
 .bg-spot{
@@ -161,25 +161,23 @@ input,select,textarea{ font-family:inherit; }
 @supports not (backdrop-filter:blur(2px)){ .appbar{ background:rgba(0,0,0,.95); } }
 .appbar-in{
   width:100%; max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
-  display:flex; align-items:center; gap:10px;
-  flex-wrap:wrap;             /* يلف بين اللوجو والأدوات لو المساحة ضاقت */
+  display:grid; grid-template-columns:minmax(0,1fr) auto;   /* اللوجو | الأدوات */
+  align-items:center; gap:14px;
 }
-.appbar-in > *{ flex:0 0 auto; }
-.appbar-in > .appbar-grow{ flex:1 1 0; min-width:0; }
+.appbar-in > .appbar-grow{ display:none; }   /* الـ grid بيعمل الفصل بدالها */
 
-/* الأدوات في مجموعة واحدة — تلفّ لسطر تاني لو المساحة ضاقت، وماتختفيش أبدًا */
+/* الأدوات: صف واحد ثابت — ممنوع اللف وممنوع القص */
 .appbar-tools{
-  display:flex; align-items:center; gap:10px;
-  flex-wrap:wrap; justify-content:flex-end;
-  flex:0 1 auto; min-width:0;
-  overflow:visible;               /* ممنوع القص — كل زر لازم يبان */
+  display:flex; align-items:center; gap:9px;
+  flex-wrap:nowrap; justify-content:flex-end;
+  overflow:visible;
 }
 .appbar-tools > *{ flex:0 0 auto; }
 /* المجموعات الداخلية ماتتفكّش */
 .appbar-tools .fs-grp,
 .appbar-tools .fs-segmented{ flex-wrap:nowrap; }
 
-.logo{ display:flex; align-items:center; gap:12px; color:inherit; flex:0 0 auto; white-space:nowrap; }
+.logo{ display:flex; align-items:center; gap:12px; color:inherit; min-width:0; white-space:nowrap; }
 .logo-mark{
   width:42px; height:42px; flex:0 0 42px; border-radius:13px;
   display:grid; place-items:center;
@@ -198,7 +196,7 @@ input,select,textarea{ font-family:inherit; }
   animation:sheen 4.5s ease-in-out infinite;
 }
 @keyframes sheen{ 0%,62%{ transform:translateX(-130%); } 82%,100%{ transform:translateX(130%); } }
-.logo-tx{ display:flex; flex-direction:column; line-height:1.3; }
+.logo-tx{ display:flex; flex-direction:column; line-height:1.3; min-width:0; overflow:hidden; }
 .logo-tx b{ font-family:var(--font-display); font-size:1.04rem; font-weight:900; }
 .logo-tx small{ font-size:.7rem; color:var(--dim2); font-weight:700; letter-spacing:.3px; }
 .appbar-grow{ flex:1 1 auto; min-width:4px; }
@@ -212,8 +210,9 @@ input,select,textarea{ font-family:inherit; }
   border-color:var(--line-hot); background:var(--glass2);
   transform:translateY(-2px); box-shadow:0 8px 24px -10px var(--cyan);
 }
+/* مؤشر الاتصال بيظهر بس لما النت يقع — مش نضيف نعرضه دايمًا */
 .net-dot{
-  display:inline-flex; align-items:center; gap:7px; flex:0 0 auto;
+  display:none; align-items:center; gap:7px; flex:0 0 auto;
   font-family:var(--font-display); font-size:.73rem; color:var(--dim); font-weight:800;
   border:1px solid var(--line); border-radius:99px; padding:6px 13px; background:var(--glass);
   white-space:nowrap;
@@ -222,6 +221,7 @@ input,select,textarea{ font-family:inherit; }
   width:7px; height:7px; border-radius:50%; background:var(--lime); font-style:normal;
   box-shadow:0 0 10px var(--lime); animation:pulse 2.4s ease-in-out infinite;
 }
+.net-dot.off{ display:inline-flex; }
 .net-dot.off i{ background:var(--amber); box-shadow:0 0 10px var(--amber); }
 @keyframes pulse{ 50%{ opacity:.35; transform:scale(.8); } }
 
@@ -749,19 +749,18 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 .hero .kicker{ margin-bottom:14px; }
 
 /* الشريط العلوي على الموبايل: الأدوات تنزل سطر تاني بترتيب */
+/* الأدوات بتختفي بالترتيب من الأقل أهمية — الشريط يفضل صف واحد دايمًا */
+@media (max-width:1200px){ .fs-label{ display:none; } }
+@media (max-width:1040px){ #deviceSelect,.tool-divider{ display:none; } }
 @media (max-width:900px){
-  .appbar-in{ padding:12px 14px; gap:8px; }
-  .fs-label,.tool-divider{ display:none; }
+  .appbar-in{ padding:12px 14px; gap:10px; }
   .logo-tx small{ display:none; }
 }
-@media (max-width:700px){
-  #deviceSelect{ display:none; }        /* على الموبايل المعاينة مالهاش لازمة */
-  .net-dot span{ display:none; }
-  .appbar-in{ padding:11px 14px; row-gap:9px; }
-  .appbar-tools{ width:100%; justify-content:flex-start; }
-  .appbar-grow{ display:none; }         /* اللوجو سطر والأدوات سطر */
-  .logo{ width:100%; }
-  .hero{ padding-top:18px; }
+@media (max-width:560px){
+  #shareBtn{ display:none; }            /* المشاركة موجودة في install.html */
+}
+@media (max-width:420px){
+  .fs-segmented .fs-btn{ padding:7px 8px; font-size:.7rem; }
 }
 @media (max-width:520px){
   .tool-select{ padding:8px 7px; font-size:.7rem; }

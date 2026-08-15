@@ -1,5 +1,7 @@
 # خطتي الأكاديمية — ويب أبليكيشن
 
+🔗 **اللينك:** https://arsanyh33.github.io/cs-plan/
+
 خطط دراسية تفاعلية لقسم الرياضيات وعلوم الحاسب، كلية العلوم — جامعة الإسكندرية.
 تشتغل **بدون إنترنت** وتتثبّت على شاشة الموبايل كأيقونة عادية.
 
@@ -15,7 +17,7 @@ git commit -m "خطتي الأكاديمية — أول إصدار"
 
 # 2) اربطه بالريبو بتاعك
 git branch -M main
-git remote add origin https://github.com/USERNAME/REPO.git
+git remote add origin https://github.com/arsanyh33/cs-plan.git
 git push -u origin main
 ```
 
@@ -23,7 +25,7 @@ git push -u origin main
 1. **Settings** ← **Pages**
 2. تحت **Source** اختار **Deploy from a branch**
 3. **Branch:** `main` و **Folder:** `/ (root)` ← **Save**
-4. استنى دقيقة، هيطلعلك لينك: `https://USERNAME.github.io/REPO/`
+4. استنى دقيقة، هيطلعلك لينك: `https://arsanyh33.github.io/cs-plan/`
 
 > ملف `.nojekyll` موجود بالفعل — مهم عشان GitHub مايتجاهلش المجلدات.
 

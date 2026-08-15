@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     قالب صفحة جديدة — انسخ المجلد ده وابدأ اكتب جواه
+     ───────────────────────────────────────────────────────────────────────
+     خطوات إضافة صفحة جديدة للتطبيق:
+
+     1) انسخ مجلد modules/_template وسمّيه باسم صفحتك:
+          cp -r modules/_template modules/schedule
+
+     2) اكتب المحتوى بتاعك جوه <main> تحت. عادي خالص —
+        HTML و CSS و JS زي ما إنت متعوّد. الملف ده مجرد بداية.
+
+     3) ضيف الصفحة في registry.json (انسخ أي object وعدّل):
+          {
+            "id": "schedule",
+            "title": "جدول المحاضرات",
+            "short": "الجدول",
+            "icon": "🗓️",
+            "desc": "وصف قصير يظهر في كارت الداشبورد.",
+            "entry": "modules/schedule/index.html",
+            "color1": "#22d39a",
+            "color2": "#00e5ff",
+            "storageKeys": ["scheduleData_v1"],
+            "tags": ["جدول", "محاضرات"],
+            "cache": true
+          }
+
+     4) ضيف مسار الصفحة في sw.js جوه مصفوفة PRECACHE:
+          './modules/schedule/index.html',
+        وزوّد CACHE_VERSION (مثلاً 'v1.0.1').
+
+     5) زوّد version في registry.json كمان.
+
+     خلاص! الصفحة هتظهر في الداشبورد، تشتغل بدون نت، وتدخل في البحث.
+
+     ملاحظة عن الحفظ: لو صفحتك بتحفظ بيانات، استخدم localStorage عادي
+     بمفتاح يبدأ بـ cs مثلاً (زي csSchedule_v1) والجسر هيعمل نسخة احتياطية
+     تلقائية على IndexedDB لوحده. وضيف المفتاح في assets/store.js جوه
+     WATCHED_KEYS عشان يدخل في التصدير والاستيراد.
+     ═══════════════════════════════════════════════════════════════════ -->
+<html lang="ar" dir="rtl" data-theme="dark" data-module="_template">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>صفحة جديدة — خطتي الأكاديمية</title>
+
+<!-- الخطوط محليًا: مهم عشان الشكل مايبوظش بدون نت -->
+<link rel="preload" href="../../assets/fonts/Cairo-variable-arabic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/Almarai-400-arabic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../../assets/bridge.css">
+<link rel="stylesheet" href="../../assets/app.css">
+
+<!-- ربط التطبيق (PWA) -->
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="خطتي">
+
+<style>
+  /* استايلات خاصة بالصفحة دي بس — الأساسيات جاية من app.css */
+  /* المتغيرات المتاحة: --bg --surface --line --text --muted --accent
+     --accent2 --amber --rose --violet --green --radius --shadow
+     --font-display --font-body --font-mono                        */
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="wrap appbar-in">
+    <a class="logo" href="../../index.html" style="color:inherit">
+      <div class="logo-mark">خ</div>
+      <div class="logo-tx"><b>عنوان صفحتك</b><small>وصف قصير</small></div>
+    </a>
+    <div class="appbar-grow"></div>
+    <button class="icon-btn" id="themeBtn" aria-label="تبديل الوضع">☀️</button>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <div class="hero-kicker">🧩 صفحة جديدة</div>
+    <h1>ابدأ اكتب <span class="grad">هنا</span></h1>
+    <p>امسح المحتوى ده واكتب اللي إنت عايزه. كل الكلاسات الجاهزة موضحة تحت.</p>
+  </section>
+
+  <section class="wrap sec">
+    <div class="sec-h"><h2>الكلاسات الجاهزة</h2><span>انسخ واستخدم</span></div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-t"><span class="ic">📦</span> كارت</div>
+        <div class="card-sub">‏<code class="mono">.card</code> مع <code class="mono">.card-t</code> للعنوان و<code class="mono">.card-sub</code> للوصف.</div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">🏷️</span> شرائط</div>
+        <div class="card-sub" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+          <span class="pill">عادي</span>
+          <span class="pill ok">تمام</span>
+          <span class="pill warn">تحذير</span>
+          <span class="pill bad">خطأ</span>
+          <span class="pill info">معلومة</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">📊</span> شريط تقدم</div>
+        <div class="bar" style="margin-top:12px"><i style="width:62%"></i></div>
+        <div class="card-sub" style="margin-top:8px">‏<code class="mono">.bar &gt; i</code> مع <code class="mono">width</code></div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">🔔</span> ملاحظات</div>
+        <div class="note info" style="margin-top:10px">‏<code class="mono">.note.info</code></div>
+        <div class="note warn" style="margin-top:8px">‏<code class="mono">.note.warn</code></div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">🔢</span> أرقام</div>
+        <div class="grid g3" style="margin-top:12px">
+          <div class="stat"><b>132</b><small>ساعة</small></div>
+          <div class="stat"><b>3.7</b><small>معدل</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">🔘</span> أزرار</div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn primary sm">أساسي</button>
+          <button class="btn sm">عادي</button>
+          <button class="btn ghost sm">شفاف</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap sec">
+    <div class="card">
+      <div class="card-t"><span class="ic">💾</span> مثال على الحفظ</div>
+      <div class="card-sub">اكتب أي حاجة — بتتحفظ تلقائيًا وبيتعمل لها نسخة احتياطية.</div>
+      <input id="demoInput" type="text" placeholder="اكتب هنا…"
+             style="width:100%;margin-top:14px;padding:12px 14px;border-radius:11px;background:var(--surface2);border:1px solid var(--line);color:var(--text);font-family:inherit">
+      <div class="card-sub" id="demoOut" style="margin-top:10px"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in"><a href="../../index.html">◀ الرئيسية</a></div>
+</footer>
+
+<!-- ============ جسر التطبيق: لازم يبقى آخر حاجة قبل </body> ============ -->
+<script src="../../assets/store.js"></script>
+<script src="../../assets/inapp.js"></script>
+<script src="../../assets/bridge.js"></script>
+
+<script>
+/* الكود بتاعك هنا */
+(function(){
+  'use strict';
+
+  /* تبديل الوضع الليلي/النهاري */
+  var tb = document.getElementById('themeBtn');
+  var saved = 'dark';
+  try { saved = JSON.parse(localStorage.getItem('uniShellPrefs_v1')||'{}').theme || 'dark'; } catch(e){}
+  document.documentElement.setAttribute('data-theme', saved);
+  if (tb) {
+    tb.textContent = saved === 'light' ? '🌙' : '☀️';
+    tb.addEventListener('click', function(){
+      var cur = document.documentElement.getAttribute('data-theme');
+      var next = cur === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      tb.textContent = next === 'light' ? '🌙' : '☀️';
+      var p = {}; try { p = JSON.parse(localStorage.getItem('uniShellPrefs_v1')||'{}'); } catch(e){}
+      p.theme = next;
+      try { localStorage.setItem('uniShellPrefs_v1', JSON.stringify(p)); } catch(e){}
+    });
+  }
+
+  /* مثال حفظ: المفتاح لازم يبدأ بـ cs عشان الجسر يعمله نسخة احتياطية */
+  var KEY = 'csTemplateDemo_v1';
+  var inp = document.getElementById('demoInput');
+  var out = document.getElementById('demoOut');
+  try {
+    var d = JSON.parse(localStorage.getItem(KEY)||'null');
+    if (d && d.text) { inp.value = d.text; out.textContent = '↩︎ اترجّع من آخر مرة'; }
+  } catch(e){}
+  var t = null;
+  inp.addEventListener('input', function(){
+    if (t) clearTimeout(t);
+    t = setTimeout(function(){
+      try {
+        localStorage.setItem(KEY, JSON.stringify({ text: inp.value, at: Date.now() }));
+        out.textContent = '✓ اتحفظ ' + new Date().toLocaleTimeString('ar-EG');
+      } catch(e){ out.textContent = '⚠️ التخزين مش متاح'; }
+    }, 400);
+  });
+})();
+</script>
+</body>
+</html>

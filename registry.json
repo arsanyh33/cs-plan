@@ -4,7 +4,9 @@
     "shortName": "خطتي",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "1.0.0"
+    "version": "2.0.0",
+    "repo": "arsanyh33/cs-plan",
+    "url": "https://arsanyh33.github.io/cs-plan/"
   },
   "_howToAddModule": [
     "عايز تضيف صفحة جديدة؟ 3 خطوات وخلاص:",
@@ -23,8 +25,19 @@
       "entry": "modules/cs-stat/index.html",
       "color1": "#00e5ff",
       "color2": "#7c4dff",
-      "storageKeys": ["csStatPlanState_v1", "csStatRealPlan_v1"],
-      "tags": ["حاسب", "إحصاء", "رئيسي", "فرعي", "132 ساعة", "GPA", "متطلبات سابقة"],
+      "storageKeys": [
+        "csStatPlanState_v1",
+        "csStatRealPlan_v1"
+      ],
+      "tags": [
+        "حاسب",
+        "إحصاء",
+        "رئيسي",
+        "فرعي",
+        "132 ساعة",
+        "GPA",
+        "متطلبات سابقة"
+      ],
       "cache": true
     },
     {
@@ -36,8 +49,17 @@
       "entry": "modules/cs-special/index.html",
       "color1": "#f0b429",
       "color2": "#ff4081",
-      "storageKeys": ["csSpecialPlan_v1", "csActualPlan_v1"],
-      "tags": ["سبيشيال", "علوم الحاسب", "مرتبة الشرف", "شروط الالتحاق", "132 ساعة"],
+      "storageKeys": [
+        "csSpecialPlan_v1",
+        "csActualPlan_v1"
+      ],
+      "tags": [
+        "سبيشيال",
+        "علوم الحاسب",
+        "مرتبة الشرف",
+        "شروط الالتحاق",
+        "132 ساعة"
+      ],
       "cache": true
     }
   ]

@@ -1,0 +1,192 @@
+/* ==========================================================================
+   bridge.css — أنماط الجسر فقط
+   --------------------------------------------------------------------------
+   ⚠️  الملف ده مقصود إنه صغير ومعزول. بيتحمّل جوه ملفاتك الأصلية،
+       فممنوع يمس أي كلاس بتستخدمه هي (زي .card أو .hero أو .pill).
+       كل الكلاسات هنا ببادئة خاصة أو داخل #uniBridgeBar / .inapp-gate.
+       المتغيرات بتُقرأ من ملفك، ومعاها قيم بديلة لو مش موجودة.
+   بيشمل: شريط التنقل تحت • الإشعارات • شاشة اعتراض واتساب
+   ========================================================================== */
+
+/* ---------------------------------------------- شريط التنقل (تحت) */
+#uniBridgeBar{
+  position:fixed; inset-inline:0; bottom:0; z-index:9000;
+  display:flex; align-items:center; gap:10px;
+  min-height:52px;
+  padding:6px clamp(10px, 3vw, 20px);
+  padding-bottom:calc(6px + env(safe-area-inset-bottom));
+  background:var(--bg, #02030b);
+  border-top:1px solid var(--line-strong, rgba(90,120,255,.4));
+  font-family:var(--font-display, 'Cairo', sans-serif);
+  font-size:.82rem; direction:rtl;
+}
+@supports (backdrop-filter: blur(2px)){
+  #uniBridgeBar{
+    background:color-mix(in srgb, var(--bg, #02030b) 92%, transparent);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  }
+}
+html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)) !important; }
+
+#uniBridgeBar .ubb-home,
+#uniBridgeBar .ubb-act{
+  display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px;
+  border:1px solid var(--line, rgba(90,120,255,.16));
+  background:var(--surface, #070b1c); color:var(--text, #eef1fb);
+  font-weight:800; text-decoration:none; white-space:nowrap;
+  font-family:inherit; font-size:inherit; cursor:pointer;
+  transition:border-color .16s, color .16s;
+}
+#uniBridgeBar .ubb-home:hover,
+#uniBridgeBar .ubb-act:hover{ border-color:var(--accent, #00e5ff); color:var(--accent, #00e5ff); }
+#uniBridgeBar .ubb-act:disabled{ opacity:.5; pointer-events:none; }
+#uniBridgeBar .ubb-ic{ font-size:.9rem; line-height:1; }
+#uniBridgeBar .ubb-grow{ flex:1; }
+#uniBridgeBar .ubb-sep{ width:1px; height:20px; background:var(--line, rgba(90,120,255,.16)); }
+#uniBridgeBar .ubb-status{
+  color:var(--muted, #9aa4c9); font-size:.76rem; font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+#uniBridgeBar .ubb-on{ color:#22d39a; }
+#uniBridgeBar .ubb-off{ color:var(--amber, #f0b429); }
+@media (max-width:520px){
+  #uniBridgeBar .ubb-tx{ display:none; }
+  #uniBridgeBar .ubb-status{ font-size:.72rem; }
+}
+@media print{ #uniBridgeBar{ display:none !important; } }
+
+/* ------------------------------------------------------- الإشعارات */
+#uniToastHost{
+  position:fixed; z-index:9500; inset-inline:0;
+  bottom:calc(72px + env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  pointer-events:none; padding-inline:14px; direction:rtl;
+}
+#uniToastHost .uni-toast{
+  max-width:min(92vw, 460px);
+  background:var(--surface2, #0d1330); color:var(--text, #eef1fb);
+  border:1px solid var(--line-strong, rgba(90,120,255,.4)); border-radius:12px;
+  padding:11px 16px; font-size:.86rem; line-height:1.7;
+  font-family:var(--font-body, 'Almarai', sans-serif);
+  box-shadow:0 10px 40px -12px rgba(0,0,0,.85);
+  opacity:0; transform:translateY(14px);
+  transition:opacity .3s, transform .3s;
+}
+#uniToastHost .uni-toast.in{ opacity:1; transform:none; }
+@media print{ #uniToastHost{ display:none !important; } }
+
+/* ============= شاشة اعتراض المتصفح الداخلي (واتساب وغيره) ========== */
+.inapp-gate{
+  position:fixed; inset:0; z-index:99999; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  background:var(--bg, #02030b);
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:clamp(16px, 5vw, 48px) clamp(14px, 5vw, 24px);
+  padding-top:calc(clamp(16px,5vw,48px) + env(safe-area-inset-top));
+  font-family:var(--font-body, 'Almarai', sans-serif);
+  color:var(--text, #eef1fb); direction:rtl; text-align:start;
+  line-height:1.9;
+}
+.inapp-gate .ia-box{ width:100%; max-width:520px; }
+.inapp-gate .ia-badge{
+  width:62px; height:62px; border-radius:18px; display:grid; place-items:center; font-size:1.9rem;
+  background:var(--surface2, #0d1330);
+  border:1px solid var(--amber, #f0b429); margin-bottom:18px;
+}
+.inapp-gate h1{
+  font-family:var(--font-display, 'Cairo', sans-serif);
+  font-size:clamp(1.28rem, 5vw, 1.75rem); font-weight:900; line-height:1.45;
+  margin:0; padding:0; border:0; letter-spacing:0;
+}
+.inapp-gate .ia-lede{
+  color:var(--muted, #9aa4c9); margin:12px 0 0; font-size:.96rem; line-height:1.9;
+}
+.inapp-gate .ia-lede b{ color:var(--text, #eef1fb); }
+.inapp-gate .ia-actions{ display:grid; gap:11px; margin:24px 0 16px; }
+.inapp-gate .ia-btn{
+  display:flex; align-items:center; gap:13px; text-align:start; width:100%;
+  border:1px solid var(--line-strong, rgba(90,120,255,.4)); border-radius:13px;
+  padding:14px 16px; background:var(--surface, #070b1c); color:var(--text, #eef1fb);
+  text-decoration:none; font-family:inherit; font-size:1rem; cursor:pointer;
+  transition:border-color .18s, transform .18s;
+}
+.inapp-gate .ia-btn:hover,
+.inapp-gate .ia-btn:active{ border-color:var(--accent, #00e5ff); transform:translateY(-2px); }
+.inapp-gate .ia-btn.ia-primary{
+  background:linear-gradient(120deg, var(--accent, #00e5ff), var(--accent2, #7c4dff));
+  color:#02030b; border-color:transparent;
+}
+.inapp-gate .ia-btn .ia-ic{ font-size:1.4rem; flex:0 0 auto; line-height:1; }
+.inapp-gate .ia-btn b{
+  display:block; font-family:var(--font-display, 'Cairo', sans-serif);
+  font-weight:800; font-size:.98rem; line-height:1.5;
+}
+.inapp-gate .ia-btn small{ display:block; opacity:.75; font-size:.79rem; margin-top:1px; }
+.inapp-gate .ia-url{
+  font-family:var(--font-mono, monospace); font-size:.76rem; direction:ltr; text-align:left;
+  background:var(--surface2, #0d1330); border:1px solid var(--line, rgba(90,120,255,.16));
+  border-radius:10px; padding:11px 13px; word-break:break-all;
+  color:var(--muted, #9aa4c9); cursor:pointer; transition:border-color .2s, color .2s;
+}
+.inapp-gate .ia-url.copied{ border-color:#22d39a; color:#22d39a; }
+.inapp-gate .ia-steps{
+  margin-top:20px; background:var(--surface, #070b1c);
+  border:1px solid var(--line, rgba(90,120,255,.16)); border-radius:13px; padding:16px 18px;
+}
+.inapp-gate .ia-steps-title{
+  font-family:var(--font-display, 'Cairo', sans-serif); font-weight:800;
+  font-size:.9rem; margin-bottom:9px;
+}
+.inapp-gate .ia-steps ol{
+  padding-inline-start:20px; margin:0;
+  color:var(--muted, #9aa4c9); font-size:.88rem; line-height:2.1;
+}
+.inapp-gate .ia-steps li{ margin:0; }
+.inapp-gate .ia-steps b{ color:var(--text, #eef1fb); }
+.inapp-gate .ia-kbd{
+  display:inline-grid; place-items:center; min-width:24px; height:24px; padding:0 5px;
+  border:1px solid var(--line-strong, rgba(90,120,255,.4)); border-radius:6px;
+  background:var(--surface2, #0d1330); font-family:var(--font-mono, monospace);
+  font-size:.82rem; vertical-align:middle;
+}
+.inapp-gate .ia-why{
+  margin-top:18px; font-size:.85rem; color:var(--muted, #9aa4c9); line-height:1.85;
+  border-inline-start:3px solid var(--accent, #00e5ff); padding-inline-start:14px;
+}
+.inapp-gate .ia-why b{ color:var(--text, #eef1fb); font-family:var(--font-display, 'Cairo', sans-serif); }
+.inapp-gate .ia-skip{
+  display:block; width:100%; margin-top:26px; padding:13px; border-radius:11px;
+  border:1px dashed var(--line-strong, rgba(90,120,255,.4));
+  color:var(--muted2, #7a84ac); font-size:.85rem;
+  font-family:var(--font-display, 'Cairo', sans-serif); font-weight:700;
+  background:transparent; cursor:pointer; transition:color .18s, border-color .18s;
+}
+.inapp-gate .ia-skip:hover{ color:var(--text, #eef1fb); border-color:var(--muted2, #7a84ac); }
+
+/* ------------------------------------------------- شريط التحذير الثابت */
+.inapp-warnbar{
+  position:fixed; inset-inline:0; top:0; z-index:9800;
+  display:flex; align-items:center; gap:10px; justify-content:center; flex-wrap:wrap;
+  background:var(--surface2, #0d1330);
+  border-bottom:1px solid var(--amber, #f0b429);
+  color:var(--text, #eef1fb); font-size:.78rem; padding:8px 14px;
+  padding-top:calc(8px + env(safe-area-inset-top));
+  font-family:var(--font-display, 'Cairo', sans-serif); line-height:1.6; direction:rtl;
+}
+.inapp-warnbar button{
+  border:1px solid var(--amber, #f0b429); border-radius:8px;
+  padding:4px 11px; font-weight:800; font-size:.75rem;
+  background:var(--surface, #070b1c); color:inherit;
+  white-space:nowrap; font-family:inherit; cursor:pointer;
+}
+html.has-warnbar body{ padding-top:46px; }
+@media print{ .inapp-gate, .inapp-warnbar{ display:none !important; } }
+
+/* ---------------------------------- تقليل الحركة للأجهزة الضعيفة */
+html.reduce-fx #uniBridgeBar *,
+html.reduce-fx #uniToastHost *,
+html.reduce-fx .inapp-gate *{
+  transition-duration:.01ms !important; animation-duration:.01ms !important;
+}
+@media (prefers-reduced-motion: reduce){
+  #uniToastHost .uni-toast{ transition-duration:.01ms; }
+}

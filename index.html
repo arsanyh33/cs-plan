@@ -6,9 +6,8 @@
 <title>خطتي الأكاديمية — كلية العلوم إسكندرية</title>
 <meta name="description" content="خطة دراسية تفاعلية لقسم الرياضيات وعلوم الحاسب — كلية العلوم جامعة الإسكندرية. حاسب + إحصاء وشعبة السبيشيال، حاسبة معدل، وخريطة متطلبات. تعمل بدون إنترنت.">
 
-<!-- PWA -->
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#02030b">
+<meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark light">
 <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -18,19 +17,19 @@
 <meta name="apple-mobile-web-app-title" content="خطتي">
 <meta name="application-name" content="خطتي">
 
-<!-- Open Graph: عشان اللينك يطلع كارت محترم على واتساب وفيسبوك -->
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://arsanyh33.github.io/cs-plan/">
 <meta property="og:site_name" content="خطتي الأكاديمية">
 <meta property="og:locale" content="ar_EG">
 <meta property="og:title" content="خطتي الأكاديمية — كلية العلوم إسكندرية">
 <meta property="og:description" content="خطة قسم الرياضيات وعلوم الحاسب: حاسب + إحصاء والسبيشيال، حاسبة معدل، وخريطة المتطلبات. تشتغل بدون إنترنت وتتثبّت على شاشتك.">
-<meta property="og:image" content="assets/icons/og.png">
+<meta property="og:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="خطتي الأكاديمية — كلية العلوم إسكندرية">
 <meta name="twitter:description" content="خطة الحاسب والإحصاء والسبيشيال، حاسبة معدل، وخريطة متطلبات. بدون إنترنت.">
-<meta name="twitter:image" content="assets/icons/og.png">
+<meta name="twitter:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 
 <link rel="preload" href="assets/fonts/Cairo-variable-arabic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/Almarai-400-arabic.woff2" as="font" type="font/woff2" crossorigin>
@@ -38,7 +37,15 @@
 </head>
 <body>
 
-<!-- شاشة البداية: بتقول للمستخدم إيه اللي بيحصل بدل ما يستنى في الفاضي -->
+<!-- ===================== الخلفية الحيّة (3 طبقات) ===================== -->
+<div class="bg" aria-hidden="true">
+  <div class="bg-aurora"><i></i><i></i><i></i></div>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<!-- ========================== شاشة البداية ========================== -->
 <div class="boot" id="boot">
   <div class="boot-in">
     <div class="boot-mark">خ</div>
@@ -48,125 +55,132 @@
   </div>
 </div>
 
-<header class="appbar">
+<header class="appbar" id="appbar">
   <div class="wrap appbar-in">
-    <div class="logo">
+    <a class="logo" href="index.html">
       <div class="logo-mark">خ</div>
       <div class="logo-tx">
         <b>خطتي الأكاديمية</b>
         <small>كلية العلوم — إسكندرية</small>
       </div>
-    </div>
+    </a>
     <div class="appbar-grow"></div>
-    <span class="net-dot" id="netDot"><i></i>متصل</span>
+    <span class="net-dot" id="netDot"><i></i><span>متصل</span></span>
     <button class="icon-btn" id="themeBtn" aria-label="تبديل الوضع">☀️</button>
   </div>
 </header>
 
 <main>
-  <!-- ------------------------------------------------------------- HERO -->
+  <!-- ============================== الهيرو ============================ -->
   <section class="wrap hero">
-    <div class="hero-kicker">🎓 قسم الرياضيات وعلوم الحاسب</div>
-    <h1>كل خططك الأكاديمية <span class="grad">في تطبيق واحد</span><br>يشتغل بدون نت</h1>
-    <p>
+    <div class="kicker rv">🎓 قسم الرياضيات وعلوم الحاسب</div>
+    <h1 class="rv rv-d1">
+      خطتك الأكاديمية<br>
+      <span class="grad">بشكل مختلف تمامًا</span>
+    </h1>
+    <p class="sub rv rv-d2">
       الخطط الدراسية، حاسبة المعدل، خريطة المتطلبات السابقة، وبيانك الأكاديمي —
-      كلها محفوظة على جهازك. ثبّتها على شاشتك وافتحها في أي وقت، حتى وإنت في
-      المحاضرة والنت واقع.
+      في تطبيق واحد <b>يتثبّت على شاشتك</b> و<b>يشتغل بدون نت خالص</b>.
+      كل حاجة محفوظة على جهازك، مش على أي سيرفر.
     </p>
+    <div class="hero-cta rv rv-d3">
+      <a class="btn primary" href="#plans">استعرض الخطط <span>←</span></a>
+      <button class="btn ghost hide" id="installBtn">📲 ثبّت التطبيق</button>
+      <a class="btn ghost" href="install.html">📖 إزاي أثبّته؟</a>
+    </div>
   </section>
 
-  <!-- ------------------------------------------------------------ SEARCH -->
-  <section class="wrap" style="padding-bottom:8px">
-    <div class="search">
+  <!-- ============================== البحث ============================ -->
+  <section class="wrap" style="padding-bottom:10px">
+    <div class="search rv">
       <input id="searchInput" type="search" inputmode="search" autocomplete="off"
-             placeholder="ابحث في كل الخطط… (اسم مادة، تخصص، أو صفحة)"
-             aria-label="بحث شامل">
+             placeholder="ابحث في كل الخطط…  (اسم مادة، تخصص، أو صفحة)" aria-label="بحث شامل">
       <span class="s-ic">🔍</span>
     </div>
     <div class="res hide" id="searchRes"></div>
   </section>
 
-  <!-- ------------------------------------------------------------- STATS -->
+  <!-- ============================= الأرقام =========================== -->
   <section class="wrap sec">
-    <div class="card">
-      <div class="card-t"><span class="ic">📊</span> نظرة سريعة على تقدمك</div>
-      <div class="card-sub" id="overallHint">بنحمّل بياناتك…</div>
-      <div class="grid g4" style="margin-top:18px">
-        <div class="stat card" style="box-shadow:none"><b id="stModules">—</b><small>خطة متاحة</small></div>
-        <div class="stat card" style="box-shadow:none"><b id="stDone">—</b><small>مادة مخلّصة</small></div>
-        <div class="stat card" style="box-shadow:none"><b id="stHours">—</b><small>ساعة منجزة</small></div>
-        <div class="stat card" style="box-shadow:none"><b id="stGraded">—</b><small>تقدير مسجّل</small></div>
-      </div>
+    <div class="sec-h rv">
+      <h2>تقدمك</h2>
+      <span class="hint" id="overallHint">بنحمّل بياناتك…</span>
+      <span class="line"></span>
+    </div>
+    <div class="grid g4">
+      <div class="stat rv"       ><b data-count id="stModules">—</b><small>خطة متاحة</small></div>
+      <div class="stat rv rv-d1" ><b data-count id="stDone">—</b><small>مادة مخلّصة</small></div>
+      <div class="stat rv rv-d2" ><b data-count id="stHours">—</b><small>ساعة منجزة</small></div>
+      <div class="stat rv rv-d3" ><b data-count id="stGraded">—</b><small>تقدير مسجّل</small></div>
     </div>
   </section>
 
-  <!-- ------------------------------------------------------------ MODULES -->
+  <!-- ============================= الخطط ============================= -->
   <section class="wrap sec" id="plans">
-    <div class="sec-h">
+    <div class="sec-h rv">
       <h2>الخطط الدراسية</h2>
-      <span>اضغط على أي خطة تفتحها — تقدمك بيتحفظ لوحده</span>
+      <span class="hint">تقدمك بيتحفظ لوحده — من غير أي تسجيل</span>
+      <span class="line"></span>
     </div>
-    <div class="grid g2" id="modHost">
+    <div class="grid g2 mods" id="modHost">
       <div class="card"><div class="card-sub">بنحمّل الخطط…</div></div>
     </div>
   </section>
 
-  <!-- ------------------------------------------------------------ INSTALL -->
+  <!-- ============================ التثبيت ============================ -->
   <section class="wrap sec" id="installCard">
-    <div class="card" style="border-color:var(--line-strong)">
-      <div class="card-t"><span class="ic">📲</span> ثبّت التطبيق على شاشتك</div>
+    <div class="card rv" style="border-color:var(--line2)">
+      <div class="card-t"><span class="ic">📲</span> ثبّته على شاشتك</div>
       <div class="card-sub">
-        لما تثبّته، بيبقى أيقونة عادية على موبايلك — يفتح فورًا، من غير متصفح،
+        يبقى أيقونة عادية على موبايلك — يفتح فورًا بدون شريط متصفح،
         <b>ومن غير نت خالص</b>، وتقدمك يبقى محفوظ بشكل دائم.
       </div>
-      <div class="btn-row" style="margin-top:16px">
-        <button class="btn primary hide" id="installBtn">📲 ثبّت التطبيق الآن</button>
-        <a class="btn" href="install.html">📖 تعليمات التثبيت لجهازي</a>
+      <div class="btn-row" style="margin-top:20px">
+        <button class="btn primary hide" id="installBtn2">📲 ثبّت الآن</button>
+        <a class="btn" href="install.html">📖 تعليمات جهازي</a>
       </div>
-      <div class="note info" style="margin-top:16px">
-        <b>📵 مهم:</b> لو فتحت اللينك ده من <b>واتساب</b> أو فيسبوك أو إنستجرام،
-        التثبيت مش هيشتغل — لازم تفتحه من <b>كروم أو سفاري</b>.
-        التطبيق بيكتشف الحالة دي لوحده ويقولك تعمل إيه.
+      <div class="note info" style="margin-top:18px">
+        <b>📵 خد بالك:</b> لو فتحت اللينك من <b>واتساب</b> أو فيسبوك أو إنستجرام،
+        التثبيت مش هيشتغل — لازم <b>كروم أو سفاري</b>.
+        التطبيق بيكتشف ده لوحده ويقولك تعمل إيه.
       </div>
     </div>
   </section>
 
-  <!-- ------------------------------------------------------------ STORAGE -->
+  <!-- ============================ البيانات =========================== -->
   <section class="wrap sec">
-    <div class="card">
+    <div class="card rv">
       <div class="card-t"><span class="ic">🛟</span> بياناتك وأمانها</div>
       <div class="card-sub">
-        تقدمك محفوظ على جهازك (مش على أي سيرفر). بنعمل نسخة تلقائية في مكانين،
+        تقدمك على جهازك بس. بنعمل نسخة تلقائية في مكانين،
         بس النسخة اللي تنزّلها بإيدك هي الأضمن.
       </div>
-      <div id="storageBody" style="margin-top:16px">
+      <div id="storageBody" style="margin-top:18px">
         <div class="card-sub">بنفحص حالة التخزين…</div>
       </div>
     </div>
   </section>
 
-  <!-- --------------------------------------------------------------- HOW -->
+  <!-- ============================== إزاي ============================= -->
   <section class="wrap sec">
     <div class="grid g2">
-      <div class="card">
-        <div class="card-t"><span class="ic">📴</span> إزاي بيشتغل بدون نت؟</div>
-        <div class="card-sub" style="line-height:1.95">
-          أول مرة تفتح التطبيق وإنت متصل، بيحفظ كل ملفاته على جهازك
-          (الصفحات + الخطوط العربية + الأكواد). بعد كده بيفتح من الجهاز نفسه،
-          والنت مابقاش له لازمة خالص.
-          <br><br>
-          <b>شرط واحد:</b> أول تشغيل لازم يكون فيه نت لمرة واحدة بس.
+      <div class="card rv">
+        <div class="card-t"><span class="ic">📴</span> بيشتغل بدون نت إزاي؟</div>
+        <div class="card-sub">
+          أول مرة تفتحه وإنت متصل، بيحفظ كل ملفاته على جهازك — الصفحات
+          والخطوط العربية والأكواد. بعد كده بيفتح من الجهاز نفسه،
+          والنت مابقاش له لازمة.
+          <br><br><b>شرط واحد:</b> أول تشغيل لازم يكون فيه نت لمرة واحدة بس.
         </div>
       </div>
-      <div class="card">
-        <div class="card-t"><span class="ic">🧩</span> بتتوسّع إزاي؟</div>
-        <div class="card-sub" style="line-height:1.95">
-          التطبيق مبني كـ«حاوية» تشيل صفحات. تكتب أي صفحة HTML جديدة،
-          تحطها في مجلد <code class="mono">modules/</code>، وتضيف سطر واحد في
-          <code class="mono">registry.json</code> — وتظهر هنا تلقائيًا،
+      <div class="card rv rv-d1">
+        <div class="card-t"><span class="ic">🧩</span> بيتوسّع إزاي؟</div>
+        <div class="card-sub">
+          مبني كـ«حاوية» تشيل صفحات. تكتب أي صفحة HTML جديدة،
+          تحطها في <span class="mono">modules/</span>، وتضيف سطر واحد في
+          <span class="mono">registry.json</span> — تظهر هنا تلقائيًا،
           وتتحفظ للشغل بدون نت، وتدخل في البحث.
-          <br><br>
-          فيه قالب جاهز في <code class="mono">modules/_template/</code> تنسخه وتبدأ.
+          <br><br>فيه قالب جاهز في <span class="mono">modules/_template/</span>.
         </div>
       </div>
     </div>
@@ -175,8 +189,7 @@
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <span>خطتي الأكاديمية — <span id="appVer">إصدار 1.0.0</span></span>
-    <span>•</span>
+    <span>خطتي الأكاديمية — <span id="appVer">إصدار 2.0</span></span>
     <a href="install.html">التثبيت</a>
     <a href="diagnostics.html">التشخيص والنسخ الاحتياطي</a>
     <span class="appbar-grow"></span>

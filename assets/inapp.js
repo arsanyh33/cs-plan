@@ -170,6 +170,11 @@
           المتصفح الداخلي بتاع ${appName} <b>مش بيقدر يثبّت التطبيق</b> ولا
           يخليه يشتغل بدون نت، وأي تقدم تسجله هنا <b>بيضيع</b> لما تقفل الشاشة.
         </p>
+        <p class="ia-lede" style="color:var(--rose,#e0455a)">
+          ⚠️ <b>متضغطش دلوقتي على أي زرار "إضافة إلى الشاشة الرئيسية" أو تثبيت
+          جوه ${appName} نفسه</b> — الأيقونة اللي هتتحمل هتبقى <b>باظة ومش هتفتح</b>
+          تاني. لازم تفتح اللينك في كروم أو سفاري الأول زي تحت، وبعدين ثبّته من هناك.
+        </p>
 
         <div class="ia-actions">
           ${androidBtns}
@@ -187,7 +192,7 @@
           ويفتح بعد كده <b>من غير نت خالص</b>، وتقدمك يتحفظ بشكل دائم.
         </div>
 
-        <button class="ia-skip" id="iaSkip">أكمّل هنا برضو (تقدمي مش هيتحفظ) ↓</button>
+        <button class="ia-skip" id="iaSkip">أكمّل هنا برضو (تقدمي مش هيتحفظ، ومينفعش أثبّت من هنا) ↓</button>
       </div>`;
 
     return host;
@@ -197,7 +202,8 @@
     const bar = document.createElement('div');
     bar.className = 'inapp-warnbar';
     bar.innerHTML = `
-      <span>⚠️ إنت في متصفح ${appName} — تقدمك <b>مش محفوظ</b> والتطبيق مش هيشتغل بدون نت.</span>
+      <span>⚠️ إنت في متصفح ${appName} — تقدمك <b>مش محفوظ</b>، والتطبيق مش هيشتغل بدون نت،
+      و<b>متثبتوش من هنا</b> هيبقى باظ.</span>
       <button type="button" id="iaReopen">افتح في المتصفح</button>`;
     return bar;
   }
@@ -213,6 +219,24 @@
     try { dismissed = sessionStorage.getItem(dismissKey) === '1'; } catch (e) { void e; }
 
     const appName = (info.app && info.app.name) || 'التطبيق';
+
+    /* ------------------------------------------------------------------
+       محاولة تلقائية (مرة واحدة بس في الجلسة): على أندرويد، نحاول نفتح
+       كروم فورًا من غير ما ننتظر المستخدم يدوس أي زرار. لو كروم موجود
+       هيتفتح فعليًا ويسيب واتساب في الخلفية. لو مش موجود، الـ intent
+       بيرجع لنفس الصفحة (fallback) وهنا الشاشة اليدوية بتظهر عادي.
+       ما بنعملهاش لو المستخدم فعلًا دوس "أكمّل هنا برضو" قبل كده،
+       عشان ما نضايقوش كل تنقل بين الصفحات. ما بنعملهاش على iOS لأن
+       آبل بتمنع أي تحويل تلقائي للمتصفح من جافاسكريبت. */
+    if (info.isAndroid && !dismissed) {
+      const autoKey = 'uniInAppAutoTried_v1';
+      let autoTried = false;
+      try { autoTried = sessionStorage.getItem(autoKey) === '1'; } catch (e) { void e; }
+      if (!autoTried) {
+        try { sessionStorage.setItem(autoKey, '1'); } catch (e) { void e; }
+        try { location.href = chromeIntentURL(opts.url || location.href); } catch (e) { void e; }
+      }
+    }
 
     if (dismissed) {
       const bar = warnBar(appName);

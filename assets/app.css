@@ -177,7 +177,7 @@ input,select,textarea{ font-family:inherit; }
 .appbar-tools .fs-grp,
 .appbar-tools .fs-segmented{ flex-wrap:nowrap; }
 
-.logo{ display:flex; align-items:center; gap:12px; color:inherit; min-width:0; white-space:nowrap; }
+.logo{ display:flex; align-items:center; gap:12px; color:inherit; min-width:0; white-space:nowrap; overflow:hidden; }
 .logo-mark{
   width:42px; height:42px; flex:0 0 42px; border-radius:13px;
   display:grid; place-items:center;
@@ -758,6 +758,10 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 }
 @media (max-width:560px){
   #shareBtn{ display:none; }            /* المشاركة موجودة في install.html */
+}
+@media (max-width:520px){
+  .logo-tx{ display:none; }             /* شعار CS بس — ممنوع أي تراكب */
+  .appbar-in{ gap:8px; }
 }
 @media (max-width:420px){
   .fs-segmented .fs-btn{ padding:7px 8px; font-size:.7rem; }

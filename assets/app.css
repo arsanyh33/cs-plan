@@ -76,7 +76,7 @@ body{
   font-weight:500;
   font-size:1.02rem;
   line-height:1.85;
-  letter-spacing:.1px;
+  letter-spacing:0;
   min-height:100dvh;
   overflow-x:hidden;
   position:relative;
@@ -148,7 +148,7 @@ html[data-theme="light"] .bg-grid{ opacity:.25; }
 html[data-theme="light"] .bg-noise{ display:none; }
 
 /* ============================ التايبوغرافي ========================== */
-h1,h2,h3,h4{ font-family:var(--font-display); font-weight:900; line-height:1.32; letter-spacing:-.4px; }
+h1,h2,h3,h4{ font-family:var(--font-display); font-weight:900; line-height:1.32; letter-spacing:0; }
 a{ color:var(--cyan); text-decoration:none; }
 button{ font-family:inherit; font-size:inherit; color:inherit; cursor:pointer; border:0; background:none; }
 input,select,textarea{ font-family:inherit; }
@@ -232,7 +232,7 @@ input,select,textarea{ font-family:inherit; }
 .hero{ padding:clamp(48px,11vw,120px) 0 clamp(26px,5vw,48px); position:relative; }
 .kicker{
   display:inline-flex; align-items:center; gap:9px;
-  font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:1.6px;
+  font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:.2px;
   color:var(--cyan); border:1px solid var(--line-hot); border-radius:99px;
   padding:7px 17px; background:rgba(0,229,255,.07);
   box-shadow:0 0 26px -8px rgba(0,229,255,.5), inset 0 0 20px -12px var(--cyan);
@@ -240,7 +240,7 @@ input,select,textarea{ font-family:inherit; }
 }
 .hero h1{
   font-size:clamp(2rem,7.4vw,4.6rem);
-  font-weight:900; line-height:1.1; letter-spacing:-1.5px;
+  font-weight:900; line-height:1.15; letter-spacing:0;
   text-shadow:0 0 70px rgba(0,229,255,.18);
 }
 .hero .sub{
@@ -421,7 +421,7 @@ input,select,textarea{ font-family:inherit; }
 .stat:hover{ border-color:var(--line-hot); transform:translateY(-4px); background:var(--glass2); }
 .stat b{
   display:block; font-family:var(--font-display);
-  font-size:clamp(1.7rem,5.2vw,2.5rem); font-weight:900; line-height:1.14;
+  font-size:clamp(1.7rem,5.2vw,2.5rem); font-weight:900; line-height:1.14; letter-spacing:0;
   font-variant-numeric:tabular-nums;
   background:linear-gradient(150deg,#fff,var(--cyan) 55%,var(--violet));
   -webkit-background-clip:text; background-clip:text;
@@ -520,7 +520,7 @@ table.t{ width:100%; border-collapse:collapse; font-size:.86rem; }
 table.t th,table.t td{ padding:12px 13px; border-bottom:1px solid var(--line); text-align:start; }
 table.t th{
   font-family:var(--font-display); font-size:.76rem; color:var(--dim2);
-  font-weight:900; letter-spacing:.4px; text-transform:uppercase;
+  font-weight:900; letter-spacing:0;
 }
 table.t tbody tr{ transition:background .2s; }
 table.t tbody tr:hover{ background:var(--glass); }
@@ -609,7 +609,7 @@ html.weak-device .mod{ transform:none !important; }
 /* ============================== الموبايل ========================== */
 @media (max-width:640px){
   .hero{ padding-top:clamp(32px,9vw,60px); }
-  .hero h1{ letter-spacing:-.8px; }
+  .hero h1{ letter-spacing:0; }
   .card{ border-radius:15px; }
   .mod{ border-radius:18px; }
   .mod-top{ transform:none; }
@@ -643,7 +643,7 @@ html.weak-device .mod{ transform:none !important; }
 /* الكيكر القديم = الجديد */
 .hero-kicker{
   display:inline-flex; align-items:center; gap:9px;
-  font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:1.6px;
+  font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:.2px;
   color:var(--cyan); border:1px solid var(--line-hot); border-radius:99px;
   padding:7px 17px; background:rgba(0,229,255,.07);
   box-shadow:0 0 26px -8px rgba(0,229,255,.5);

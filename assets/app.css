@@ -965,3 +965,26 @@ html.reduce-fx .hero-h1 .w{ transform:none; opacity:1; transition:none; }
   .boot-count{ font-size:2.1rem; }
   .hero-h1{ max-width:100%; }
 }
+
+/* ==========================================================================
+   إصدار 2.5 — معايير عالمية للمس والقراءة على الموبايل
+   (Touch targets 44-48px، تباعد 8px، خط الإدخال 16px يمنع زووم iOS
+   التلقائي، وحدات dvh لارتفاع الشاشة الحقيقي، بدون أي فرض لمنظور تاني)
+   ========================================================================== */
+@media (hover:none){
+  /* أزرار الأيقونات وحجم الخط: 44px مساحة لمس بدل 42px */
+  .icon-btn{ width:44px; height:44px; }
+  .fs-segmented .fs-btn{ min-width:38px; min-height:44px; padding:10px 12px; }
+  .to-top{ width:48px; height:48px; }
+  /* الروابط والأزرار الصغيرة تبقى قابلة للمس بسهولة */
+  .foot a,.foot-brand{ display:inline-flex; align-items:center; min-height:32px; }
+  .mod-go{ min-height:32px; align-items:center; display:inline-flex; }
+  /* تباعد آمن بين أي عنصرين قابلين للمس جنب بعض */
+  .appbar-tools{ gap:10px; }
+}
+/* خط حقل البحث لازم يكون 16px فأكثر — أقل من كده Safari يعمل زووم تلقائي
+   لحقل الإدخال بمجرد الضغط عليه، وده تجربة مستخدم سيئة على الموبايل */
+.search input,#deviceSelect,select.tool-select{ font-size:max(1rem,16px); }
+
+/* dvh بدل vh — بيحسب المتصفح فعليًا (شريط العنوان بيختفي ويظهر) */
+.boot{ min-height:100dvh; }

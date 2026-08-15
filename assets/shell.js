@@ -135,6 +135,7 @@
     });
     revealScan();
     growBars(host);
+    if (document.body.classList.contains('device-laptop')) forceLaptopScale(true);
   }
 
 
@@ -339,13 +340,13 @@
   }
 
   function wireDevice() {
+    /* الافتراضي دايمًا "تلقائي" — الصفحة تاخد حجم شاشة الجهاز الحقيقي.
+       فرض منظور اللابتوب على الموبايل كان قرار غلط (زوّم اوت + مساحة
+       فاضية تحت المحتوى) — أفضل الممارسات العالمية بتنصح بعكسه تمامًا:
+       تصميم Mobile-first متجاوب حقيقي بدل تصغير شكل الديسكتوب.
+       "لابتوب" فضل موجود في القائمة كخيار معاينة اختياري بس، مش افتراضي. */
     const sel = $('#deviceSelect');
-    const saved = prefs().device;
-    let mode = saved;
-    if (!mode) {
-      const isSmallScreen = Math.min(innerWidth, screen.width || innerWidth) < 1180;
-      mode = isSmallScreen ? 'laptop' : 'auto';
-    }
+    const mode = prefs().device || 'auto';
     applyDevice(mode);
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);

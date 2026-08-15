@@ -38,8 +38,8 @@
   --req46:#ffb020; --req16:#ff2d78; --elective:#98a0c0;
   --college:#8b5cf6; --support:#00e5ff;
 
-  --radius:18px;
-  --radius-sm:12px;
+  --radius:14px;          /* نفس ملفاتك */
+  --radius-sm:10px;
   --bar-h:56px;
   --fs-scale:1;
 
@@ -74,9 +74,9 @@ body{
   color:var(--text);
   font-family:var(--font-body);
   font-weight:500;
-  font-size:1.02rem;
-  line-height:1.85;
-  letter-spacing:0;
+  font-size:1.0625rem;    /* نفس ملفاتك */
+  line-height:1.9;        /* نفس ملفاتك */
+  letter-spacing:.15px;   /* نفس ملفاتك */
   min-height:100dvh;
   overflow-x:hidden;
   position:relative;
@@ -154,7 +154,7 @@ button{ font-family:inherit; font-size:inherit; color:inherit; cursor:pointer; b
 input,select,textarea{ font-family:inherit; }
 .mono{ font-family:var(--font-mono); font-size:.9em; }
 .ltr{ direction:ltr; unicode-bidi:isolate; }
-.wrap{ max-width:1240px; margin-inline:auto; padding-inline:clamp(16px,4.5vw,40px); }
+.wrap{ max-width:1180px; margin-inline:auto; padding-inline:22px; }  /* نفس ملفاتك */
 
 /* نص متدرّج نيون */
 .grad{
@@ -181,7 +181,10 @@ input,select,textarea{ font-family:inherit; }
   background:rgba(0,0,0,.9);
 }
 @supports not (backdrop-filter:blur(2px)){ .appbar{ background:rgba(0,0,0,.95); } }
-.appbar-in{ display:flex; align-items:center; gap:14px; min-height:68px; }
+.appbar-in{
+  max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+}
 
 .logo{ display:flex; align-items:center; gap:12px; color:inherit; }
 .logo-mark{
@@ -229,7 +232,7 @@ input,select,textarea{ font-family:inherit; }
 @keyframes pulse{ 50%{ opacity:.35; transform:scale(.8); } }
 
 /* ============================== الهيرو ============================== */
-.hero{ padding:clamp(48px,11vw,120px) 0 clamp(26px,5vw,48px); position:relative; }
+.hero{ padding:clamp(26px,6vw,54px) 0 10px; position:relative; }
 .kicker{
   display:inline-flex; align-items:center; gap:9px;
   font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:.2px;
@@ -239,9 +242,10 @@ input,select,textarea{ font-family:inherit; }
   margin-bottom:22px;
 }
 .hero h1{
-  font-size:clamp(2rem,7.4vw,4.6rem);
-  font-weight:900; line-height:1.15; letter-spacing:0;
-  text-shadow:0 0 70px rgba(0,229,255,.18);
+  font-size:clamp(1.625rem,4vw,2.375rem);   /* نفس ملفاتك */
+  font-weight:900; line-height:1.35; letter-spacing:0;
+  max-width:32ch; text-wrap:balance;
+  text-shadow:0 0 60px rgba(0,229,255,.16);
 }
 .hero .sub{
   color:var(--dim); max-width:60ch; margin-top:22px;
@@ -283,9 +287,9 @@ input,select,textarea{ font-family:inherit; }
 }
 
 /* ============================== الأقسام ============================= */
-.sec{ padding:clamp(30px,6vw,64px) 0; }
+.sec{ padding:18px 0 26px; }
 .sec-h{ display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:26px; }
-.sec-h h2{ font-size:clamp(1.35rem,4vw,2.1rem); }
+.sec-h h2{ font-size:1.5rem; }   /* نفس ملفاتك */
 .sec-h .hint{ color:var(--dim2); font-size:.86rem; margin-bottom:5px; }
 .sec-h .line{
   flex:1; min-width:40px; height:1px; margin-bottom:11px;
@@ -651,9 +655,101 @@ html.weak-device .mod{ transform:none !important; }
 }
 /* الهيرو القديم بيستخدم <p> مباشر */
 .hero > p{ color:var(--dim); max-width:62ch; margin-top:16px; font-size:1.02rem; line-height:1.9; }
-.hero h1{ font-size:clamp(1.8rem,6.4vw,3.4rem); }
+.hero h1{ font-size:clamp(1.625rem,4vw,2.375rem); }
 /* حقول الملفات والراديو */
 input[type="file"]{ color:var(--dim) !important; background:var(--glass) !important; }
 input[type="radio"]{ accent-color:var(--cyan); }
 /* كارت جوه كارت: نخفّف الخلفية عشان مايبقاش تقيل */
 .card .card{ background:rgba(255,255,255,.022); backdrop-filter:none; -webkit-backdrop-filter:none; }
+
+/* ==========================================================================
+   أدوات الشريط العلوي — نفس اللي في ملفاتك
+   ========================================================================== */
+.fs-grp{ display:flex; align-items:center; gap:8px; }
+.fs-label{ font-family:var(--font-display); font-size:.72rem; font-weight:800; color:var(--dim2); white-space:nowrap; }
+.fs-segmented{
+  display:flex; border:1px solid var(--line2); border-radius:10px; overflow:hidden;
+  background:var(--glass);
+}
+.fs-segmented .fs-btn{
+  border:0; border-radius:0; background:transparent; color:var(--text);
+  font-family:var(--font-mono); font-size:.78rem; font-weight:700;
+  padding:8px 11px; transition:.2s var(--ease); line-height:1;
+}
+.fs-segmented .fs-btn:not(:last-child){ border-inline-end:1px solid var(--line2); }
+.fs-segmented .fs-btn:hover{ background:var(--glass2); color:var(--cyan); }
+.fs-segmented .fs-btn:active{ background:var(--cyan); color:#000; }
+
+.tool-divider{ width:1px; height:22px; background:var(--line2); }
+
+.tool-select{
+  border:1px solid var(--line2); border-radius:10px; background:var(--glass);
+  color:var(--text); font-family:var(--font-display); font-size:.76rem; font-weight:800;
+  padding:9px 11px; transition:.2s var(--ease); cursor:pointer;
+}
+.tool-select:hover{ border-color:var(--line-hot); color:var(--cyan); }
+.tool-select option{ background:#0a0a14; color:#f4f6ff; }
+
+/* ---------------- معاينة الأجهزة — نفس مقاسات ملفاتك ---------------- */
+#appFrame{ transition:max-width .4s var(--ease); }
+body.device-mobile #appFrame{
+  max-width:390px; margin:18px auto; border:1px solid var(--line2); border-radius:26px;
+  box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden;
+  max-height:844px; overflow-y:auto;
+}
+body.device-tablet #appFrame{
+  max-width:768px; margin:18px auto; border:1px solid var(--line2); border-radius:18px;
+  box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden;
+  max-height:1024px; overflow-y:auto;
+}
+body.device-laptop #appFrame{ max-width:1180px; margin:0 auto; }
+body.device-mobile .wrap,
+body.device-tablet .wrap{ padding-inline:14px; }
+body.device-mobile .g2,
+body.device-mobile .g3,
+body.device-mobile .g4{ grid-template-columns:1fr; }
+body.device-mobile .fs-label{ display:none; }
+
+/* ---------------------------- زر الرجوع لفوق ---------------------------- */
+.to-top{
+  position:fixed; z-index:8500;
+  inset-inline-start:20px;
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  width:50px; height:50px; border-radius:16px;
+  display:grid; place-items:center; color:#000;
+  background:linear-gradient(140deg,var(--cyan),var(--violet) 60%,var(--magenta));
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 12px 34px -12px var(--cyan);
+  opacity:0; visibility:hidden; transform:translateY(18px) scale(.85);
+  transition:opacity .35s var(--ease), transform .35s var(--ease2), visibility .35s;
+}
+.to-top.show{ opacity:1; visibility:visible; transform:none; }
+.to-top:hover{ transform:translateY(-4px) scale(1.06); box-shadow:0 18px 44px -12px var(--cyan); }
+.to-top:active{ transform:translateY(-1px) scale(1.01); }
+/* حلقة تقدّم القراءة حوالين الزر */
+.to-top::before{
+  content:''; position:absolute; inset:-4px; border-radius:19px;
+  background:conic-gradient(var(--cyan) calc(var(--p,0) * 1%), transparent 0);
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  opacity:.85; pointer-events:none;
+}
+@media (max-width:640px){
+  .to-top{ width:46px; height:46px; inset-inline-start:14px; bottom:calc(14px + env(safe-area-inset-bottom)); }
+}
+html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-inset-bottom)); }
+
+/* الهيرو صغير ونظيف — بدون فقرات شرح */
+.hero .kicker{ margin-bottom:14px; }
+
+/* الشريط العلوي على الموبايل: الأدوات تنزل سطر تاني بترتيب */
+@media (max-width:820px){
+  .appbar-in{ padding:12px 14px; gap:9px; }
+  .fs-label,.tool-divider{ display:none; }
+  .logo-tx small{ display:none; }
+}
+@media (max-width:520px){
+  .tool-select{ padding:8px 7px; font-size:.7rem; }
+  .fs-segmented .fs-btn{ padding:7px 9px; font-size:.72rem; }
+  .net-dot span{ display:none; }
+}

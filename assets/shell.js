@@ -257,6 +257,120 @@
     }, { passive: true });
   }
 
+
+  /* ==================================================================
+     أدوات الواجهة: حجم الخط • معاينة الأجهزة • الرجوع لفوق • مشاركة
+     كلها بنفس قيم ملفاتك الأصلية بالظبط.
+     ================================================================== */
+
+  /* ------------------------- حجم الخط (A− A A+) ------------------------- */
+  const FS_MIN = 0.85, FS_MAX = 1.35, FS_STEP = 0.075;
+
+  function applyFs(v) {
+    const val = Math.min(FS_MAX, Math.max(FS_MIN, +Number(v).toFixed(3)));
+    document.documentElement.style.setProperty('--fs-scale', val);
+    prefs({ fs: val });
+    return val;
+  }
+  function curFs() {
+    const p = prefs().fs;
+    return (typeof p === 'number' && p >= FS_MIN && p <= FS_MAX) ? p : 1;
+  }
+  function wireFontSize() {
+    let fs = applyFs(curFs());
+    const minus = $('#fsMinus'), reset = $('#fsReset'), plus = $('#fsPlus');
+    if (minus) minus.addEventListener('click', () => { fs = applyFs(fs - FS_STEP); });
+    if (reset) reset.addEventListener('click', () => { fs = applyFs(1); });
+    if (plus)  plus.addEventListener('click',  () => { fs = applyFs(fs + FS_STEP); });
+
+    /* اختصارات لوحة المفاتيح: Ctrl + / − / 0 */
+    global.addEventListener('keydown', (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      if (e.key === '+' || e.key === '=') { e.preventDefault(); fs = applyFs(fs + FS_STEP); }
+      else if (e.key === '-' || e.key === '_') { e.preventDefault(); fs = applyFs(fs - FS_STEP); }
+      else if (e.key === '0') { e.preventDefault(); fs = applyFs(1); }
+    });
+  }
+
+  /* --------------------- معاينة الأجهزة (Auto/Mobile/…) ------------------ */
+  const DEVICES = ['auto', 'mobile', 'tablet', 'laptop'];
+  function applyDevice(mode) {
+    const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
+    document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop');
+    if (m !== 'auto') document.body.classList.add('device-' + m);
+    prefs({ device: m });
+    const sel = $('#deviceSelect');
+    if (sel && sel.value !== m) sel.value = m;
+    return m;
+  }
+  function wireDevice() {
+    const sel = $('#deviceSelect');
+    const saved = prefs().device || 'auto';
+    applyDevice(saved);
+    if (sel) sel.addEventListener('change', () => {
+      applyDevice(sel.value);
+      global.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ------------------ زر الرجوع لفوق + حلقة تقدّم القراءة ---------------- */
+  function wireToTop() {
+    const btn = $('#toTop');
+    if (!btn) return;
+    let raf = null;
+    function upd() {
+      raf = null;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - innerHeight;
+      const y = global.scrollY;
+      btn.classList.toggle('show', y > 320);
+      const pct = max > 0 ? Math.min(100, (y / max) * 100) : 0;
+      btn.style.setProperty('--p', pct.toFixed(1));
+    }
+    global.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
+    global.addEventListener('resize', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
+    btn.addEventListener('click', () => {
+      global.scrollTo({ top: 0, behavior: FX_OFF() ? 'auto' : 'smooth' });
+    });
+    upd();
+  }
+
+  /* ------------------------------- مشاركة ------------------------------- */
+  function wireShare() {
+    const btn = $('#shareBtn');
+    if (!btn) return;
+    const url = location.href.replace(/[?#].*$/, '');
+    btn.addEventListener('click', () => {
+      if (navigator.share) {
+        navigator.share({
+          title: 'خطتي الأكاديمية — كلية العلوم إسكندرية',
+          text: 'الخطط الدراسية لقسم الرياضيات وعلوم الحاسب. افتحها من كروم أو سفاري وثبّتها على شاشتك.',
+          url,
+        }).catch(() => {});
+        return;
+      }
+      if (global.UniInApp) {
+        global.UniInApp.copyLink(url).then((ok) => {
+          toast(ok ? '🔗 اللينك اتنسخ' : '⚠️ انسخ اللينك من شريط العنوان');
+        });
+      }
+    });
+  }
+
+  /* ------------------- اختصار البحث: / أو Ctrl+K ------------------- */
+  function wireSearchShortcut() {
+    const inp = $('#searchInput');
+    if (!inp) return;
+    global.addEventListener('keydown', (e) => {
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      const typing = /INPUT|TEXTAREA|SELECT/.test(tag);
+      if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault(); inp.focus(); inp.select(); return;
+      }
+      if (e.key === '/' && !typing) { e.preventDefault(); inp.focus(); }
+    });
+  }
+
   /* ---------------------------------------------------------- overall */
   function renderOverall() {
     if (!REG) return;
@@ -269,10 +383,12 @@
       graded += s.gradedCount;
       realTerms += s.realTerms;
     });
+    /* قسم الأرقام اتشال من الواجهة — نسيب الدوال آمنة لو رجعت بعدين */
     setStat('#stModules', REG.modules.length);
     setStat('#stDone', doneCourses || '—');
     setStat('#stHours', doneHours || '—');
     setStat('#stGraded', graded || '—');
+    void realTerms; void started;
 
     const hint = $('#overallHint');
     if (hint) {
@@ -465,6 +581,7 @@
   /* -------------------------------------------------------- storage card */
   function renderStorage() {
     if (!global.UniStore) return;
+    if (!$('#storageBody')) return;      /* القسم اتشال من الواجهة */
     global.UniStore.storageStatus().then((st) => {
       const host = $('#storageBody');
       if (!host) return;
@@ -546,6 +663,11 @@
 
     wireAppbar();
     wireParallax();
+    wireFontSize();
+    wireDevice();
+    wireToTop();
+    wireShare();
+    wireSearchShortcut();
     revealScan();
 
     const si = $('#searchInput');
@@ -601,5 +723,5 @@
     document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else { boot(); }
 
-  global.UniShell = { toast, tilt3D, revealScan, countUp, renderModules, renderOverall, renderStorage, prefs, applyTheme };
+  global.UniShell = { toast, tilt3D, revealScan, countUp, applyFs, applyDevice, renderModules, renderOverall, renderStorage, prefs, applyTheme };
 })(typeof window !== 'undefined' ? window : this);

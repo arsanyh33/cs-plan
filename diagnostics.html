@@ -13,14 +13,31 @@
 </head>
 <body>
 
+<div class="bg" aria-hidden="true">
+  <div class="bg-aurora"><i></i><i></i><i></i></div>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-noise"></div>
+</div>
+
 <header class="appbar">
-  <div class="wrap appbar-in">
+  <div class="appbar-in">
     <a class="logo" href="index.html" style="color:inherit">
       <div class="logo-mark">خ</div>
       <div class="logo-tx"><b>خطتي الأكاديمية</b><small>التشخيص والنسخ الاحتياطي</small></div>
     </a>
     <div class="appbar-grow"></div>
-    <a class="icon-btn" href="index.html" aria-label="الرئيسية">◀</a>
+    <div class="fs-grp">
+      <span class="fs-label">حجم الخط</span>
+      <div class="fs-segmented">
+        <button class="fs-btn" id="fsMinus" title="تصغير الخط">A−</button>
+        <button class="fs-btn" id="fsReset" title="الحجم الافتراضي">A</button>
+        <button class="fs-btn" id="fsPlus"  title="تكبير الخط">A+</button>
+      </div>
+    </div>
+    <span class="tool-divider" aria-hidden="true"></span>
+    <button class="icon-btn" id="themeBtn" title="تبديل الوضع" aria-label="تبديل الوضع">☀️</button>
+    <a class="icon-btn" href="index.html" title="الرئيسية" aria-label="الرئيسية">◀</a>
   </div>
 </header>
 
@@ -335,6 +352,43 @@
   renderStorage(); renderKeys(); renderCache(); renderDevice();
   window.addEventListener('online', renderDevice);
   window.addEventListener('offline', renderDevice);
+})();
+</script>
+<button class="to-top" id="toTop" title="ارجع لفوق" aria-label="ارجع لأعلى الصفحة">
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+    <path d="M12 5l-7 7h4.5v7h5v-7H17z" fill="currentColor"/>
+  </svg>
+</button>
+
+<script>
+/* أدوات الصفحة: حجم الخط + الوضع + زر فوق */
+(function(){
+  var K='uniShellPrefs_v1', MIN=.85, MAX=1.35, ST=.075;
+  function P(patch){ var p={}; try{p=JSON.parse(localStorage.getItem(K)||'{}');}catch(e){}
+    if(patch){ Object.assign(p,patch); try{localStorage.setItem(K,JSON.stringify(p));}catch(e){} } return p; }
+  var fs = (typeof P().fs==='number' && P().fs>=MIN && P().fs<=MAX) ? P().fs : 1;
+  function set(v){ fs=Math.min(MAX,Math.max(MIN,+Number(v).toFixed(3)));
+    document.documentElement.style.setProperty('--fs-scale',fs); P({fs:fs}); }
+  set(fs);
+  var m=document.getElementById('fsMinus'), r=document.getElementById('fsReset'), p2=document.getElementById('fsPlus');
+  if(m) m.onclick=function(){ set(fs-ST); };
+  if(r) r.onclick=function(){ set(1); };
+  if(p2) p2.onclick=function(){ set(fs+ST); };
+
+  var th=P().theme||'dark';
+  function theme(t){ document.documentElement.setAttribute('data-theme',t); P({theme:t});
+    var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'🌙':'☀️';
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#f7f8fc':'#000000'); }
+  theme(th);
+  var tb=document.getElementById('themeBtn');
+  if(tb) tb.onclick=function(){ theme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'); };
+
+  var t=document.getElementById('toTop');
+  if(t){ var raf=null;
+    function u(){ raf=null; var d=document.documentElement, mx=d.scrollHeight-innerHeight, y=scrollY;
+      t.classList.toggle('show', y>320); t.style.setProperty('--p', (mx>0?Math.min(100,y/mx*100):0).toFixed(1)); }
+    addEventListener('scroll',function(){ if(!raf) raf=requestAnimationFrame(u); },{passive:true});
+    t.onclick=function(){ scrollTo({top:0,behavior:'smooth'}); }; u(); }
 })();
 </script>
 </body>

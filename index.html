@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>خطتي الأكاديمية — كلية العلوم إسكندرية</title>
-<meta name="description" content="خطة دراسية تفاعلية لقسم الرياضيات وعلوم الحاسب — كلية العلوم جامعة الإسكندرية. حاسب + إحصاء وشعبة السبيشيال، حاسبة معدل، وخريطة متطلبات. تعمل بدون إنترنت.">
+<meta name="description" content="الخطط الدراسية لقسم الرياضيات وعلوم الحاسب — كلية العلوم جامعة الإسكندرية.">
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
@@ -22,19 +22,18 @@
 <meta property="og:site_name" content="خطتي الأكاديمية">
 <meta property="og:locale" content="ar_EG">
 <meta property="og:title" content="خطتي الأكاديمية — كلية العلوم إسكندرية">
-<meta property="og:description" content="خطة قسم الرياضيات وعلوم الحاسب: حاسب + إحصاء والسبيشيال، حاسبة معدل، وخريطة المتطلبات. تشتغل بدون إنترنت وتتثبّت على شاشتك.">
+<meta property="og:description" content="الخطط الدراسية لقسم الرياضيات وعلوم الحاسب: حاسب + إحصاء والسبيشيال.">
 <meta property="og:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="خطتي الأكاديمية — كلية العلوم إسكندرية">
-<meta name="twitter:description" content="خطة الحاسب والإحصاء والسبيشيال، حاسبة معدل، وخريطة متطلبات. بدون إنترنت.">
+<meta name="twitter:description" content="الخطط الدراسية لقسم الرياضيات وعلوم الحاسب.">
 <meta name="twitter:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 
-<!-- ===================== الخلفية الحيّة (3 طبقات) ===================== -->
 <div class="bg" aria-hidden="true">
   <div class="bg-aurora"><i></i><i></i><i></i></div>
   <div class="bg-grid"></div>
@@ -42,18 +41,17 @@
   <div class="bg-noise"></div>
 </div>
 
-<!-- ========================== شاشة البداية ========================== -->
 <div class="boot" id="boot">
   <div class="boot-in">
     <div class="boot-mark">خ</div>
     <div class="boot-tx">خطتي الأكاديمية</div>
-    <div class="boot-sub" id="bootSub">بنحضّر التطبيق للشغل بدون نت…</div>
+    <div class="boot-sub" id="bootSub">جاري التحضير…</div>
     <div class="boot-bar" id="bootBar"><i></i></div>
   </div>
 </div>
 
 <header class="appbar" id="appbar">
-  <div class="wrap appbar-in">
+  <div class="appbar-in">
     <a class="logo" href="index.html">
       <div class="logo-mark">خ</div>
       <div class="logo-tx">
@@ -61,138 +59,72 @@
         <small>كلية العلوم — إسكندرية</small>
       </div>
     </a>
+
     <div class="appbar-grow"></div>
+
+    <!-- حجم الخط — نفس اللي في ملفاتك -->
+    <div class="fs-grp">
+      <span class="fs-label">حجم الخط</span>
+      <div class="fs-segmented">
+        <button class="fs-btn" id="fsMinus" title="تصغير الخط" aria-label="تصغير حجم الخط">A−</button>
+        <button class="fs-btn" id="fsReset" title="الحجم الافتراضي" aria-label="الحجم الافتراضي">A</button>
+        <button class="fs-btn" id="fsPlus"  title="تكبير الخط" aria-label="تكبير حجم الخط">A+</button>
+      </div>
+    </div>
+
+    <span class="tool-divider" aria-hidden="true"></span>
+
+    <!-- معاينة الأجهزة — نفس اللي في ملفاتك -->
+    <select id="deviceSelect" class="tool-select" title="معاينة على جهاز مختلف" aria-label="معاينة على جهاز مختلف">
+      <option value="auto">🖥 Auto</option>
+      <option value="mobile">📱 Mobile</option>
+      <option value="tablet">📲 Tablet</option>
+      <option value="laptop">💻 Laptop</option>
+    </select>
+
     <span class="net-dot" id="netDot"><i></i><span>متصل</span></span>
-    <button class="icon-btn" id="themeBtn" aria-label="تبديل الوضع">☀️</button>
+    <button class="icon-btn hide" id="installBtn" title="تثبيت التطبيق" aria-label="تثبيت التطبيق">📲</button>
+    <button class="icon-btn" id="shareBtn" title="مشاركة اللينك" aria-label="مشاركة اللينك">🔗</button>
+    <button class="icon-btn" id="themeBtn" title="تبديل الوضع" aria-label="تبديل الوضع">☀️</button>
   </div>
 </header>
 
+<div id="appFrame">
 <main>
-  <!-- ============================== الهيرو ============================ -->
   <section class="wrap hero">
     <div class="kicker rv">🎓 قسم الرياضيات وعلوم الحاسب</div>
-    <h1 class="rv rv-d1">
-      خطتك الأكاديمية<br>
-      <span class="grad">بشكل مختلف تمامًا</span>
-    </h1>
-    <p class="sub rv rv-d2">
-      الخطط الدراسية، حاسبة المعدل، خريطة المتطلبات السابقة، وبيانك الأكاديمي —
-      في تطبيق واحد <b>يتثبّت على شاشتك</b> و<b>يشتغل بدون نت خالص</b>.
-      كل حاجة محفوظة على جهازك، مش على أي سيرفر.
-    </p>
-    <div class="hero-cta rv rv-d3">
-      <a class="btn primary" href="#plans">استعرض الخطط <span>←</span></a>
-      <button class="btn ghost hide" id="installBtn">📲 ثبّت التطبيق</button>
-      <a class="btn ghost" href="install.html">📖 إزاي أثبّته؟</a>
-    </div>
+    <h1 class="rv rv-d1">الخطط <span class="grad">الدراسية</span></h1>
   </section>
 
-  <!-- ============================== البحث ============================ -->
-  <section class="wrap" style="padding-bottom:10px">
+  <section class="wrap" style="padding-bottom:6px">
     <div class="search rv">
       <input id="searchInput" type="search" inputmode="search" autocomplete="off"
-             placeholder="ابحث في كل الخطط…  (اسم مادة، تخصص، أو صفحة)" aria-label="بحث شامل">
+             placeholder="ابحث…" aria-label="بحث">
       <span class="s-ic">🔍</span>
     </div>
     <div class="res hide" id="searchRes"></div>
   </section>
 
-  <!-- ============================= الأرقام =========================== -->
-  <section class="wrap sec">
-    <div class="sec-h rv">
-      <h2>تقدمك</h2>
-      <span class="hint" id="overallHint">بنحمّل بياناتك…</span>
-      <span class="line"></span>
-    </div>
-    <div class="grid g4">
-      <div class="stat rv"       ><b data-count id="stModules">—</b><small>خطة متاحة</small></div>
-      <div class="stat rv rv-d1" ><b data-count id="stDone">—</b><small>مادة مخلّصة</small></div>
-      <div class="stat rv rv-d2" ><b data-count id="stHours">—</b><small>ساعة منجزة</small></div>
-      <div class="stat rv rv-d3" ><b data-count id="stGraded">—</b><small>تقدير مسجّل</small></div>
-    </div>
-  </section>
-
-  <!-- ============================= الخطط ============================= -->
   <section class="wrap sec" id="plans">
-    <div class="sec-h rv">
-      <h2>الخطط الدراسية</h2>
-      <span class="hint">تقدمك بيتحفظ لوحده — من غير أي تسجيل</span>
-      <span class="line"></span>
-    </div>
-    <div class="grid g2 mods" id="modHost">
-      <div class="card"><div class="card-sub">بنحمّل الخطط…</div></div>
-    </div>
-  </section>
-
-  <!-- ============================ التثبيت ============================ -->
-  <section class="wrap sec" id="installCard">
-    <div class="card rv" style="border-color:var(--line2)">
-      <div class="card-t"><span class="ic">📲</span> ثبّته على شاشتك</div>
-      <div class="card-sub">
-        يبقى أيقونة عادية على موبايلك — يفتح فورًا بدون شريط متصفح،
-        <b>ومن غير نت خالص</b>، وتقدمك يبقى محفوظ بشكل دائم.
-      </div>
-      <div class="btn-row" style="margin-top:20px">
-        <button class="btn primary hide" id="installBtn2">📲 ثبّت الآن</button>
-        <a class="btn" href="install.html">📖 تعليمات جهازي</a>
-      </div>
-      <div class="note info" style="margin-top:18px">
-        <b>📵 خد بالك:</b> لو فتحت اللينك من <b>واتساب</b> أو فيسبوك أو إنستجرام،
-        التثبيت مش هيشتغل — لازم <b>كروم أو سفاري</b>.
-        التطبيق بيكتشف ده لوحده ويقولك تعمل إيه.
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================ البيانات =========================== -->
-  <section class="wrap sec">
-    <div class="card rv">
-      <div class="card-t"><span class="ic">🛟</span> بياناتك وأمانها</div>
-      <div class="card-sub">
-        تقدمك على جهازك بس. بنعمل نسخة تلقائية في مكانين،
-        بس النسخة اللي تنزّلها بإيدك هي الأضمن.
-      </div>
-      <div id="storageBody" style="margin-top:18px">
-        <div class="card-sub">بنفحص حالة التخزين…</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== إزاي ============================= -->
-  <section class="wrap sec">
-    <div class="grid g2">
-      <div class="card rv">
-        <div class="card-t"><span class="ic">📴</span> بيشتغل بدون نت إزاي؟</div>
-        <div class="card-sub">
-          أول مرة تفتحه وإنت متصل، بيحفظ كل ملفاته على جهازك — الصفحات
-          والخطوط العربية والأكواد. بعد كده بيفتح من الجهاز نفسه،
-          والنت مابقاش له لازمة.
-          <br><br><b>شرط واحد:</b> أول تشغيل لازم يكون فيه نت لمرة واحدة بس.
-        </div>
-      </div>
-      <div class="card rv rv-d1">
-        <div class="card-t"><span class="ic">🧩</span> بيتوسّع إزاي؟</div>
-        <div class="card-sub">
-          مبني كـ«حاوية» تشيل صفحات. تكتب أي صفحة HTML جديدة،
-          تحطها في <span class="mono">modules/</span>، وتضيف سطر واحد في
-          <span class="mono">registry.json</span> — تظهر هنا تلقائيًا،
-          وتتحفظ للشغل بدون نت، وتدخل في البحث.
-          <br><br>فيه قالب جاهز في <span class="mono">modules/_template/</span>.
-        </div>
-      </div>
-    </div>
+    <div class="grid g2 mods" id="modHost"></div>
   </section>
 </main>
+</div>
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <span>خطتي الأكاديمية — <span id="appVer">إصدار 2.0</span></span>
+    <span id="appVer">2.1</span>
     <a href="install.html">التثبيت</a>
-    <a href="diagnostics.html">التشخيص والنسخ الاحتياطي</a>
-    <span class="appbar-grow"></span>
-    <span>البيانات الأكاديمية زي ما هي من ملفاتك الأصلية — بدون أي تعديل.</span>
+    <a href="diagnostics.html">النسخ الاحتياطي</a>
   </div>
 </footer>
+
+<!-- زر الرجوع لفوق -->
+<button class="to-top" id="toTop" title="ارجع لفوق" aria-label="ارجع لأعلى الصفحة">
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+    <path d="M12 5l-7 7h4.5v7h5v-7H17z" fill="currentColor"/>
+  </svg>
+</button>
 
 <script src="assets/store.js"></script>
 <script src="assets/inapp.js"></script>

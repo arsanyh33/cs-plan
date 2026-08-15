@@ -39,12 +39,14 @@
   let nodes = [], syms = [];
   let mx = -9999, my = -9999, hasMouse = false;
   let raf = null, running = false;
-  let lastT = 0, fpsAcc = 0, fpsN = 0, degraded = false;
+  let lastT = 0, fpsAcc = 0, fpsN = 0, degraded = 0;   /* 0=كامل 1=مخفّف 2=متوقف */
 
-  function weak() {
-    const mem = navigator.deviceMemory || 4;
-    const cores = navigator.hardwareConcurrency || 4;
-    return mem <= 2 || cores <= 2;
+  /* بوابة صارمة بس على الأجهزة الضعيفة *جدًا*.
+     الحماية الحقيقية هي قياس الأداء تحت (degrade على مرحلتين)،
+     فمفيش داعي نقفل الشبكة على كل موبايل متوسط. */
+  function tooWeak() {
+    const mem = navigator.deviceMemory;
+    return (typeof mem === 'number' && mem <= 1);
   }
   function reduced() {
     return global.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -81,7 +83,7 @@
         vy: rand(-0.09, -0.028) * dpr,
         vx: rand(-0.04, 0.04) * dpr,
         s: rand(15, 40) * dpr,
-        a: rand(0.05, 0.14),
+        a: rand(0.07, 0.18),
         rot: rand(-0.28, 0.28),
       });
     }
@@ -105,12 +107,20 @@
     if (lastT) {
       const dt = t - lastT;
       fpsAcc += dt; fpsN++;
-      if (fpsN >= 90) {
-        const avg = fpsAcc / fpsN;
-        if (avg > 26 && !degraded && nodes.length > CFG.minNodes) {
-          degraded = true;
-          nodes = nodes.slice(0, Math.max(CFG.minNodes, (nodes.length * 0.55) | 0));
-          syms = syms.slice(0, 5);
+      if (fpsN >= 80) {
+        const avg = fpsAcc / fpsN;      /* متوسط زمن الإطار بالمللي */
+        if (avg > 24 && degraded === 0) {
+          /* مرحلة 1: نقص العُقد والرموز */
+          degraded = 1;
+          nodes = nodes.slice(0, Math.max(CFG.minNodes, (nodes.length * 0.5) | 0));
+          syms = syms.slice(0, 4);
+        } else if (avg > 30 && degraded === 1) {
+          /* مرحلة 2: الجهاز مش قادر — نوقف الرسم ونحوّل لخلفية ثابتة */
+          degraded = 2;
+          stop();
+          cv.style.display = 'none';
+          document.documentElement.classList.add('bg-static');
+          return;
         }
         fpsAcc = 0; fpsN = 0;
       }
@@ -155,7 +165,7 @@
           const MR = CFG.mouseRadius * dpr;
           if (md < MR) boost = (1 - md / MR) * 0.5;
         }
-        ctx.strokeStyle = `rgba(${a.c[0]},${a.c[1]},${a.c[2]},${(k * 0.17 + boost).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(${a.c[0]},${a.c[1]},${a.c[2]},${(k * 0.26 + boost).toFixed(3)})`;
         ctx.lineWidth = (0.6 + k * 0.7 + boost * 1.4) * dpr;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -200,13 +210,13 @@
 
       /* هالة */
       const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 7);
-      glow.addColorStop(0, `rgba(${r},${g},${b},${0.30 * pulse})`);
+      glow.addColorStop(0, `rgba(${r},${g},${b},${0.42 * pulse})`);
       glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
       ctx.fillStyle = glow;
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r * 7, 0, Math.PI * 2); ctx.fill();
 
       /* النواة */
-      ctx.fillStyle = `rgba(${r},${g},${b},${0.72 * pulse + 0.2})`;
+      ctx.fillStyle = `rgba(${r},${g},${b},${0.8 * pulse + 0.2})`;
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
     }
 
@@ -228,7 +238,7 @@
     if (!cv) return;
 
     /* الأجهزة الضعيفة أو تقليل الحركة → خلفية ثابتة بدل الرسم */
-    if (weak() || reduced()) {
+    if (tooWeak() || reduced()) {
       cv.style.display = 'none';
       document.documentElement.classList.add('bg-static');
       return;

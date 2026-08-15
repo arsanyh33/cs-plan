@@ -346,7 +346,16 @@
        تصميم Mobile-first متجاوب حقيقي بدل تصغير شكل الديسكتوب.
        "لابتوب" فضل موجود في القائمة كخيار معاينة اختياري بس، مش افتراضي. */
     const sel = $('#deviceSelect');
-    const mode = prefs().device || 'auto';
+    /* ترقيع لمرة واحدة: إصدارات سابقة (2.4.0-2.4.1) كانت بتحفظ "لابتوب"
+       تلقائيًا في localStorage بدون اختيار حقيقي من المستخدم. أي جهاز
+       عنده القيمة القديمة دي بيترجع "تلقائي" أول ما يفتح الإصدار ده —
+       ولو بعد كده اختار لابتوب بنفسه من القايمة، اختياره ده بيفضل زي ما هو. */
+    let p = prefs();
+    if (!p.deviceMigratedV1) {
+      prefs({ device: 'auto', deviceMigratedV1: true });
+      p = prefs();
+    }
+    const mode = p.device || 'auto';
     applyDevice(mode);
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);

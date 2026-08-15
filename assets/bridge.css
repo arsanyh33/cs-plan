@@ -28,6 +28,16 @@
 }
 html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)) !important; }
 
+#uniBridgeBar .ubb-crumb{
+  display:flex; align-items:center; gap:8px; min-width:0;
+}
+#uniBridgeBar .ubb-crumb-sep{ color:var(--muted2, #5a6390); font-size:.8rem; }
+#uniBridgeBar .ubb-crumb-cur{
+  color:var(--text, #eef1fb); font-weight:800; font-size:.82rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:38vw;
+}
+@media (max-width:520px){ #uniBridgeBar .ubb-crumb-cur{ max-width:32vw; } }
+
 #uniBridgeBar .ubb-home,
 #uniBridgeBar .ubb-act{
   display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px;

@@ -67,9 +67,13 @@
     const bar = document.createElement('div');
     bar.id = 'uniBridgeBar';
     bar.innerHTML = `
-      <a class="ubb-home" href="${BASE}index.html" title="الرجوع للرئيسية — Top Computer Science Students">
-        <span class="ubb-ic">◀</span><span class="ubb-tx">الرئيسية</span>
-      </a>
+      <nav class="ubb-crumb" aria-label="مسار التنقل">
+        <a class="ubb-home" href="${BASE}index.html" title="الرجوع للرئيسية — Top Computer Science Students">
+          <span class="ubb-ic">◀</span><span class="ubb-tx">الرئيسية</span>
+        </a>
+        <span class="ubb-crumb-sep" aria-hidden="true">/</span>
+        <span class="ubb-crumb-cur" id="ubbCrumbCur">${MODULE_ID}</span>
+      </nav>
       <span class="ubb-sep"></span>
       <span class="ubb-status" id="ubbStatus"></span>
       <span class="ubb-grow"></span>
@@ -78,6 +82,16 @@
       </button>`;
     document.body.appendChild(bar);
     document.documentElement.classList.add('has-bridge-bar');
+
+    /* نجيب الاسم الحقيقي للموديول من registry.json (بدون ما نلمس أي بيانات) */
+    fetch(BASE + 'registry.json', { cache: 'no-cache' })
+      .then((r) => r.json())
+      .then((reg) => {
+        const mod = reg && reg.modules && reg.modules.find((m) => m.id === MODULE_ID);
+        const cur = bar.querySelector('#ubbCrumbCur');
+        if (mod && cur) cur.textContent = mod.short || mod.title || MODULE_ID;
+      })
+      .catch(() => {});
 
     const statusEl = bar.querySelector('#ubbStatus');
     function paintStatus() {

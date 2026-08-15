@@ -180,6 +180,19 @@ input,select,textarea{ font-family:inherit; }
 }
 @supports not (backdrop-filter:blur(2px)){ .appbar{ background:var(--void); } }
 @supports not (background:color-mix(in srgb,red 5%,blue)){ .appbar{ background:var(--void); } }
+
+/* رابط سريع للخطط — بيظهر بس لما الشريط يبقى "ملزّق" فوق أثناء السكرول */
+.quick-plans{
+  display:none; align-items:center; gap:6px;
+  padding:9px 14px; border-radius:11px;
+  border:1px solid var(--line); background:var(--glass);
+  color:var(--text); font-family:var(--font-display); font-weight:800; font-size:.83rem;
+  text-decoration:none; white-space:nowrap;
+  transition:.2s var(--ease);
+}
+.quick-plans:hover{ border-color:var(--cyan); color:var(--cyan); }
+.appbar.stuck .quick-plans{ display:inline-flex; }
+@media (max-width:640px){ .quick-plans span:first-child{ display:none; } }
 .appbar-in{
   width:100%; max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
   display:grid; grid-template-columns:minmax(0,1fr) auto;   /* اللوجو | الأدوات */
@@ -418,6 +431,42 @@ input,select,textarea{ font-family:inherit; }
 }
 .mod-go span{ transition:transform .35s var(--ease2); display:inline-block; }
 .mod:hover .mod-go span{ transform:translateX(-7px); }
+
+/* حالة التحميل — لحظة فتح الموديول */
+.mod.is-loading{ cursor:progress; pointer-events:none; }
+.mod.is-loading .mod-go{ visibility:hidden; }
+.mod.is-loading::after{
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  background:color-mix(in srgb, var(--panel) 55%, transparent);
+}
+.mod-foot{ position:relative; }
+.mod.is-loading .mod-foot::before{
+  content:''; position:absolute; inset-inline-end:0; top:50%; transform:translateY(-50%);
+  width:18px; height:18px;
+  border-radius:50%; border:2px solid var(--line-strong); border-top-color:var(--c1, var(--cyan));
+  animation:modspin .7s linear infinite; z-index:2;
+}
+@keyframes modspin{ to{ transform:rotate(360deg); } }
+html.reduce-fx .mod.is-loading .mod-foot::before,
+html.weak-device .mod.is-loading .mod-foot::before{ animation:none; border-top-color:var(--line-strong); }
+
+/* انتقال ناعم بين الصفحة الرئيسية وفتح موديول */
+body{ transition:opacity .22s var(--ease); }
+html.leaving body{ opacity:0; }
+html.reduce-fx body,
+html.weak-device body{ transition:none !important; }
+
+/* نبضة احتفال بسيطة عند نجاح التثبيت */
+html.celebrate #installCard,
+html.celebrate .logo-mark{ animation:celebratePulse .45s var(--ease2) 2; }
+@keyframes celebratePulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); box-shadow:0 0 0 6px color-mix(in srgb, var(--lime) 25%, transparent); }
+}
+html.reduce-fx.celebrate #installCard,
+html.reduce-fx.celebrate .logo-mark,
+html.weak-device.celebrate #installCard,
+html.weak-device.celebrate .logo-mark{ animation:none; }
 
 /* ============================== الشرائط ============================ */
 .pill{
@@ -919,6 +968,8 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 }
 .foot-sep{ color:var(--dim2); }
 .foot-ver{ font-family:var(--font-mono); font-size:.78rem; color:var(--dim2); }
+.foot-copy-row{ margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+.foot-copy{ font-size:.78rem; color:var(--dim2); }
 .foot{ position:relative; overflow:hidden; }
 .foot::before{
   content:''; position:absolute; inset:0 0 auto 0; height:1px;

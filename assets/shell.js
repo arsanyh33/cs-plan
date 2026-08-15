@@ -130,6 +130,14 @@
         <p class="mod-desc">${mod.desc || ''}</p>
         ${s.hasData ? `<div class="bar" title="${Math.round(pct)}%"><i data-w="${pct}"></i></div>` : ''}
         <div class="mod-foot">${pills.join('')}<span class="mod-go">افتح <span>←</span></span></div>`;
+      a.addEventListener('click', (e) => {
+        if (a.classList.contains('is-loading')) { e.preventDefault(); return; }
+        e.preventDefault();
+        a.classList.add('is-loading');
+        document.documentElement.classList.add('leaving');
+        setTimeout(() => { location.href = a.href; }, 220);
+      });
+
       host.appendChild(a);
       tilt3D(a);
     });
@@ -662,6 +670,8 @@
     global.addEventListener('appinstalled', () => {
       if (card) card.classList.add('hide');
       toast('🎉 اتثبّت! دوّر على الأيقونة على شاشتك');
+      document.documentElement.classList.add('celebrate');
+      setTimeout(() => document.documentElement.classList.remove('celebrate'), 900);
     });
   }
 
@@ -807,6 +817,9 @@
     paintNet();
     global.addEventListener('online', paintNet);
     global.addEventListener('offline', paintNet);
+
+    const fy = $('#footYear');
+    if (fy) fy.textContent = String(new Date().getFullYear());
 
     wireAppbar();
     wireScrollProgress();

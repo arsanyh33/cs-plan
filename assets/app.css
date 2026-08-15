@@ -189,14 +189,17 @@ input,select,textarea{ font-family:inherit; }
 .appbar-in > *{ flex:0 0 auto; }
 .appbar-in > .appbar-grow{ flex:1 1 0; min-width:0; }
 
-/* الأدوات في مجموعة واحدة — ماتتقطعش ولا تتراكم أبدًا */
+/* الأدوات في مجموعة واحدة — تلفّ لسطر تاني لو المساحة ضاقت، وماتختفيش أبدًا */
 .appbar-tools{
   display:flex; align-items:center; gap:10px;
-  flex-wrap:nowrap; flex:0 0 auto;
-  max-width:100%; overflow-x:auto; scrollbar-width:none;
+  flex-wrap:wrap; justify-content:flex-end;
+  flex:0 1 auto; min-width:0;
+  overflow:visible;               /* ممنوع القص — كل زر لازم يبان */
 }
-.appbar-tools::-webkit-scrollbar{ display:none; }
 .appbar-tools > *{ flex:0 0 auto; }
+/* المجموعات الداخلية ماتتفكّش */
+.appbar-tools .fs-grp,
+.appbar-tools .fs-segmented{ flex-wrap:nowrap; }
 
 .logo{ display:flex; align-items:center; gap:12px; color:inherit; flex:0 0 auto; white-space:nowrap; }
 .logo-mark{
@@ -697,7 +700,7 @@ input[type="radio"]{ accent-color:var(--cyan); }
 .tool-divider{ width:1px; height:22px; background:var(--line2); }
 
 .tool-select{
-  flex:0 0 auto; width:auto; max-width:9.5rem;
+  flex:0 0 auto; width:auto; max-width:11rem;
   -webkit-appearance:none; appearance:none;
   background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),
                    linear-gradient(135deg,var(--dim) 50%,transparent 50%);

@@ -11,7 +11,7 @@
    ⚠️  لما تضيف صفحة جديدة: زوّد CACHE_VERSION تحت + ضيف مسارها في PRECACHE.
    ========================================================================== */
 
-const CACHE_VERSION = 'v2.2.0';
+const CACHE_VERSION = 'v2.3.0';
 const CACHE_NAME = `uni-planner-${CACHE_VERSION}`;
 
 /* الملفات اللي لازم تتحفظ عشان التطبيق يفتح بدون نت */
@@ -30,6 +30,7 @@ const PRECACHE = [
   './assets/inapp.js',
   './assets/bridge.js',
   './assets/shell.js',
+  './assets/bg.js',
   './assets/fonts/fonts.css',
 
   './modules/cs-stat/index.html',

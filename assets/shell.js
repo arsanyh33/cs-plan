@@ -240,23 +240,6 @@
     global.addEventListener('scroll', upd, { passive: true });
   }
 
-  /** الشفق يتفاعل مع حركة الماوس (لمسة بسيطة بتحسّس بالحياة) */
-  function wireParallax() {
-    if (FX_OFF() || matchMedia('(hover:none)').matches) return;
-    const aur = $('.bg-aurora');
-    if (!aur) return;
-    let raf = null, tx = 0, ty = 0;
-    global.addEventListener('mousemove', (e) => {
-      tx = (e.clientX / innerWidth - 0.5) * 22;
-      ty = (e.clientY / innerHeight - 0.5) * 22;
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = null;
-        aur.style.transform = `translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,0)`;
-      });
-    }, { passive: true });
-  }
-
 
   /* ==================================================================
      أدوات الواجهة: حجم الخط • معاينة الأجهزة • الرجوع لفوق • مشاركة
@@ -369,6 +352,100 @@
       }
       if (e.key === '/' && !typing) { e.preventDefault(); inp.focus(); }
     });
+  }
+
+
+  /* ==================================================================
+     إصدار 2.3 — تفاعلات مستوحاة من المواقع الفائزة عالميًا
+     ================================================================== */
+
+  /** شاشة الدخول بعدّاد حقيقي مربوط بتقدّم الكاش */
+  let bootPct = 0, bootDone = false;
+  function setBoot(text, pct, finish) {
+    const sub = $('#bootSub'), bar = $('#bootBar i'), cnt = $('#bootCount');
+    if (text && sub) sub.textContent = text;
+    if (pct != null) {
+      bootPct = Math.max(bootPct, Math.min(100, pct));
+      if (bar) bar.style.width = bootPct + '%';
+      if (cnt) cnt.innerHTML = Math.round(bootPct) + '<span>%</span>';
+    }
+    if (finish && !bootDone) {
+      bootDone = true;
+      if (bar) bar.style.width = '100%';
+      if (cnt) cnt.innerHTML = '100<span>%</span>';
+      setTimeout(() => {
+        const el = $('#boot');
+        if (el) el.classList.add('done');
+        playHero();
+      }, 420);
+    }
+  }
+
+  /** ظهور كلمات العنوان واحدة واحدة */
+  function playHero() {
+    const h = $('.hero-h1');
+    if (h) requestAnimationFrame(() => h.classList.add('in'));
+    revealScan();
+  }
+
+  /** شريط تقدّم القراءة أعلى الصفحة */
+  function wireScrollProgress() {
+    const el = $('#scrollProg i');
+    if (!el) return;
+    let raf = null;
+    const upd = () => {
+      raf = null;
+      const d = document.documentElement;
+      const max = d.scrollHeight - innerHeight;
+      el.style.setProperty('--p', (max > 0 ? Math.min(100, (scrollY / max) * 100) : 0).toFixed(2) + '%');
+    };
+    global.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
+    global.addEventListener('resize', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
+    upd();
+  }
+
+  /** بقعة الضوء في الخلفية بتتبع المؤشر */
+  function wireSpotlight() {
+    if (FX_OFF() || matchMedia('(hover:none)').matches) return;
+    const spot = $('#bgSpot');
+    if (!spot) return;
+    document.documentElement.classList.add('has-spot');
+    let raf = null, x = 50, y = 22;
+    global.addEventListener('mousemove', (e) => {
+      x = (e.clientX / innerWidth) * 100;
+      y = (e.clientY / innerHeight) * 100;
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        spot.style.setProperty('--sx', x.toFixed(1) + '%');
+        spot.style.setProperty('--sy', y.toFixed(1) + '%');
+      });
+    }, { passive: true });
+  }
+
+  /** أزرار مغناطيسية — الزر بيتحرك ناحية المؤشر (نمط momentum hover) */
+  function magnetize(el, strength) {
+    if (FX_OFF() || matchMedia('(hover:none)').matches) return;
+    const S = strength || 5;
+    let raf = null;
+    el.classList.add('mag');
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+      const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        el.style.transform = `translate(${(dx * S).toFixed(1)}px,${(dy * S).toFixed(1)}px)`;
+      });
+    });
+    el.addEventListener('mouseleave', () => {
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
+      el.style.transform = '';
+    });
+  }
+  function wireMagnets() {
+    $$('.icon-btn, .fs-btn, .to-top').forEach((b) => magnetize(b, 3.5));
   }
 
   /* ---------------------------------------------------------- overall */
@@ -516,11 +593,11 @@
   /* ------------------------------------------------- service worker + boot */
   function setupSW() {
     if (!('serviceWorker' in navigator)) {
-      setBoot('المتصفح ده مش بيدعم الشغل بدون نت', true);
+      setBoot('المتصفح ده مش بيدعم الشغل بدون نت', 100, true);
       return;
     }
     if (location.protocol === 'file:') {
-      setBoot('التطبيق مفتوح كملف محلي — الشغل بدون نت محتاج سيرفر', true);
+      setBoot('التطبيق مفتوح كملف محلي — الشغل بدون نت محتاج سيرفر', 100, true);
       return;
     }
 
@@ -537,21 +614,21 @@
       });
       setTimeout(() => reg.update().catch(() => {}), 4000);
     }).catch(() => {
-      setBoot('تعذّر تحضير الشغل بدون نت', true);
+      setBoot('تعذّر تحضير الشغل بدون نت', 100, true);
     });
 
     navigator.serviceWorker.addEventListener('message', (ev) => {
       const d = ev.data || {};
       if (d.type === 'PRECACHE_DONE') {
         const pct = d.total ? Math.round((d.ok / d.total) * 100) : 100;
-        setBoot(`جاهز للشغل بدون نت — ${d.ok}/${d.total} ملف`, true, pct);
+        setBoot(`جاهز — ${d.ok}/${d.total} ملف محفوظ`, pct, true);
         if (d.failed) toast(`⚠️ ${d.failed} ملف مانزلوش — افتح التطبيق بالنت تاني`, 6000);
         else toast('✅ التطبيق بقى شغال بدون نت', 4200);
       }
     });
 
     if (navigator.serviceWorker.controller) {
-      setBoot('محفوظ ومتاح بدون نت', true, 100);
+      setBoot('محفوظ ومتاح بدون نت', 100, true);
     }
   }
 
@@ -571,12 +648,7 @@
     $('#updLater', bar).addEventListener('click', () => bar.remove());
   }
 
-  function setBoot(text, done, pct) {
-    const b = $('#bootSub'); const bar = $('#bootBar i');
-    if (b) b.textContent = text;
-    if (bar && pct != null) bar.style.width = pct + '%';
-    if (done) setTimeout(() => { const el = $('#boot'); if (el) el.classList.add('done'); }, 500);
-  }
+
 
   /* -------------------------------------------------------- storage card */
   function renderStorage() {
@@ -662,7 +734,9 @@
     global.addEventListener('offline', paintNet);
 
     wireAppbar();
-    wireParallax();
+    wireScrollProgress();
+    wireSpotlight();
+    wireMagnets();
     wireFontSize();
     wireDevice();
     wireToTop();
@@ -716,12 +790,19 @@
     });
 
     /* أمان: لو حصل أي خطأ، الشاشة الافتتاحية ماتقعدش عالقة */
-    setTimeout(() => { const el = $('#boot'); if (el) el.classList.add('done'); }, 6000);
+    /* تقدّم تدريجي مطمئن + أمان لو حصل أي خطأ */
+    let tick = 0;
+    const creep = setInterval(() => {
+      tick++;
+      if (bootDone) { clearInterval(creep); return; }
+      setBoot(null, Math.min(88, 12 + tick * 9));
+    }, 260);
+    setTimeout(() => { clearInterval(creep); setBoot('جاهز', 100, true); }, 5200);
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else { boot(); }
 
-  global.UniShell = { toast, tilt3D, revealScan, countUp, applyFs, applyDevice, renderModules, renderOverall, renderStorage, prefs, applyTheme };
+  global.UniShell = { toast, tilt3D, magnetize, playHero, setBoot, revealScan, countUp, applyFs, applyDevice, renderModules, renderOverall, renderStorage, prefs, applyTheme };
 })(typeof window !== 'undefined' ? window : this);

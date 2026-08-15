@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>تثبيت التطبيق — خطتي الأكاديمية</title>
-<meta name="description" content="تعليمات تثبيت تطبيق خطتي الأكاديمية على موبايلك — تتغير تلقائيًا حسب جهازك.">
+<title>تثبيت التطبيق — Top Computer Science Students</title>
+<meta name="description" content="تعليمات تثبيت تطبيق Top Computer Science Students على موبايلك — تتغير تلقائيًا حسب جهازك.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://arsanyh33.github.io/cs-plan/">
-<meta property="og:title" content="ثبّت خطتي الأكاديمية على موبايلك">
+<meta property="og:title" content="ثبّت Top Computer Science Students على موبايلك">
 <meta property="og:description" content="خطة كلية العلوم إسكندرية — قسم الرياضيات وعلوم الحاسب. تشتغل بدون إنترنت.">
 <meta property="og:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -22,9 +22,8 @@
 <body>
 
 <div class="bg" aria-hidden="true">
-  <div class="bg-aurora"><i></i><i></i><i></i></div>
-  <div class="bg-grid"></div>
-  <div class="bg-glow"></div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="bg-veil"></div>
   <div class="bg-noise"></div>
 </div>
 
@@ -32,7 +31,7 @@
   <div class="appbar-in">
     <a class="logo" href="index.html" style="color:inherit">
       <div class="logo-mark">CS</div>
-      <div class="logo-tx"><b>خطتي الأكاديمية</b><small>تثبيت التطبيق</small></div>
+      <div class="logo-tx"><b>Top Computer Science Students</b><small>تثبيت التطبيق</small></div>
     </a>
     <div class="appbar-grow"></div>
     <div class="appbar-tools">
@@ -105,6 +104,7 @@
 
 <script src="assets/store.js"></script>
 <script src="assets/inapp.js"></script>
+<script src="assets/bg.js"></script>
 <script>
 (function(){
   'use strict';
@@ -135,7 +135,7 @@
     sb.classList.remove('hide');
     sb.addEventListener('click', function(){
       navigator.share({
-        title: 'خطتي الأكاديمية — كلية العلوم إسكندرية',
+        title: 'Top Computer Science Students — كلية العلوم إسكندرية',
         text: 'خطة قسم الرياضيات وعلوم الحاسب. افتحها من كروم أو سفاري وثبّتها على شاشتك — تشتغل بدون نت.',
         url: shareURL
       }).catch(function(){});

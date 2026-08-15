@@ -67,7 +67,7 @@
     const bar = document.createElement('div');
     bar.id = 'uniBridgeBar';
     bar.innerHTML = `
-      <a class="ubb-home" href="${BASE}index.html" title="الرجوع للرئيسية">
+      <a class="ubb-home" href="${BASE}index.html" title="الرجوع للرئيسية — Top Computer Science Students">
         <span class="ubb-ic">◀</span><span class="ubb-tx">الرئيسية</span>
       </a>
       <span class="ubb-sep"></span>

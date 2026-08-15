@@ -1,10 +1,10 @@
 {
   "app": {
-    "name": "خطتي الأكاديمية",
-    "shortName": "خطتي",
+    "name": "Top Computer Science Students",
+    "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>خطتي الأكاديمية — كلية العلوم إسكندرية</title>
-<meta name="description" content="الخطط الدراسية لقسم الرياضيات وعلوم الحاسب — كلية العلوم جامعة الإسكندرية.">
+<title>Top Computer Science Students — جامعة الإسكندرية</title>
+<meta name="description" content="دليل مقررات قسم الرياضيات وعلوم الحاسب — كلية العلوم، جامعة الإسكندرية. لائحة الساعات المعتمدة.">
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
@@ -14,99 +14,146 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="خطتي">
-<meta name="application-name" content="خطتي">
+<meta name="apple-mobile-web-app-title" content="TCSS">
+<meta name="application-name" content="TCSS">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://arsanyh33.github.io/cs-plan/">
-<meta property="og:site_name" content="خطتي الأكاديمية">
+<meta property="og:site_name" content="Top Computer Science Students">
 <meta property="og:locale" content="ar_EG">
-<meta property="og:title" content="خطتي الأكاديمية — كلية العلوم إسكندرية">
-<meta property="og:description" content="الخطط الدراسية لقسم الرياضيات وعلوم الحاسب: حاسب + إحصاء والسبيشيال.">
+<meta property="og:title" content="Top Computer Science Students — جامعة الإسكندرية">
+<meta property="og:description" content="دليل مقررات قسم الرياضيات وعلوم الحاسب: حاسب + إحصاء والسبيشيال، مع خريطة المتطلبات وحاسبة المعدل.">
 <meta property="og:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="خطتي الأكاديمية — كلية العلوم إسكندرية">
-<meta name="twitter:description" content="الخطط الدراسية لقسم الرياضيات وعلوم الحاسب.">
+<meta name="twitter:title" content="Top Computer Science Students — جامعة الإسكندرية">
+<meta name="twitter:description" content="دليل مقررات قسم الرياضيات وعلوم الحاسب.">
 <meta name="twitter:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 
+<!-- تخطي للمحتوى — للوصولية ولوحة المفاتيح -->
+<a href="#plans" class="skip">تخطّي إلى الخطط</a>
+
+<!-- شريط تقدّم القراءة -->
+<div class="scrollbar-top" id="scrollProg" aria-hidden="true"><i></i></div>
+
+<!-- ================== الخلفية: شبكة عُقد حيّة ================== -->
 <div class="bg" aria-hidden="true">
-  <div class="bg-aurora"><i></i><i></i><i></i></div>
-  <div class="bg-grid"></div>
-  <div class="bg-glow"></div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="bg-veil"></div>
+  <div class="bg-spot" id="bgSpot"></div>
   <div class="bg-noise"></div>
 </div>
 
+<!-- ====================== شاشة الدخول ====================== -->
 <div class="boot" id="boot">
   <div class="boot-in">
     <div class="boot-mark">CS</div>
-    <div class="boot-tx">خطتي الأكاديمية</div>
-    <div class="boot-sub" id="bootSub">جاري التحضير…</div>
+    <div class="boot-name">Top Computer Science Students</div>
+    <div class="boot-count" id="bootCount">0<span>%</span></div>
     <div class="boot-bar" id="bootBar"><i></i></div>
+    <div class="boot-sub" id="bootSub">جاري التحضير…</div>
   </div>
 </div>
 
 <header class="appbar" id="appbar">
   <div class="appbar-in">
     <a class="logo" href="index.html">
-      <div class="logo-mark">CS</div>
-      <div class="logo-tx">
-        <b>خطتي الأكاديمية</b>
-        <small>كلية العلوم — إسكندرية</small>
-      </div>
+      <span class="logo-mark">CS</span>
+      <span class="logo-tx">
+        <b>Top Computer Science Students</b>
+        <small>جامعة الإسكندرية · كلية العلوم</small>
+      </span>
     </a>
 
     <div class="appbar-grow"></div>
 
     <div class="appbar-tools">
-    <!-- حجم الخط — نفس اللي في ملفاتك -->
-    <div class="fs-grp">
-      <span class="fs-label">حجم الخط</span>
-      <div class="fs-segmented">
-        <button class="fs-btn" id="fsMinus" title="تصغير الخط" aria-label="تصغير حجم الخط">A−</button>
-        <button class="fs-btn" id="fsReset" title="الحجم الافتراضي" aria-label="الحجم الافتراضي">A</button>
-        <button class="fs-btn" id="fsPlus"  title="تكبير الخط" aria-label="تكبير حجم الخط">A+</button>
+      <div class="fs-grp">
+        <span class="fs-label">حجم الخط</span>
+        <div class="fs-segmented">
+          <button class="fs-btn" id="fsMinus" title="تصغير الخط" aria-label="تصغير حجم الخط">A−</button>
+          <button class="fs-btn" id="fsReset" title="الحجم الافتراضي" aria-label="الحجم الافتراضي">A</button>
+          <button class="fs-btn" id="fsPlus"  title="تكبير الخط" aria-label="تكبير حجم الخط">A+</button>
+        </div>
       </div>
-    </div>
 
-    <span class="tool-divider" aria-hidden="true"></span>
+      <span class="tool-divider" aria-hidden="true"></span>
 
-    <!-- معاينة الأجهزة — نفس اللي في ملفاتك -->
-    <select id="deviceSelect" class="tool-select" title="معاينة على جهاز مختلف" aria-label="معاينة على جهاز مختلف">
-      <option value="auto">🖥 Auto</option>
-      <option value="mobile">📱 Mobile</option>
-      <option value="tablet">📲 Tablet</option>
-      <option value="laptop">💻 Laptop</option>
-    </select>
+      <select id="deviceSelect" class="tool-select" title="معاينة على جهاز مختلف" aria-label="معاينة على جهاز مختلف">
+        <option value="auto">🖥 Auto</option>
+        <option value="mobile">📱 Mobile</option>
+        <option value="tablet">📲 Tablet</option>
+        <option value="laptop">💻 Laptop</option>
+      </select>
 
-    <span class="net-dot" id="netDot"><i></i><span>متصل</span></span>
-    <button class="icon-btn hide" id="installBtn" title="تثبيت التطبيق" aria-label="تثبيت التطبيق">📲</button>
-    <button class="icon-btn" id="shareBtn" title="مشاركة اللينك" aria-label="مشاركة اللينك">🔗</button>
-    <button class="icon-btn" id="themeBtn" title="تبديل الوضع" aria-label="تبديل الوضع">☀️</button>
+      <span class="net-dot" id="netDot"><i></i><span>متصل</span></span>
+      <button class="icon-btn hide" id="installBtn" title="تثبيت التطبيق" aria-label="تثبيت التطبيق">📲</button>
+      <button class="icon-btn" id="shareBtn" title="مشاركة اللينك" aria-label="مشاركة اللينك">🔗</button>
+      <button class="icon-btn" id="themeBtn" title="تبديل الوضع" aria-label="تبديل الوضع">☀️</button>
     </div>
   </div>
 </header>
 
 <div id="appFrame">
 <main>
+  <!-- ============================ الهيرو ============================ -->
   <section class="wrap hero">
-    <div class="kicker rv">🎓 قسم الرياضيات وعلوم الحاسب</div>
-    <h1 class="rv rv-d1">الخطط <span class="grad">الدراسية</span></h1>
+    <div class="eyebrow rv">
+      <span class="eyebrow-line" aria-hidden="true"></span>
+      <span>TOP COMPUTER SCIENCE STUDENTS</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>كلية العلوم</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>لائحة الساعات المعتمدة</span>
+    </div>
+
+    <h1 class="hero-h1">
+      <span class="line"><span class="w">دليل</span> <span class="w">مقررات</span> <span class="w">قسم</span></span>
+      <span class="line"><span class="w grad">الرياضيات</span> <span class="w">و</span><span class="w grad">علوم الحاسب</span></span>
+    </h1>
+
+    <p class="lede rv rv-d2">
+      شجرة المقررات لكل تخصص — الإجبارية والاختيارية، الرئيسي والفرعي،
+      والمتطلبات السابقة لكل مقرر.
+    </p>
   </section>
 
-  <section class="wrap" style="padding-bottom:6px">
+  <!-- شريط متحرك — نمط الـ marquee اللي في المواقع الكبيرة -->
+  <div class="marquee rv" aria-hidden="true">
+    <div class="marquee-in">
+      <span>132 ساعة معتمدة</span><span class="sep">◆</span>
+      <span>حاسب رئيسي + إحصاء فرعي</span><span class="sep">◆</span>
+      <span>علوم الحاسب سبيشيال</span><span class="sep">◆</span>
+      <span>خريطة المتطلبات السابقة</span><span class="sep">◆</span>
+      <span>حاسبة المعدل التراكمي</span><span class="sep">◆</span>
+      <span>البيان الأكاديمي</span><span class="sep">◆</span>
+      <span>يعمل بدون إنترنت</span><span class="sep">◆</span>
+      <span>132 ساعة معتمدة</span><span class="sep">◆</span>
+      <span>حاسب رئيسي + إحصاء فرعي</span><span class="sep">◆</span>
+      <span>علوم الحاسب سبيشيال</span><span class="sep">◆</span>
+      <span>خريطة المتطلبات السابقة</span><span class="sep">◆</span>
+      <span>حاسبة المعدل التراكمي</span><span class="sep">◆</span>
+      <span>البيان الأكاديمي</span><span class="sep">◆</span>
+      <span>يعمل بدون إنترنت</span><span class="sep">◆</span>
+    </div>
+  </div>
+
+  <!-- ============================ البحث ============================ -->
+  <section class="wrap" style="padding-block:20px 4px">
     <div class="search rv">
       <input id="searchInput" type="search" inputmode="search" autocomplete="off"
              placeholder="ابحث…" aria-label="بحث">
-      <span class="s-ic">🔍</span>
+      <span class="s-ic" aria-hidden="true">🔍</span>
+      <kbd class="s-kbd" aria-hidden="true">/</kbd>
     </div>
     <div class="res hide" id="searchRes"></div>
   </section>
 
+  <!-- ============================ الخطط ============================ -->
   <section class="wrap sec" id="plans">
     <div class="grid g2 mods" id="modHost"></div>
   </section>
@@ -115,13 +162,15 @@
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <span id="appVer">2.1</span>
+    <span class="foot-brand">Top&nbsp;Computer&nbsp;Science&nbsp;Students</span>
+    <span class="foot-sep" aria-hidden="true">·</span>
     <a href="install.html">التثبيت</a>
     <a href="diagnostics.html">النسخ الاحتياطي</a>
+    <span class="appbar-grow"></span>
+    <span class="foot-ver" id="appVer">2.3</span>
   </div>
 </footer>
 
-<!-- زر الرجوع لفوق -->
 <button class="to-top" id="toTop" title="ارجع لفوق" aria-label="ارجع لأعلى الصفحة">
   <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
     <path d="M12 5l-7 7h4.5v7h5v-7H17z" fill="currentColor"/>
@@ -130,6 +179,7 @@
 
 <script src="assets/store.js"></script>
 <script src="assets/inapp.js"></script>
+<script src="assets/bg.js"></script>
 <script src="assets/shell.js"></script>
 </body>
 </html>

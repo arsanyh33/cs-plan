@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تثبيت التطبيق — خطتي الأكاديمية</title>
+<meta name="description" content="تعليمات تثبيت تطبيق خطتي الأكاديمية على موبايلك — تتغير تلقائيًا حسب جهازك.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#02030b">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ثبّت خطتي الأكاديمية على موبايلك">
+<meta property="og:description" content="خطة كلية العلوم إسكندرية — قسم الرياضيات وعلوم الحاسب. تشتغل بدون إنترنت.">
+<meta property="og:image" content="assets/icons/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div class="wrap appbar-in">
+    <a class="logo" href="index.html" style="color:inherit">
+      <div class="logo-mark">خ</div>
+      <div class="logo-tx"><b>خطتي الأكاديمية</b><small>تثبيت التطبيق</small></div>
+    </a>
+    <div class="appbar-grow"></div>
+    <a class="icon-btn" href="index.html" aria-label="الرئيسية">◀</a>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" style="padding-bottom:6px">
+    <div class="hero-kicker" id="devBadge">🔍 بنكتشف جهازك…</div>
+    <h1>ثبّت التطبيق <span class="grad">على شاشتك</span></h1>
+    <p>لما تثبّته: يفتح كأيقونة عادية، بدون شريط المتصفح، <b>ويشتغل بدون نت</b>، وتقدمك يتحفظ بشكل دائم.</p>
+  </section>
+
+  <section class="wrap sec" id="mainCard"></section>
+
+  <section class="wrap sec">
+    <div class="sec-h"><h2>ليه أثبّته أصلًا؟</h2></div>
+    <div class="grid g3">
+      <div class="card">
+        <div class="card-t"><span class="ic">📴</span> بدون نت</div>
+        <div class="card-sub">يفتح في المحاضرة أو المواصلات من غير أي اتصال.</div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">🔒</span> بياناتك أأمن</div>
+        <div class="card-sub">التخزين المثبّت أصعب في المسح من تخزين المتصفح العادي.</div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">⚡</span> أسرع</div>
+        <div class="card-sub">يفتح فورًا من الجهاز — مفيش تحميل ولا انتظار.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap sec">
+    <div class="card">
+      <div class="card-t"><span class="ic">🔗</span> شارك التطبيق مع زمايلك</div>
+      <div class="card-sub">ابعتلهم اللينك ده — وقولهم يفتحوه من كروم أو سفاري، مش من جوه واتساب.</div>
+      <div class="ia-url" id="shareUrl" style="margin-top:14px" title="اضغط للنسخ">—</div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn primary sm" id="copyBtn">📋 انسخ اللينك</button>
+        <button class="btn sm hide" id="shareBtn">📤 شارك</button>
+      </div>
+      <div class="note warn" style="margin-top:16px">
+        <b>⚠️ نصيحة مهمة وقت المشاركة:</b> لما تبعت اللينك على واتساب، الشخص التاني
+        بيفتحه جوه واتساب نفسه — وهناك <b>التثبيت مش بيشتغل</b>. التطبيق بيكتشف كده
+        ويظهرله شاشة تشرح إزاي يفتحه في كروم، بس الأحسن تنبّهه إنت كمان.
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a href="index.html">◀ الرئيسية</a>
+    <a href="diagnostics.html">التشخيص</a>
+  </div>
+</footer>
+
+<script src="assets/store.js"></script>
+<script src="assets/inapp.js"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(s){ return document.querySelector(s); };
+  var info = UniInApp.detect();
+  var shareURL = location.href.replace(/install\.html.*$/, 'index.html');
+
+  /* شاشة الاعتراض لو جوه واتساب */
+  UniInApp.guard({ url: shareURL });
+
+  var su = $('#shareUrl');
+  su.textContent = shareURL;
+  su.addEventListener('click', function(){
+    UniInApp.copyLink(shareURL).then(function(){
+      su.classList.add('copied');
+      setTimeout(function(){ su.classList.remove('copied'); }, 1600);
+    });
+  });
+  $('#copyBtn').addEventListener('click', function(){
+    var b = this;
+    UniInApp.copyLink(shareURL).then(function(ok){
+      b.textContent = ok ? '✅ اتنسخ!' : '⚠️ انسخه من فوق';
+      setTimeout(function(){ b.textContent = '📋 انسخ اللينك'; }, 2000);
+    });
+  });
+  if (navigator.share) {
+    var sb = $('#shareBtn');
+    sb.classList.remove('hide');
+    sb.addEventListener('click', function(){
+      navigator.share({
+        title: 'خطتي الأكاديمية — كلية العلوم إسكندرية',
+        text: 'خطة قسم الرياضيات وعلوم الحاسب. افتحها من كروم أو سفاري وثبّتها على شاشتك — تشتغل بدون نت.',
+        url: shareURL
+      }).catch(function(){});
+    });
+  }
+
+  /* ---------------- بطاقة التعليمات حسب الجهاز ---------------- */
+  var badge = $('#devBadge');
+  var host = $('#mainCard');
+  var deferred = null;
+
+  var kbd = function(t){ return '<b class="ia-kbd">'+t+'</b>'; };
+
+  function stepsCard(title, sub, steps, extra){
+    return '<div class="card">'
+      + '<div class="card-t"><span class="ic">📲</span> '+title+'</div>'
+      + '<div class="card-sub">'+sub+'</div>'
+      + '<ol style="margin:18px 20px 0;line-height:2.4;font-size:.96rem">'
+      + steps.map(function(s){ return '<li>'+s+'</li>'; }).join('')
+      + '</ol>'
+      + (extra || '')
+      + '</div>';
+  }
+
+  if (info.installed) {
+    badge.textContent = '✅ التطبيق مثبّت';
+    host.innerHTML = '<div class="card"><div class="card-t"><span class="ic">🎉</span> التطبيق مثبّت بالفعل</div>'
+      + '<div class="card-sub">إنت بتشغّله دلوقتي من الأيقونة المثبّتة. كل حاجة تمام.</div>'
+      + '<div class="btn-row" style="margin-top:16px"><a class="btn primary" href="index.html">افتح الخطط ←</a></div></div>';
+
+  } else if (info.inApp) {
+    badge.textContent = '⚠️ متصفح داخلي';
+    host.innerHTML = '<div class="note bad"><b>إنت جوه متصفح '
+      + ((info.app && info.app.name) || 'تطبيق تاني')
+      + ' — التثبيت مش هيشتغل من هنا.</b><br>اتبع الشاشة اللي ظهرتلك، أو انسخ اللينك وافتحه في كروم/سفاري.</div>';
+
+  } else if (info.isIOS) {
+    badge.textContent = '🍎 آيفون / آيباد';
+    var iosExtra = '<div class="note warn" style="margin-top:18px"><b>⚠️ خاص بالآيفون:</b> سفاري بيمسح بيانات المواقع '
+      + 'بعد <b>7 أيام</b> من عدم الاستخدام. عشان كده <b>نزّل نسخة احتياطية</b> من صفحة التشخيص كل فترة — '
+      + 'دي حمايتك الوحيدة على iOS. <a href="diagnostics.html">افتح التشخيص ←</a></div>';
+    if (info.browser !== 'safari') {
+      host.innerHTML = '<div class="note warn"><b>إنت في متصفح مش سفاري.</b> على الآيفون، '
+        + '<b>سفاري بس</b> هو اللي بيقدر يثبّت التطبيقات. انسخ اللينك وافتحه في سفاري.</div>'
+        + stepsCard('بعد ما تفتحه في سفاري', 'الخطوات دي في سفاري نفسه:', [
+            'اضغط زر المشاركة '+kbd('↑')+' تحت في وسط الشاشة',
+            'انزل بإصبعك في القائمة لحد ما تلاقي <b>«إضافة إلى الشاشة الرئيسية»</b>',
+            'اضغط <b>«إضافة»</b> فوق على اليمين'
+          ], iosExtra);
+    } else {
+      host.innerHTML = stepsCard('التثبيت على الآيفون', 'اتبع الخطوات دي بالترتيب — دقيقة واحدة:', [
+        'اضغط زر المشاركة '+kbd('↑')+' تحت في <b>وسط</b> الشاشة',
+        'انزل بإصبعك في القائمة لحد ما تلاقي <b>«إضافة إلى الشاشة الرئيسية»</b> (Add to Home Screen)',
+        'اضغط <b>«إضافة»</b> فوق على اليمين',
+        'قفّل سفاري وافتح التطبيق من <b>الأيقونة الجديدة</b> على شاشتك'
+      ], iosExtra);
+    }
+
+  } else if (info.isAndroid) {
+    badge.textContent = '🤖 أندرويد';
+    host.innerHTML = '<div class="card"><div class="card-t"><span class="ic">📲</span> التثبيت على أندرويد</div>'
+      + '<div class="card-sub">أسهل طريقة: اضغط الزر ده مباشرة.</div>'
+      + '<div class="btn-row" style="margin-top:16px">'
+      + '<button class="btn primary" id="promptBtn" disabled>⏳ بنجهّز زر التثبيت…</button></div>'
+      + '<div id="fallback" style="margin-top:20px"></div></div>';
+
+    var fb = $('#fallback');
+    fb.innerHTML = '<div class="note" style="line-height:2.2"><b>أو يدويًا من كروم:</b><ol style="margin:10px 20px 0">'
+      + '<li>اضغط '+kbd('⋮')+' فوق على اليمين</li>'
+      + '<li>اختار <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b></li>'
+      + '<li>اضغط <b>«تثبيت»</b></li></ol></div>';
+
+    window.addEventListener('beforeinstallprompt', function(e){
+      e.preventDefault(); deferred = e;
+      var b = $('#promptBtn');
+      b.disabled = false; b.textContent = '📲 ثبّت التطبيق الآن';
+    });
+    $('#promptBtn').addEventListener('click', function(){
+      if (!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function(c){
+        if (c.outcome === 'accepted') {
+          host.innerHTML = '<div class="note ok"><b>🎉 اتثبّت!</b> دوّر على أيقونة «خطتي» على شاشتك.</div>';
+        }
+        deferred = null;
+      });
+    });
+    setTimeout(function(){
+      var b = $('#promptBtn');
+      if (b && b.disabled) {
+        b.textContent = '⚠️ الزر التلقائي مش متاح';
+        fb.insertAdjacentHTML('afterbegin', '<div class="note warn" style="margin-bottom:12px">'
+          + 'كروم مش عارض زر التثبيت التلقائي (بيحصل لو التطبيق مثبّت قبل كده، أو المتصفح مش كروم). '
+          + 'استخدم الطريقة اليدوية تحت.</div>');
+      }
+    }, 3500);
+
+  } else {
+    badge.textContent = '💻 كمبيوتر';
+    host.innerHTML = stepsCard('التثبيت على الكمبيوتر',
+      'يشتغل على كروم وإيدج وأوبرا:', [
+        'دوّر على أيقونة التثبيت '+kbd('⊕')+' في شريط العنوان فوق على اليمين',
+        'أو من قائمة '+kbd('⋮')+' ← <b>«تثبيت …»</b> / <b>«Install»</b>',
+        'اضغط <b>تثبيت</b> — هيفتح في نافذة لوحده'
+      ],
+      '<div class="note info" style="margin-top:18px"><b>💡</b> بس الفايدة الأكبر على الموبايل — '
+      + 'ابعت اللينك لنفسك على الموبايل وثبّته هناك.</div>');
+  }
+
+  /* تشغيل الـ SW من هنا كمان عشان الكاش يبدأ */
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function(){});
+  }
+  if (window.UniStore) { UniStore.mirrorToIDB().catch(function(){}); }
+})();
+</script>
+</body>
+</html>

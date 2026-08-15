@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>التشخيص والنسخ الاحتياطي — خطتي الأكاديمية</title>
+<meta name="description" content="حالة التخزين والكاش، وتصدير واستيراد بياناتك.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#02030b">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div class="wrap appbar-in">
+    <a class="logo" href="index.html" style="color:inherit">
+      <div class="logo-mark">خ</div>
+      <div class="logo-tx"><b>خطتي الأكاديمية</b><small>التشخيص والنسخ الاحتياطي</small></div>
+    </a>
+    <div class="appbar-grow"></div>
+    <a class="icon-btn" href="index.html" aria-label="الرئيسية">◀</a>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" style="padding-bottom:6px">
+    <div class="hero-kicker">🩺 صحة التطبيق</div>
+    <h1>بياناتك <span class="grad">وحالة التطبيق</span></h1>
+    <p>من هنا تنزّل نسخة احتياطية من كل حاجة، وترجّعها على أي جهاز، وتشوف التطبيق محفوظ للشغل بدون نت أو لأ.</p>
+  </section>
+
+  <!-- ============================ BACKUP ============================ -->
+  <section class="wrap sec">
+    <div class="card" style="border-color:var(--line-strong)">
+      <div class="card-t"><span class="ic">🛟</span> النسخة الاحتياطية — الأهم في الصفحة</div>
+      <div class="card-sub">
+        بياناتك محفوظة على جهازك بس. لو المتصفح مسحها (بيحصل لما مساحة الموبايل تقل،
+        أو على الآيفون بعد 7 أيام)، النسخة اللي نزّلتها هي اللي هترجّع كل حاجة.
+        <b>انصحك تنزّل نسخة كل أسبوعين.</b>
+      </div>
+
+      <div class="grid g2" style="margin-top:18px">
+        <div class="card" style="box-shadow:none">
+          <div class="card-t" style="font-size:.96rem"><span class="ic">⤓</span> تصدير</div>
+          <div class="card-sub">ملف JSON واحد فيه كل تقدمك وتقديراتك وخطتك الفعلية.</div>
+          <div class="btn-row" style="margin-top:14px">
+            <button class="btn primary sm" id="expBtn">⤓ نزّل النسخة</button>
+          </div>
+          <div id="expOut" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card" style="box-shadow:none">
+          <div class="card-t" style="font-size:.96rem"><span class="ic">⤒</span> استيراد</div>
+          <div class="card-sub">اختار ملف نسخة احتياطية نزّلته قبل كده.</div>
+          <div style="margin-top:14px">
+            <input type="file" id="impFile" accept=".json,application/json"
+                   style="width:100%;padding:11px;border:1px dashed var(--line-strong);border-radius:11px;background:var(--surface2);color:var(--muted);font-family:inherit;font-size:.85rem">
+          </div>
+          <div style="margin-top:12px;display:flex;gap:14px;flex-wrap:wrap;font-size:.83rem;color:var(--muted)">
+            <label style="display:flex;gap:6px;align-items:center;cursor:pointer">
+              <input type="radio" name="impMode" value="replace" checked> استبدال الموجود
+            </label>
+            <label style="display:flex;gap:6px;align-items:center;cursor:pointer">
+              <input type="radio" name="impMode" value="fill"> املأ الفاضي بس (أأمن)
+            </label>
+          </div>
+          <div class="btn-row" style="margin-top:14px">
+            <button class="btn sm" id="impBtn" disabled>⤒ استورد</button>
+          </div>
+          <div id="impOut" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ STORAGE ============================ -->
+  <section class="wrap sec">
+    <div class="card">
+      <div class="card-t"><span class="ic">💾</span> حالة التخزين</div>
+      <div id="stHost" style="margin-top:14px"><div class="card-sub">بنفحص…</div></div>
+    </div>
+  </section>
+
+  <!-- ============================ DATA KEYS ========================== -->
+  <section class="wrap sec">
+    <div class="card">
+      <div class="card-t"><span class="ic">🗂️</span> ملفات بياناتك</div>
+      <div class="card-sub">كل خطة بتحفظ بياناتها في مفاتيح منفصلة. دي حالتها دلوقتي:</div>
+      <div id="keysHost" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <!-- ============================ CACHE ============================= -->
+  <section class="wrap sec">
+    <div class="card">
+      <div class="card-t"><span class="ic">📴</span> الشغل بدون نت (الكاش)</div>
+      <div class="card-sub">دي الملفات المحفوظة على جهازك عشان التطبيق يفتح من غير اتصال.</div>
+      <div id="cacheHost" style="margin-top:14px"><div class="card-sub">بنفحص…</div></div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn sm" id="refreshCache">🔄 حدّث الملفات المحفوظة</button>
+        <button class="btn sm ghost" id="testOffline">🧪 اختبر الشغل بدون نت</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ DEVICE ============================ -->
+  <section class="wrap sec">
+    <div class="card">
+      <div class="card-t"><span class="ic">📱</span> جهازك والمتصفح</div>
+      <div id="devHost" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <!-- ============================ DANGER ============================ -->
+  <section class="wrap sec">
+    <div class="card" style="border-color:color-mix(in srgb, var(--rose) 40%, transparent)">
+      <div class="card-t"><span class="ic">⚠️</span> منطقة الخطر</div>
+      <div class="card-sub">مسح كل بياناتك من الجهاز ده. مفيش رجوع — نزّل نسخة احتياطية الأول.</div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn sm ghost" id="wipeBtn" style="border-color:var(--rose);color:var(--rose)">🗑️ امسح كل بياناتي</button>
+      </div>
+      <div id="wipeOut" style="margin-top:12px"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a href="index.html">◀ الرئيسية</a>
+    <a href="install.html">التثبيت</a>
+    <span class="appbar-grow"></span>
+    <span id="verOut"></span>
+  </div>
+</footer>
+
+<script src="assets/store.js"></script>
+<script src="assets/inapp.js"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(s){ return document.querySelector(s); };
+  var mb = function(n){ return n == null ? '—' : (n/1048576).toFixed(2) + ' MB'; };
+  var kb = function(n){ return n == null ? '—' : (n/1024).toFixed(1) + ' KB'; };
+  var yes = '<span style="color:var(--green)">✓ نعم</span>';
+  var no  = '<span style="color:var(--rose)">✕ لأ</span>';
+  var mid = '<span style="color:var(--amber)">— غير مؤكد</span>';
+
+  UniInApp.guard();
+
+  /* ---------------------------------------------------- التصدير */
+  $('#expBtn').addEventListener('click', function(){
+    var b = this; b.disabled = true;
+    UniStore.downloadBackup().then(function(r){
+      $('#expOut').innerHTML = '<div class="note ok"><b>✅ اتنزّلت</b><br>'
+        + r.keys + ' عناصر — ' + kb(r.bytes) + '<br><small style="color:var(--muted)">'
+        + 'الملف: ' + r.name + '</small></div>';
+      renderStorage();
+    }).catch(function(e){
+      $('#expOut').innerHTML = '<div class="note bad">⚠️ فشل: ' + (e.message||'خطأ') + '</div>';
+    }).then(function(){ b.disabled = false; });
+  });
+
+  /* ---------------------------------------------------- الاستيراد */
+  var impFile = $('#impFile');
+  impFile.addEventListener('change', function(){
+    $('#impBtn').disabled = !impFile.files.length;
+    $('#impOut').innerHTML = '';
+  });
+  $('#impBtn').addEventListener('click', function(){
+    var f = impFile.files[0]; if (!f) return;
+    var mode = (document.querySelector('input[name="impMode"]:checked')||{}).value || 'replace';
+    if (mode === 'replace' && !confirm('الاستيراد هيستبدل بياناتك الحالية بالموجود في الملف.\n\nمتأكد؟ (لو مش متأكد، نزّل نسخة احتياطية الأول)')) return;
+    var b = this; b.disabled = true;
+    UniStore.importBackup(f, mode).then(function(r){
+      $('#impOut').innerHTML = '<div class="note ok"><b>✅ تم الاستيراد</b><br>'
+        + 'اترجّع: ' + r.applied.length + ' عنصر'
+        + (r.skipped.length ? '<br>اتخطّى: ' + r.skipped.length : '')
+        + (r.exportedAt ? '<br><small style="color:var(--muted)">النسخة بتاريخ: '
+            + new Date(r.exportedAt).toLocaleString('ar-EG') + '</small>' : '')
+        + '<br><br><a class="btn sm primary" href="index.html">افتح الخطط وشوف ←</a></div>';
+      renderKeys(); renderStorage();
+    }).catch(function(e){
+      $('#impOut').innerHTML = '<div class="note bad">⚠️ ' + (e.message||'فشل الاستيراد') + '</div>';
+    }).then(function(){ b.disabled = false; });
+  });
+
+  /* ---------------------------------------------------- حالة التخزين */
+  function renderStorage(){
+    UniStore.storageStatus().then(function(st){
+      var pctBar = st.percent != null
+        ? '<div class="bar" style="margin-top:6px"><i style="width:'+Math.min(100,st.percent)+'%"></i></div>' : '';
+      var lastB = st.lastBackupAt ? new Date(st.lastBackupAt) : null;
+      var days = lastB ? Math.floor((Date.now()-st.lastBackupAt)/86400000) : null;
+      $('#stHost').innerHTML =
+          '<div class="kv"><span>localStorage (الحفظ الأساسي)</span><b>'+(st.localStorageOK?yes:no)+'</b></div>'
+        + '<div class="kv"><span>IndexedDB (النسخة التلقائية)</span><b>'+(st.indexedDBOK?yes:no)+'</b></div>'
+        + '<div class="kv"><span>تخزين دائم (مقاوم للمسح)</span><b>'
+            +(st.persisted===true?yes:st.persisted===false?mid:'—')+'</b></div>'
+        + '<div class="kv"><span>المستخدم</span><b>'+mb(st.usage)+(st.quota?' من '+mb(st.quota):'')+'</b></div>'
+        + (pctBar ? '<div style="padding:4px 0 10px">'+pctBar+'</div>' : '')
+        + '<div class="kv"><span>آخر نسخة احتياطية</span><b>'
+            +(lastB ? lastB.toLocaleString('ar-EG') + (days>14?' <span style="color:var(--amber)">(بقالها '+days+' يوم!)</span>':'')
+                   : '<span style="color:var(--amber)">ولا واحدة</span>')+'</b></div>';
+    }).catch(function(){
+      $('#stHost').innerHTML = '<div class="note bad">تعذّر فحص التخزين</div>';
+    });
+  }
+
+  /* ---------------------------------------------------- المفاتيح */
+  function renderKeys(){
+    var rows = UniStore.WATCHED_KEYS.map(function(w){
+      var raw = null;
+      try { raw = localStorage.getItem(w.key); } catch(e){}
+      var ok = raw && raw.length > 2;
+      var detail = '';
+      if (ok) {
+        try {
+          var o = JSON.parse(raw);
+          var bits = [];
+          if (o.done)  bits.push(Object.keys(o.done).filter(function(k){return o.done[k];}).length + ' مخلّصة');
+          if (o.grades) bits.push(Object.keys(o.grades).length + ' تقدير');
+          if (Array.isArray(o.terms)) bits.push(o.terms.length + ' ترم');
+          detail = bits.join(' • ');
+        } catch(e){ detail = 'صيغة غير مقروءة'; }
+      }
+      return '<tr><td><b style="font-family:var(--font-display);font-size:.87rem">'+w.label+'</b>'
+        + '<br><code class="mono" style="font-size:.7rem;color:var(--muted2)">'+w.key+'</code></td>'
+        + '<td style="white-space:nowrap">'+(ok
+            ? '<span class="pill ok">محفوظة</span>'
+            : '<span class="pill">فاضية</span>')+'</td>'
+        + '<td style="font-size:.8rem;color:var(--muted)">'+(detail||'—')+'</td>'
+        + '<td style="white-space:nowrap;font-size:.78rem;color:var(--muted2)">'+(ok?kb(raw.length):'—')+'</td></tr>';
+    }).join('');
+    $('#keysHost').innerHTML = '<div style="overflow-x:auto"><table class="t">'
+      + '<thead><tr><th>البيانات</th><th>الحالة</th><th>المحتوى</th><th>الحجم</th></tr></thead>'
+      + '<tbody>'+rows+'</tbody></table></div>';
+  }
+
+  /* ---------------------------------------------------- الكاش */
+  function renderCache(){
+    if (!('serviceWorker' in navigator)) {
+      $('#cacheHost').innerHTML = '<div class="note bad">المتصفح ده مش بيدعم الشغل بدون نت.</div>';
+      return;
+    }
+    if (location.protocol === 'file:') {
+      $('#cacheHost').innerHTML = '<div class="note warn"><b>التطبيق مفتوح كملف محلي (file://)</b><br>'
+        + 'الشغل بدون نت محتاج التطبيق يكون على سيرفر (زي GitHub Pages).</div>';
+      return;
+    }
+    navigator.serviceWorker.getRegistration().then(function(reg){
+      if (!reg) {
+        $('#cacheHost').innerHTML = '<div class="note warn">الـ Service Worker مش مسجّل. '
+          + '<a href="index.html">افتح الرئيسية</a> وإنت متصل بالنت مرة واحدة.</div>';
+        return;
+      }
+      var sw = navigator.serviceWorker.controller;
+      if (!sw) {
+        $('#cacheHost').innerHTML = '<div class="note info">الـ Service Worker مسجّل بس لسه ماشتغلش. حدّث الصفحة.</div>';
+        return;
+      }
+      var done = false;
+      navigator.serviceWorker.addEventListener('message', function(ev){
+        var d = ev.data||{};
+        if (d.type === 'CACHE_STATUS_RESULT' && !done) {
+          done = true;
+          var pct = d.expected ? Math.round((d.files/d.expected)*100) : 0;
+          var healthy = d.files >= d.expected;
+          $('#cacheHost').innerHTML =
+              '<div class="note '+(healthy?'ok':'warn')+'"><b>'
+                +(healthy?'✅ التطبيق جاهز للشغل بدون نت':'⚠️ الحفظ ناقص — افتح التطبيق بالنت واستنى شوية')
+              +'</b></div>'
+            + '<div class="kv" style="margin-top:12px"><span>الإصدار</span><b class="mono">'+d.version+'</b></div>'
+            + '<div class="kv"><span>ملفات محفوظة</span><b>'+d.files+' من '+d.expected+' ('+pct+'%)</b></div>'
+            + '<div class="bar" style="margin:8px 0"><i style="width:'+Math.min(100,pct)+'%"></i></div>'
+            + '<div class="kv"><span>حجم الكاش</span><b>'+mb(d.bytes)+'</b></div>';
+          $('#verOut').textContent = 'الكاش: ' + d.version;
+        }
+        if (d.type === 'REFRESH_DONE') {
+          done = false; renderCache();
+          alert('✅ اتحدّثت الملفات المحفوظة');
+        }
+      });
+      sw.postMessage({ type: 'CACHE_STATUS' });
+      setTimeout(function(){
+        if (!done) $('#cacheHost').innerHTML = '<div class="note warn">مافيش رد من الـ Service Worker. حدّث الصفحة وجرّب تاني.</div>';
+      }, 6000);
+    });
+  }
+
+  $('#refreshCache').addEventListener('click', function(){
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      this.disabled = true; var b = this;
+      navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_CACHE' });
+      setTimeout(function(){ b.disabled = false; }, 4000);
+    }
+  });
+  $('#testOffline').addEventListener('click', function(){
+    alert('اختبار الشغل بدون نت:\n\n'
+      + '1) اقفل الواي فاي وبيانات الموبايل تمامًا\n'
+      + '2) اقفل التطبيق/التاب خالص\n'
+      + '3) افتحه تاني من الأيقونة\n\n'
+      + 'لو فتح عادي وبياناتك موجودة → كل حاجة تمام ✅\n'
+      + 'لو مافتحش → افتحه بالنت مرة واحدة واستنى لحد ما تشوف رسالة "بقى شغال بدون نت"');
+  });
+
+  /* ---------------------------------------------------- الجهاز */
+  function renderDevice(){
+    var i = UniInApp.detect();
+    var nav = navigator;
+    $('#devHost').innerHTML =
+        '<div class="kv"><span>النظام</span><b>'+(i.isIOS?'iOS / iPadOS':i.isAndroid?'Android':'كمبيوتر')+'</b></div>'
+      + '<div class="kv"><span>المتصفح</span><b>'+({chrome:'كروم',safari:'سفاري',firefox:'فايرفوكس',edge:'إيدج',other:'تاني'}[i.browser])+'</b></div>'
+      + '<div class="kv"><span>مثبّت كتطبيق</span><b>'+(i.installed?yes:no)+'</b></div>'
+      + '<div class="kv"><span>متصفح داخلي (واتساب/فيسبوك…)</span><b>'
+          +(i.inApp?'<span style="color:var(--amber)">⚠️ نعم — '+((i.app&&i.app.name)||'')+'</span>':no)+'</b></div>'
+      + '<div class="kv"><span>يدعم الشغل بدون نت</span><b>'+(i.supportsSW?yes:no)+'</b></div>'
+      + '<div class="kv"><span>ذاكرة الجهاز</span><b>'+(nav.deviceMemory?nav.deviceMemory+' GB (تقريبي)':'غير معروف')+'</b></div>'
+      + '<div class="kv"><span>أنوية المعالج</span><b>'+(nav.hardwareConcurrency||'غير معروف')+'</b></div>'
+      + '<div class="kv"><span>حالة الاتصال</span><b>'+(nav.onLine?'<span style="color:var(--green)">متصل</span>':'<span style="color:var(--amber)">بدون نت</span>')+'</b></div>'
+      + '<div class="kv"><span>الشاشة</span><b class="mono">'+screen.width+'×'+screen.height+' @'+(window.devicePixelRatio||1)+'x</b></div>';
+  }
+
+  /* ---------------------------------------------------- المسح */
+  $('#wipeBtn').addEventListener('click', function(){
+    if (!confirm('⚠️ ده هيمسح كل تقدمك وتقديراتك وخطتك الفعلية من الجهاز ده.\n\nمفيش رجوع!\n\nمتأكد؟')) return;
+    if (!confirm('تأكيد أخير: نزّلت نسخة احتياطية؟\n\nاضغط إلغاء لو عايز تنزّلها الأول.')) return;
+    UniStore.wipeAll().then(function(){
+      $('#wipeOut').innerHTML = '<div class="note ok">تم المسح. <a href="index.html">الرئيسية</a></div>';
+      renderKeys(); renderStorage();
+    });
+  });
+
+  renderStorage(); renderKeys(); renderCache(); renderDevice();
+  window.addEventListener('online', renderDevice);
+  window.addEventListener('offline', renderDevice);
+})();
+</script>
+</body>
+</html>

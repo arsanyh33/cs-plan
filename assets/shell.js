@@ -276,20 +276,42 @@
   }
 
   /* --------------------- معاينة الأجهزة (Auto/Mobile/…) ------------------ */
+  /* نفس آلية ملفاتك الأصلية بالحرف (applyDeviceMode في cs-stat/cs-special):
+     "لابتوب" بيفرض عرض 1180px فعليًا عبر تغيير viewport meta — فالمتصفح
+     يعامل الصفحة كأنها بعرض لابتوب حقيقي مهما كان الجهاز، وبيزوّم اوت
+     تلقائيًا عشان كل التفاصيل تتناسب مع الشاشة. "تلقائي" مابيفرضش حاجة
+     أصلًا — يسيب الصفحة متجاوبة طبيعي (مهم لو أصلًا مفتوح من لابتوب حقيقي).
+
+     الوضع الافتراضي عند أول فتح: لو الشاشة فعلاً صغيرة (فون/تابلت) —
+     بيفرض شكل اللابتوب بالتفاصيل كاملة تلقائيًا. لو الفتح من لابتوب/
+     ديسكتوب حقيقي (شاشة كبيرة already)، بيسيبه طبيعي تمامًا. */
   const DEVICES = ['auto', 'mobile', 'tablet', 'laptop'];
+  const RESPONSIVE_VIEWPORT = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  const DESKTOP_VIEWPORT = 'width=1180, viewport-fit=cover';
+
   function applyDevice(mode) {
     const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
     document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop');
     if (m !== 'auto') document.body.classList.add('device-' + m);
+
+    const vp = $('#viewportMeta') || document.querySelector('meta[name="viewport"]');
+    if (vp) vp.setAttribute('content', m === 'laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
+
     prefs({ device: m });
     const sel = $('#deviceSelect');
     if (sel && sel.value !== m) sel.value = m;
     return m;
   }
+
   function wireDevice() {
     const sel = $('#deviceSelect');
-    const saved = prefs().device || 'auto';
-    applyDevice(saved);
+    const saved = prefs().device;
+    let mode = saved;
+    if (!mode) {
+      const isSmallScreen = Math.min(innerWidth, screen.width || innerWidth) < 1180;
+      mode = isSmallScreen ? 'laptop' : 'auto';
+    }
+    applyDevice(mode);
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);
       global.scrollTo({ top: 0, behavior: 'smooth' });
@@ -716,7 +738,7 @@
   /* ---------------------------------------------------------------- boot */
   function boot() {
     tuneDevice();
-    applyTheme(prefs().theme || 'dark');
+    applyTheme(prefs().theme || 'light');
 
     if (global.UniInApp) {
       const info = global.UniInApp.guard();

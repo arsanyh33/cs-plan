@@ -27,12 +27,11 @@
     mousePull: 0.055,
     symbols: ['∫', 'Σ', '√', 'π', 'λ', '∂', '∞', 'Δ', 'θ', 'μ', 'σ', '≈', '⊕', '∇'],
     symbolCount: 11,
-    palette: [
-      [0, 229, 255],     /* سيان */
-      [139, 92, 246],    /* بنفسجي */
-      [255, 45, 120],    /* ماجنتا */
-      [37, 230, 160],    /* أخضر */
-    ],
+    /* لونان لكل ثيم — الفاتح ألوان أعمق وأشبع عشان تتقرا على أبيض */
+    palettes: {
+      dark:  [[0,229,255],[139,92,246],[255,45,120],[37,230,160]],
+      light: [[0,110,150],[100,55,190],[190,15,95],[10,120,80]],
+    },
   };
 
   let cv, ctx, W = 0, H = 0, dpr = 1;
@@ -51,6 +50,10 @@
   function reduced() {
     return global.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
+  function isLight() {
+    return document.documentElement.getAttribute('data-theme') === 'light';
+  }
+  function palette() { return CFG.palettes[isLight() ? 'light' : 'dark']; }
 
   function rand(a, b) { return a + Math.random() * (b - a); }
   function pick(a) { return a[(Math.random() * a.length) | 0]; }
@@ -66,7 +69,7 @@
         vx: rand(-CFG.speed, CFG.speed) * dpr,
         vy: rand(-CFG.speed, CFG.speed) * dpr,
         r: rand(1.1, 2.9) * dpr,
-        c: pick(CFG.palette),
+        ci: (Math.random() * 4) | 0,          /* رقم اللون — يتحسب من الثيم وقت الرسم */
         p: Math.random() * Math.PI * 2,      /* طور النبض */
         ps: rand(0.006, 0.017),
       });
@@ -128,6 +131,10 @@
     lastT = t;
 
     ctx.clearRect(0, 0, W, H);
+    const light = isLight();
+    const PAL = palette();
+    const symTint = light ? '70,80,120' : '150,170,255';
+    const symA = light ? 1.35 : 1;
 
     /* ---------------- الرموز الرياضية العائمة (خلف كل حاجة) ---------------- */
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -140,7 +147,7 @@
       ctx.translate(s.x, s.y);
       ctx.rotate(s.rot);
       ctx.font = `600 ${s.s}px 'Cairo', system-ui, sans-serif`;
-      ctx.fillStyle = `rgba(150,170,255,${s.a})`;
+      ctx.fillStyle = `rgba(${symTint},${(s.a * symA).toFixed(3)})`;
       ctx.fillText(s.ch, 0, 0);
       ctx.restore();
     }
@@ -149,8 +156,10 @@
     const LD = CFG.linkDist * dpr;
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
+      const ca = PAL[a.ci];
       for (let j = i + 1; j < nodes.length; j++) {
         const b = nodes[j];
+        const cb = PAL[b.ci];
         const dx = a.x - b.x, dy = a.y - b.y;
         const d2 = dx * dx + dy * dy;
         if (d2 > LD * LD) continue;
@@ -165,7 +174,7 @@
           const MR = CFG.mouseRadius * dpr;
           if (md < MR) boost = (1 - md / MR) * 0.5;
         }
-        ctx.strokeStyle = `rgba(${a.c[0]},${a.c[1]},${a.c[2]},${(k * 0.26 + boost).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(${ca[0]},${ca[1]},${ca[2]},${(k * (light ? 0.34 : 0.26) + boost).toFixed(3)})`;
         ctx.lineWidth = (0.6 + k * 0.7 + boost * 1.4) * dpr;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -206,17 +215,17 @@
       if (n.y > H) { n.y = H; n.vy *= -1; }
 
       const pulse = 0.72 + Math.sin(n.p) * 0.28;
-      const [r, g, b] = n.c;
+      const [r, g, b] = PAL[n.ci];
 
       /* هالة */
       const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 7);
-      glow.addColorStop(0, `rgba(${r},${g},${b},${0.42 * pulse})`);
+      glow.addColorStop(0, `rgba(${r},${g},${b},${(light ? 0.30 : 0.42) * pulse})`);
       glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
       ctx.fillStyle = glow;
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r * 7, 0, Math.PI * 2); ctx.fill();
 
       /* النواة */
-      ctx.fillStyle = `rgba(${r},${g},${b},${0.8 * pulse + 0.2})`;
+      ctx.fillStyle = `rgba(${r},${g},${b},${(light ? 0.86 : 0.8) * pulse + 0.2})`;
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
     }
 

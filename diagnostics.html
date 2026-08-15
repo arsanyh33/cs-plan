@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>التشخيص والنسخ الاحتياطي — Top Computer Science Students</title>
 <meta name="description" content="حالة التخزين والكاش، وتصدير واستيراد بياناتك.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icons/icon.svg">
 <link rel="stylesheet" href="assets/app.css">
@@ -377,10 +377,10 @@
   if(r) r.onclick=function(){ set(1); };
   if(p2) p2.onclick=function(){ set(fs+ST); };
 
-  var th=P().theme||'dark';
+  var th=P().theme||'light';
   function theme(t){ document.documentElement.setAttribute('data-theme',t); P({theme:t});
     var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'🌙':'☀️';
-    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#f7f8fc':'#000000'); }
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#ffffff':'#000000'); }
   theme(th);
   var tb=document.getElementById('themeBtn');
   if(tb) tb.onclick=function(){ theme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'); };

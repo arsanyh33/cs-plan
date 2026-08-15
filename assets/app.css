@@ -51,14 +51,32 @@
   --ease2:cubic-bezier(.34,1.56,.64,1);
 }
 
-/* الوضع النهاري — موجود بس التطبيق أساسًا أسود */
+/* ============================ الوضع النهاري ============================
+   الوضع الافتراضي للتطبيق: أبيض حقيقي ونضيف، بنفس هوية الألوان
+   (سيان/بنفسجي/ماجنتا) بس بتشبّع أعلى وتباين كافي عشان تتقرا على أبيض. */
 html[data-theme="light"]{
-  --void:#f7f8fc; --ink:#eef0f8; --panel:#ffffff; --panel2:#f2f4fb;
-  --glass:rgba(10,12,30,.03); --glass2:rgba(10,12,30,.055);
-  --line:rgba(20,20,50,.1); --line2:rgba(20,20,50,.18); --line-hot:rgba(0,120,180,.4);
-  --text:#0d1020; --dim:#4e5570; --dim2:#767d99;
-  --cyan:#0091b0; --violet:#6d3ed6; --magenta:#d61a5c; --amber:#b07000; --lime:#0a8f60;
+  --void:#ffffff;              /* أبيض حقيقي — الافتراضي المطلوب */
+  --ink:#fafbfe;
+  --panel:#ffffff;
+  --panel2:#f4f6fb;
+  --glass:rgba(20,25,55,.035);
+  --glass2:rgba(20,25,55,.065);
+  --line:rgba(20,25,55,.1);
+  --line2:rgba(20,25,55,.16);
+  --line-hot:rgba(0,110,170,.45);
+  --text:#0b1020;
+  --dim:#525a76;
+  --dim2:#818a9e;
+  --cyan:#0077a3;
+  --violet:#6a37d6;
+  --magenta:#c81361;
+  --amber:#946200;
+  --lime:#0a8f5f;
+  --shadow:0 18px 44px -22px rgba(20,25,60,.16);
   color-scheme:light;
+}
+html[data-theme="light"] body{
+  background:var(--void);
 }
 
 *{ box-sizing:border-box; margin:0; padding:0; }
@@ -114,10 +132,10 @@ html.has-spot .bg-spot{ opacity:1; }
 /* بديل ثابت لو الكانفس مقفول (جهاز ضعيف / تقليل حركة) */
 html.bg-static .bg{
   background:
-    radial-gradient(ellipse 70% 50% at 78% 4%,  rgba(0,229,255,.13), transparent 62%),
-    radial-gradient(ellipse 60% 50% at 12% 26%, rgba(139,92,246,.11), transparent 62%),
-    radial-gradient(ellipse 50% 40% at 62% 88%, rgba(255,45,120,.07), transparent 64%),
-    #000;
+    radial-gradient(ellipse 70% 50% at 78% 4%,  color-mix(in srgb, var(--cyan) 13%, transparent), transparent 62%),
+    radial-gradient(ellipse 60% 50% at 12% 26%, color-mix(in srgb, var(--violet) 11%, transparent), transparent 62%),
+    radial-gradient(ellipse 50% 40% at 62% 88%, color-mix(in srgb, var(--magenta) 7%, transparent), transparent 64%),
+    var(--void);
 }
 html[data-theme="light"] .bg-veil{
   background:radial-gradient(ellipse 120% 80% at 50% 0%, transparent 40%, rgba(247,248,252,.75) 82%, #f7f8fc 100%);
@@ -148,7 +166,9 @@ input,select,textarea{ font-family:inherit; }
 .appbar{
   position:sticky; top:0; z-index:70;
   padding-top:env(safe-area-inset-top);
-  background:linear-gradient(to bottom, rgba(0,0,0,.86), rgba(0,0,0,.45) 70%, transparent);
+  background:linear-gradient(to bottom,
+    color-mix(in srgb, var(--void) 86%, transparent),
+    color-mix(in srgb, var(--void) 45%, transparent) 70%, transparent);
   backdrop-filter:blur(20px) saturate(150%);
   -webkit-backdrop-filter:blur(20px) saturate(150%);
   border-bottom:1px solid transparent;
@@ -156,9 +176,10 @@ input,select,textarea{ font-family:inherit; }
 }
 .appbar.stuck{
   border-bottom-color:var(--line);
-  background:rgba(0,0,0,.9);
+  background:color-mix(in srgb, var(--void) 90%, transparent);
 }
-@supports not (backdrop-filter:blur(2px)){ .appbar{ background:rgba(0,0,0,.95); } }
+@supports not (backdrop-filter:blur(2px)){ .appbar{ background:var(--void); } }
+@supports not (background:color-mix(in srgb,red 5%,blue)){ .appbar{ background:var(--void); } }
 .appbar-in{
   width:100%; max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
   display:grid; grid-template-columns:minmax(0,1fr) auto;   /* اللوجو | الأدوات */
@@ -422,7 +443,7 @@ input,select,textarea{ font-family:inherit; }
   display:block; font-family:var(--font-display);
   font-size:clamp(1.7rem,5.2vw,2.5rem); font-weight:900; line-height:1.14; letter-spacing:0;
   font-variant-numeric:tabular-nums;
-  background:linear-gradient(150deg,#fff,var(--cyan) 55%,var(--violet));
+  background:linear-gradient(150deg,var(--text),var(--cyan) 55%,var(--violet));
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }
@@ -573,10 +594,10 @@ table.t tbody tr:hover{ background:var(--glass); }
 .sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 ::selection{ background:var(--cyan); color:#000; }
 ::-webkit-scrollbar{ width:11px; height:11px; }
-::-webkit-scrollbar-track{ background:#000; }
+::-webkit-scrollbar-track{ background:var(--void); }
 ::-webkit-scrollbar-thumb{
   background:linear-gradient(var(--cyan),var(--violet));
-  border-radius:99px; border:3px solid #000;
+  border-radius:99px; border:3px solid var(--void);
 }
 
 /* ==================== الأجهزة الضعيفة وتقليل الحركة ================ */

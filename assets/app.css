@@ -184,14 +184,19 @@ input,select,textarea{ font-family:inherit; }
 .appbar-in{
   max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
   display:flex; align-items:center; gap:10px;
-  flex-wrap:nowrap;                 /* الأدوات ماتتراكمش */
-  overflow-x:auto; overflow-y:visible;
-  scrollbar-width:none;
+  flex-wrap:wrap;             /* يلف بين اللوجو والأدوات لو المساحة ضاقت */
 }
-.appbar-in::-webkit-scrollbar{ display:none; }
-/* كل أداة بحجمها الطبيعي — مفيش تمدّد */
 .appbar-in > *{ flex:0 0 auto; }
-.appbar-in > .appbar-grow{ flex:1 1 auto; min-width:4px; }
+.appbar-in > .appbar-grow{ flex:1 1 0; min-width:0; }
+
+/* الأدوات في مجموعة واحدة — ماتتقطعش ولا تتراكم أبدًا */
+.appbar-tools{
+  display:flex; align-items:center; gap:10px;
+  flex-wrap:nowrap; flex:0 0 auto;
+  max-width:100%; overflow-x:auto; scrollbar-width:none;
+}
+.appbar-tools::-webkit-scrollbar{ display:none; }
+.appbar-tools > *{ flex:0 0 auto; }
 
 .logo{ display:flex; align-items:center; gap:12px; color:inherit; flex:0 0 auto; white-space:nowrap; }
 .logo-mark{

@@ -67,6 +67,8 @@ html{
   color-scheme:dark;
   -webkit-text-size-adjust:100%;
   scroll-behavior:smooth;
+  overflow-x:hidden;              /* مفيش سكرول أفقي أبدًا */
+  max-width:100%;
 }
 
 body{
@@ -79,6 +81,7 @@ body{
   letter-spacing:.15px;   /* نفس ملفاتك */
   min-height:100dvh;
   overflow-x:hidden;
+  max-width:100%;
   position:relative;
 }
 
@@ -154,7 +157,7 @@ button{ font-family:inherit; font-size:inherit; color:inherit; cursor:pointer; b
 input,select,textarea{ font-family:inherit; }
 .mono{ font-family:var(--font-mono); font-size:.9em; }
 .ltr{ direction:ltr; unicode-bidi:isolate; }
-.wrap{ max-width:1180px; margin-inline:auto; padding-inline:22px; }  /* نفس ملفاتك */
+.wrap{ width:100%; max-width:1180px; margin-inline:auto; padding-inline:22px; }  /* نفس ملفاتك */
 
 /* نص متدرّج نيون */
 .grad{
@@ -182,7 +185,7 @@ input,select,textarea{ font-family:inherit; }
 }
 @supports not (backdrop-filter:blur(2px)){ .appbar{ background:rgba(0,0,0,.95); } }
 .appbar-in{
-  max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
+  width:100%; max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
   display:flex; align-items:center; gap:10px;
   flex-wrap:wrap;             /* يلف بين اللوجو والأدوات لو المساحة ضاقت */
 }
@@ -259,7 +262,8 @@ input,select,textarea{ font-family:inherit; }
 .hero h1{
   font-size:clamp(1.625rem,4vw,2.375rem);   /* نفس ملفاتك */
   font-weight:900; line-height:1.35; letter-spacing:0;
-  max-width:32ch; text-wrap:balance;
+  max-width:min(32ch, 100%); text-wrap:balance;
+  overflow-wrap:break-word; word-break:normal;
   text-shadow:0 0 60px rgba(0,229,255,.16);
 }
 .hero .sub{
@@ -716,7 +720,7 @@ input[type="radio"]{ accent-color:var(--cyan); }
 .tool-select option{ background:#0a0a14; color:#f4f6ff; }
 
 /* ---------------- معاينة الأجهزة — نفس مقاسات ملفاتك ---------------- */
-#appFrame{ transition:max-width .4s var(--ease); }
+#appFrame{ width:100%; max-width:100%; transition:max-width .4s var(--ease); }
 body.device-mobile #appFrame{
   max-width:390px; margin:18px auto; border:1px solid var(--line2); border-radius:26px;
   box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden;
@@ -776,6 +780,11 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 @media (max-width:700px){
   #deviceSelect{ display:none; }        /* على الموبايل المعاينة مالهاش لازمة */
   .net-dot span{ display:none; }
+  .appbar-in{ padding:11px 14px; row-gap:9px; }
+  .appbar-tools{ width:100%; justify-content:flex-start; }
+  .appbar-grow{ display:none; }         /* اللوجو سطر والأدوات سطر */
+  .logo{ width:100%; }
+  .hero{ padding-top:18px; }
 }
 @media (max-width:520px){
   .tool-select{ padding:8px 7px; font-size:.7rem; }

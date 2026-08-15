@@ -11,7 +11,7 @@
    ⚠️  لما تضيف صفحة جديدة: زوّد CACHE_VERSION تحت + ضيف مسارها في PRECACHE.
    ========================================================================== */
 
-const CACHE_VERSION = 'v2.1.3';
+const CACHE_VERSION = 'v2.1.4';
 const CACHE_NAME = `uni-planner-${CACHE_VERSION}`;
 
 /* الملفات اللي لازم تتحفظ عشان التطبيق يفتح بدون نت */

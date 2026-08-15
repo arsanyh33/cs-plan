@@ -208,7 +208,8 @@ input,select,textarea{ font-family:inherit; }
 .logo-mark{
   width:42px; height:42px; flex:0 0 42px; border-radius:13px;
   display:grid; place-items:center;
-  font-family:var(--font-display); font-weight:900; font-size:1.15rem; color:#000;
+  font-family:var(--font-display); font-weight:900; color:#000;
+  font-size:.98rem; letter-spacing:.5px; direction:ltr;   /* CS لاتيني */
   background:linear-gradient(140deg,var(--cyan),var(--violet) 55%,var(--magenta));
   box-shadow:0 0 0 1px rgba(255,255,255,.14), 0 8px 30px -8px var(--cyan);
   position:relative; overflow:hidden;
@@ -570,7 +571,8 @@ table.t tbody tr:hover{ background:var(--glass); }
 .boot-mark{
   width:74px; height:74px; margin:0 auto 24px; border-radius:21px;
   display:grid; place-items:center; color:#000;
-  font-family:var(--font-display); font-weight:900; font-size:1.85rem;
+  font-family:var(--font-display); font-weight:900;
+  font-size:1.5rem; letter-spacing:1px; direction:ltr;   /* CS لاتيني */
   background:linear-gradient(140deg,var(--cyan),var(--violet) 55%,var(--magenta));
   box-shadow:0 0 60px -10px var(--cyan);
   animation:bootpulse 1.9s var(--ease) infinite;

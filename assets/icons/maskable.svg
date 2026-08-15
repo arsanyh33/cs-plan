@@ -3,7 +3,7 @@
 <stop offset="0" stop-color="#00e5ff"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ff2d78"/>
 </linearGradient></defs>
 <rect width="1" height="1" rx="0" fill="url(#g)"/>
-<path d="M0.5 0.3066 L0.6333 0.3512 L0.5 0.3958 L0.3667 0.3512 Z" fill="#000"/>
-<path d="M0.5960 0.3601 V0.4225" stroke="#000" stroke-width="0.0074" stroke-linecap="round"/>
-<circle cx="0.5960" cy="0.4225" r="0.0099" fill="#000"/>
-<rect x="0.4256" y="0.6395" width="0.0384" height="0.0465" rx="0.0108" fill="#000"/><rect x="0.4808" y="0.6128" width="0.0384" height="0.0732" rx="0.0108" fill="#000"/><rect x="0.5360" y="0.5856" width="0.0384" height="0.1004" rx="0.0108" fill="#000"/></svg>
+<text x="0.5" y="0.5" fill="#000" font-family="Cairo, Inter, Helvetica, Arial, sans-serif"
+      font-size="0.3" font-weight="900" letter-spacing="0.012"
+      text-anchor="middle" dominant-baseline="central">CS</text>
+</svg>

@@ -11,7 +11,7 @@
    ⚠️  لما تضيف صفحة جديدة: زوّد CACHE_VERSION تحت + ضيف مسارها في PRECACHE.
    ========================================================================== */
 
-const CACHE_VERSION = 'v2.6.5';
+const CACHE_VERSION = 'v2.6.6';
 const CACHE_NAME = `uni-planner-${CACHE_VERSION}`;
 
 /* الملفات اللي لازم تتحفظ عشان التطبيق يفتح بدون نت */
@@ -51,6 +51,10 @@ const PRECACHE = [
 
 /* ------------------------------------------------------------- INSTALL */
 self.addEventListener('install', (event) => {
+  /* بنفعّل النسخة الجديدة فورًا من غير ما ننتظر المستخدم يدوس أي زرار.
+     البيانات (localStorage/IndexedDB) مالهاش دعوة بالـ SW خالص فمفيش خطر —
+     ده بس بيضمن إن أي إصلاح جديد يوصل للمستخدمين أوتوماتيك. */
+  self.skipWaiting();
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     /* بنحفظ كل ملف لوحده: لو ملف واحد فشل، الباقي ما يتأثرش

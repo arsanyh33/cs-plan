@@ -676,6 +676,7 @@
   }
 
   /* ------------------------------------------------- service worker + boot */
+  let swAutoReloading = false;
   function setupSW() {
     if (!('serviceWorker' in navigator)) {
       setBoot('المتصفح ده مش بيدعم الشغل بدون نت', 100, true);
@@ -685,6 +686,19 @@
       setBoot('التطبيق مفتوح كملف محلي — الشغل بدون نت محتاج سيرفر', 100, true);
       return;
     }
+
+    /* لما نسخة SW جديدة تاخد السيطرة (تلقائيًا دلوقتي بفضل skipWaiting)،
+       بنعمل ريفريش مرة واحدة بس عشان الصفحة تاخد آخر HTML/CSS/JS فعليًا.
+       بنعمل كده بس لو كان فيه SW شغال بالفعل من زيارة سابقة (يعني ده
+       تحديث حقيقي، مش أول مرة المستخدم بيفتح فيها التطبيق).
+       البيانات في localStorage/IndexedDB مالهاش دعوة، آمن 100%. */
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (swAutoReloading || !hadController) return;
+      swAutoReloading = true;
+      toast('🔄 فيه تحديث جديد، بيتفعّل دلوقتي...', 2000);
+      setTimeout(() => location.reload(), 350);
+    });
 
     navigator.serviceWorker.register('sw.js', { scope: './' }).then((reg) => {
       /* تحديث متاح؟ */

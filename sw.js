@@ -11,7 +11,7 @@
    ⚠️  لما تضيف صفحة جديدة: زوّد CACHE_VERSION تحت + ضيف مسارها في PRECACHE.
    ========================================================================== */
 
-const CACHE_VERSION = 'v2.6.2';
+const CACHE_VERSION = 'v2.6.5';
 const CACHE_NAME = `uni-planner-${CACHE_VERSION}`;
 
 /* الملفات اللي لازم تتحفظ عشان التطبيق يفتح بدون نت */
@@ -39,8 +39,13 @@ const PRECACHE = [
   './modules/cs-special/index.html',
 
   './assets/icons/favicon.svg',
+  './assets/icons/favicon-32.png',
   './assets/icons/icon.svg',
   './assets/icons/maskable.svg',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/icon-maskable-512.png',
+  './assets/icons/apple-touch-icon.png',
 
 ];
 

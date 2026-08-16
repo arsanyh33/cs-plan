@@ -20,7 +20,7 @@
   /* ---- الحدود ---- */
   --line:rgba(255,255,255,.075);
   --line2:rgba(255,255,255,.14);
-  --line-hot:rgba(0,229,255,.42);
+  --line-hot:rgba(18,240,192,.42);
 
   /* ---- النص ---- */
   --text:#f4f6ff;
@@ -28,11 +28,13 @@
   --dim2:#5f6684;
 
   /* ---- النيون ---- */
-  --cyan:#00e5ff;
+  --cyan:#12f0c0;      /* تيل رقمي — اللون الأساسي الجديد للهوية (طابع "تيرمينال/هاكر" مميز) */
+  --cyan2:#4ce0ff;     /* وقفة انتقالية زرقاء فاتحة للتدرجات */
   --violet:#8b5cf6;
   --magenta:#ff2d78;
   --amber:#ffb020;
   --lime:#25e6a0;
+  --matrix:#39ff9d;    /* أخضر تيرمينال — للمسات الهاكر الصغيرة (مؤشر، نبضة حالة) فقط */
 
   /* ---- ألوان التصنيفات (من ملفاتك) ---- */
   --req46:#ffb020; --req16:#ff2d78; --elective:#98a0c0;
@@ -67,11 +69,13 @@ html[data-theme="light"]{
   --text:#0b1020;
   --dim:#525a76;
   --dim2:#818a9e;
-  --cyan:#0077a3;
+  --cyan:#00786b;
+  --cyan2:#0077a3;
   --violet:#6a37d6;
   --magenta:#c81361;
   --amber:#946200;
   --lime:#0a8f5f;
+  --matrix:#0a8f5f;
   --shadow:0 18px 44px -22px rgba(20,25,60,.16);
   color-scheme:light;
 }
@@ -121,7 +125,7 @@ body{
 .bg-spot{
   position:absolute; width:56vmax; height:56vmax; border-radius:50%;
   left:var(--sx,50%); top:var(--sy,22%); transform:translate(-50%,-50%);
-  background:radial-gradient(circle, rgba(0,229,255,.10), rgba(139,92,246,.05) 42%, transparent 66%);
+  background:radial-gradient(circle, rgba(18,240,192,.10), rgba(139,92,246,.05) 42%, transparent 66%);
   transition:opacity .5s; opacity:0;
 }
 html.has-spot .bg-spot{ opacity:1; }
@@ -129,6 +133,16 @@ html.has-spot .bg-spot{ opacity:1; }
   position:absolute; inset:0; opacity:.03; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+/* خطوط سكان لاين هادئة — لمسة "تيرمينال" مميزة، خفيفة جدًا ومش هتوجع العين */
+.bg-scan{
+  position:absolute; inset:0; opacity:.5; pointer-events:none;
+  background:repeating-linear-gradient(to bottom,
+    rgba(18,240,192,.018) 0px, rgba(18,240,192,.018) 1px,
+    transparent 1px, transparent 3px);
+  mix-blend-mode:overlay;
+}
+html[data-theme="light"] .bg-scan{ display:none; }
+@media (prefers-reduced-motion: reduce){ .bg-scan{ display:none; } }
 /* بديل ثابت لو الكانفس مقفول (جهاز ضعيف / تقليل حركة) */
 html.bg-static .bg{
   background:
@@ -154,7 +168,7 @@ input,select,textarea{ font-family:inherit; }
 
 /* نص متدرّج نيون */
 .grad{
-  background:linear-gradient(100deg,var(--cyan) 0%,#7dd3fc 26%,var(--violet) 62%,var(--magenta) 100%);
+  background:linear-gradient(100deg,var(--cyan) 0%,var(--cyan2) 30%,var(--violet) 100%);
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
   background-size:220% 100%;
@@ -217,7 +231,7 @@ input,select,textarea{ font-family:inherit; }
   display:grid; place-items:center;
   font-family:var(--font-display); font-weight:900; color:#000;
   font-size:.98rem; letter-spacing:.5px; direction:ltr;   /* CS لاتيني */
-  background:linear-gradient(140deg,var(--cyan),var(--violet) 55%,var(--magenta));
+  background:linear-gradient(140deg,var(--cyan),var(--violet));
   box-shadow:0 0 0 1px rgba(255,255,255,.14), 0 8px 30px -8px var(--cyan);
   position:relative; overflow:hidden;
   transition:transform .5s var(--ease2);
@@ -265,8 +279,8 @@ input,select,textarea{ font-family:inherit; }
   display:inline-flex; align-items:center; gap:9px;
   font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:.2px;
   color:var(--cyan); border:1px solid var(--line-hot); border-radius:99px;
-  padding:7px 17px; background:rgba(0,229,255,.07);
-  box-shadow:0 0 26px -8px rgba(0,229,255,.5), inset 0 0 20px -12px var(--cyan);
+  padding:7px 17px; background:rgba(18,240,192,.07);
+  box-shadow:0 0 26px -8px rgba(18,240,192,.5), inset 0 0 20px -12px var(--cyan);
   margin-bottom:22px;
 }
 .hero h1{
@@ -274,7 +288,7 @@ input,select,textarea{ font-family:inherit; }
   font-weight:900; line-height:1.35; letter-spacing:0;
   max-width:min(32ch, 100%); text-wrap:balance;
   overflow-wrap:break-word; word-break:normal;
-  text-shadow:0 0 60px rgba(0,229,255,.16);
+  text-shadow:0 0 60px rgba(18,240,192,.16);
 }
 .hero .sub{
   color:var(--dim); max-width:60ch; margin-top:22px;
@@ -301,7 +315,7 @@ input,select,textarea{ font-family:inherit; }
 .btn:hover::after{ opacity:1; }
 .btn:active{ transform:translateY(-1px); }
 .btn.primary{
-  background:linear-gradient(120deg,var(--cyan),var(--violet) 70%,var(--magenta));
+  background:linear-gradient(120deg,var(--cyan),var(--violet));
   color:#000; border-color:transparent;
   box-shadow:0 10px 40px -14px var(--cyan), inset 0 1px 0 rgba(255,255,255,.4);
 }
@@ -337,7 +351,7 @@ input,select,textarea{ font-family:inherit; }
   background:linear-gradient(160deg,var(--glass),rgba(255,255,255,.012));
   border:1px solid var(--line);
   padding:clamp(20px,2.8vw,30px);
-  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
   overflow:hidden; isolation:isolate;
   transition:border-color .35s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease);
 }
@@ -388,7 +402,7 @@ input,select,textarea{ font-family:inherit; }
   opacity:0; transition:opacity .5s;
 }
 @supports not (background:color-mix(in srgb,red 5%,blue)){
-  .mod::after{ background:radial-gradient(ellipse at 50% 100%,rgba(0,229,255,.3),transparent 68%); }
+  .mod::after{ background:radial-gradient(ellipse at 50% 100%,rgba(18,240,192,.3),transparent 68%); }
 }
 .mod:hover{
   border-color:transparent;
@@ -478,7 +492,7 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
 .pill.ok{ color:var(--lime); border-color:rgba(37,230,160,.35); background:rgba(37,230,160,.09); }
 .pill.warn{ color:var(--amber); border-color:rgba(255,176,32,.35); background:rgba(255,176,32,.09); }
 .pill.bad{ color:var(--magenta); border-color:rgba(255,45,120,.35); background:rgba(255,45,120,.09); }
-.pill.info{ color:var(--cyan); border-color:rgba(0,229,255,.35); background:rgba(0,229,255,.09); }
+.pill.info{ color:var(--cyan); border-color:rgba(18,240,192,.35); background:rgba(18,240,192,.09); }
 
 /* ======================== الأرقام (كروت إحصائية) =================== */
 .stat{
@@ -514,7 +528,7 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
 }
 .bar > i{
   display:block; height:100%; border-radius:99px; width:0;
-  background:linear-gradient(90deg,var(--cyan),var(--violet) 60%,var(--magenta));
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
   box-shadow:0 0 16px -2px var(--cyan);
   transition:width 1.1s var(--ease);
   position:relative; overflow:hidden;
@@ -533,7 +547,7 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
   border-inline-start:3px solid var(--dim2);
 }
 .note b{ font-family:var(--font-display); }
-.note.info{ border-inline-start-color:var(--cyan); background:rgba(0,229,255,.055); }
+.note.info{ border-inline-start-color:var(--cyan); background:rgba(18,240,192,.055); }
 .note.warn{ border-inline-start-color:var(--amber); background:rgba(255,176,32,.055); }
 .note.bad{ border-inline-start-color:var(--magenta); background:rgba(255,45,120,.055); }
 .note.ok{ border-inline-start-color:var(--lime); background:rgba(37,230,160,.055); }
@@ -550,7 +564,7 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
 .search input::placeholder{ color:var(--dim2); }
 .search input:focus{
   outline:none; border-color:var(--cyan); background:var(--glass2);
-  box-shadow:0 0 0 4px rgba(0,229,255,.11), 0 12px 40px -18px var(--cyan);
+  box-shadow:0 0 0 4px rgba(18,240,192,.11), 0 12px 40px -18px var(--cyan);
 }
 .search .s-ic{
   position:absolute; inset-inline-end:19px; top:50%; transform:translateY(-50%);
@@ -599,7 +613,7 @@ table.t tbody tr:hover{ background:var(--glass); }
   border-top:1px solid var(--line); margin-top:50px;
   padding:34px 0 calc(46px + env(safe-area-inset-bottom));
   color:var(--dim2); font-size:.83rem;
-  background:linear-gradient(to top,rgba(0,229,255,.035),transparent);
+  background:linear-gradient(to top,rgba(18,240,192,.035),transparent);
 }
 .foot-in{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
 .foot a{ color:var(--dim); transition:color .2s; }
@@ -618,7 +632,7 @@ table.t tbody tr:hover{ background:var(--glass); }
   display:grid; place-items:center; color:#000;
   font-family:var(--font-display); font-weight:900;
   font-size:1.5rem; letter-spacing:1px; direction:ltr;   /* CS لاتيني */
-  background:linear-gradient(140deg,var(--cyan),var(--violet) 55%,var(--magenta));
+  background:linear-gradient(140deg,var(--cyan),var(--violet));
   box-shadow:0 0 60px -10px var(--cyan);
   animation:bootpulse 1.9s var(--ease) infinite;
 }
@@ -715,8 +729,8 @@ html.weak-device .mod{ transform:none !important; }
   display:inline-flex; align-items:center; gap:9px;
   font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:.2px;
   color:var(--cyan); border:1px solid var(--line-hot); border-radius:99px;
-  padding:7px 17px; background:rgba(0,229,255,.07);
-  box-shadow:0 0 26px -8px rgba(0,229,255,.5);
+  padding:7px 17px; background:rgba(18,240,192,.07);
+  box-shadow:0 0 26px -8px rgba(18,240,192,.5);
   margin-bottom:20px;
 }
 /* الهيرو القديم بيستخدم <p> مباشر */
@@ -793,7 +807,7 @@ body.device-mobile .fs-label{ display:none; }
   bottom:calc(20px + env(safe-area-inset-bottom));
   width:50px; height:50px; border-radius:16px;
   display:grid; place-items:center; color:#000;
-  background:linear-gradient(140deg,var(--cyan),var(--violet) 60%,var(--magenta));
+  background:linear-gradient(140deg,var(--cyan),var(--violet));
   border:1px solid rgba(255,255,255,.2);
   box-shadow:0 12px 34px -12px var(--cyan);
   opacity:0; visibility:hidden; transform:translateY(18px) scale(.85);
@@ -864,7 +878,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 }
 .scrollbar-top > i{
   display:block; height:100%; width:var(--p,0%);
-  background:linear-gradient(90deg,var(--cyan),var(--violet) 55%,var(--magenta));
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
   box-shadow:0 0 12px var(--cyan);
   transition:width .1s linear;
 }
@@ -882,6 +896,15 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
   width:clamp(22px,4vw,54px); height:1px; flex:0 0 auto;
   background:linear-gradient(to left,var(--cyan),transparent);
 }
+/* كيرسور تيرمينال وامض — لمسة "هاكر" هادئة بجانب نص الـ eyebrow */
+.term-cursor{
+  display:inline-block; width:7px; height:14px; flex:0 0 auto;
+  background:var(--matrix); border-radius:1px;
+  box-shadow:0 0 8px var(--matrix);
+  animation:blink 1.1s step-end infinite;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+@media (prefers-reduced-motion: reduce){ .term-cursor{ animation:none; } }
 
 /* --------------------- الهيرو: ظهور الكلمات واحدة واحدة ------------------ */
 .hero-h1{
@@ -915,7 +938,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 .marquee{
   position:relative; overflow:hidden;
   border-block:1px solid var(--line);
-  background:linear-gradient(90deg,transparent,rgba(0,229,255,.03),transparent);
+  background:linear-gradient(90deg,transparent,rgba(18,240,192,.03),transparent);
   padding:13px 0; margin-top:clamp(24px,4vw,44px);
   mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
   -webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
@@ -945,7 +968,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
   font-family:var(--font-display); font-weight:900;
   font-size:clamp(.92rem,2.6vw,1.12rem); line-height:1.5;
   margin-top:4px; direction:ltr;
-  background:linear-gradient(100deg,var(--cyan),var(--violet) 60%,var(--magenta));
+  background:linear-gradient(100deg,var(--cyan),var(--violet));
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }

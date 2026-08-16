@@ -6,7 +6,7 @@
   "dir": "rtl",
   "start_url": "./index.html",
   "scope": "./",
-  "id": "uni-planner-alex-cs",
+  "id": "./",
   "display": "standalone",
   "display_override": [
     "standalone",
@@ -14,8 +14,8 @@
     "browser"
   ],
   "orientation": "any",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#faf7f2",
+  "theme_color": "#05060b",
   "categories": [
     "education",
     "productivity",

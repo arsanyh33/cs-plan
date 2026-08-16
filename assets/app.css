@@ -1,47 +1,48 @@
 /* ==========================================================================
-   app.css — نظام التصميم | إصدار 2.0 «أسود ونار»
+   app.css — نظام التصميم | إصدار 2.7 «تيل داكن عميق»
    --------------------------------------------------------------------------
-   أسود حقيقي (#000) + نيون سيان/بنفسجي/ماجنتا، عمق 3D، وحركة حيّة.
-   صفر مكتبات خارجية — كل الـ 3D والأنيميشن CSS خالص عشان يشتغل بدون نت
-   وعلى الموبايلات الضعيفة (وبيتخفّف تلقائيًا على الأجهزة الضعيفة).
+   هوية 2026 لأدوات المطورين: أسود عميق بدرجة باردة (مش أسود مطلق مسطّح) +
+   تيل رقمي (Transformative Teal) + نيلي-بنفسجي حيوي بدل البنفسجي العادي،
+   عمق 3D، وحركة حيّة. صفر مكتبات خارجية — كل الـ 3D والأنيميشن CSS خالص
+   عشان يشتغل بدون نت وعلى الموبايلات الضعيفة (وبيتخفّف تلقائيًا).
    ========================================================================== */
 @import url('./fonts/fonts.css');
 @import url('./bridge.css');
 
 :root{
-  /* ---- الأساس: أسود حقيقي ---- */
-  --void:#000000;
-  --ink:#04040a;
-  --panel:#07070f;
-  --panel2:#0b0b16;
-  --glass:rgba(255,255,255,.035);
-  --glass2:rgba(255,255,255,.06);
+  /* ---- الأساس: أسود عميق بارد (مش أسود مسطّح) ---- */
+  --void:#05060b;
+  --ink:#090a13;
+  --panel:#0d0e1a;
+  --panel2:#12131f;
+  --glass:rgba(255,255,255,.045);
+  --glass2:rgba(255,255,255,.08);
 
   /* ---- الحدود ---- */
-  --line:rgba(255,255,255,.075);
-  --line2:rgba(255,255,255,.14);
+  --line:rgba(255,255,255,.08);
+  --line2:rgba(255,255,255,.15);
   --line-hot:rgba(18,240,192,.42);
+
+  /* ---- النيون ---- */
+  --cyan:#12f0c0;      /* تيل رقمي — يفضل هوية الماركة الأساسية (مطابق لترند "Transformative Teal" 2026) */
+  --cyan2:#4ce0ff;     /* وقفة انتقالية زرقاء فاتحة للتدرجات */
+  --violet:#7c5cff;    /* نيلي-بنفسجي حيوي — أقوى وأعمق من البنفسجي العادي، طابع "أدوات مطورين" */
+  --magenta:#ff2d78;
+  --amber:#ffb020;
+  --lime:#25e6a0;
+  --matrix:#39ff9d;    /* أخضر تيرمينال — للمسات الهاكر الصغيرة (مؤشر، نبضة حالة) فقط */
 
   /* ---- النص ---- */
   --text:#f4f6ff;
   --dim:#98a0c0;
   --dim2:#5f6684;
 
-  /* ---- النيون ---- */
-  --cyan:#12f0c0;      /* تيل رقمي — اللون الأساسي الجديد للهوية (طابع "تيرمينال/هاكر" مميز) */
-  --cyan2:#4ce0ff;     /* وقفة انتقالية زرقاء فاتحة للتدرجات */
-  --violet:#8b5cf6;
-  --magenta:#ff2d78;
-  --amber:#ffb020;
-  --lime:#25e6a0;
-  --matrix:#39ff9d;    /* أخضر تيرمينال — للمسات الهاكر الصغيرة (مؤشر، نبضة حالة) فقط */
-
   /* ---- ألوان التصنيفات (من ملفاتك) ---- */
   --req46:#ffb020; --req16:#ff2d78; --elective:#98a0c0;
   --college:#8b5cf6; --support:#00e5ff;
 
-  --radius:14px;          /* نفس ملفاتك */
-  --radius-sm:10px;
+  --radius:16px;          /* أنعم شوية من قبل — طابع 2026 أدفأ */
+  --radius-sm:12px;
   --bar-h:56px;
   --fs-scale:1;
 
@@ -57,26 +58,26 @@
    الوضع الافتراضي للتطبيق: أبيض حقيقي ونضيف، بنفس هوية الألوان
    (سيان/بنفسجي/ماجنتا) بس بتشبّع أعلى وتباين كافي عشان تتقرا على أبيض. */
 html[data-theme="light"]{
-  --void:#ffffff;              /* أبيض حقيقي — الافتراضي المطلوب */
-  --ink:#fafbfe;
+  --void:#faf7f2;               /* دافئ محايد بدل الأبيض البارد المسطّح — ترند 2026 */
+  --ink:#f6f2ea;
   --panel:#ffffff;
-  --panel2:#f4f6fb;
-  --glass:rgba(20,25,55,.035);
-  --glass2:rgba(20,25,55,.065);
-  --line:rgba(20,25,55,.1);
-  --line2:rgba(20,25,55,.16);
+  --panel2:#f1ece1;
+  --glass:rgba(35,28,18,.04);
+  --glass2:rgba(35,28,18,.07);
+  --line:rgba(35,28,18,.1);
+  --line2:rgba(35,28,18,.16);
   --line-hot:rgba(0,110,170,.45);
   --text:#0b1020;
-  --dim:#525a76;
-  --dim2:#818a9e;
+  --dim:#5a5748;
+  --dim2:#89846f;
   --cyan:#00786b;
   --cyan2:#0077a3;
-  --violet:#6a37d6;
+  --violet:#5b3fd6;
   --magenta:#c81361;
   --amber:#946200;
   --lime:#0a8f5f;
   --matrix:#0a8f5f;
-  --shadow:0 18px 44px -22px rgba(20,25,60,.16);
+  --shadow:0 18px 44px -22px rgba(35,28,10,.14);
   color-scheme:light;
 }
 html[data-theme="light"] body{
@@ -125,7 +126,7 @@ body{
 .bg-spot{
   position:absolute; width:56vmax; height:56vmax; border-radius:50%;
   left:var(--sx,50%); top:var(--sy,22%); transform:translate(-50%,-50%);
-  background:radial-gradient(circle, rgba(18,240,192,.10), rgba(139,92,246,.05) 42%, transparent 66%);
+  background:radial-gradient(circle, rgba(18,240,192,.10), rgba(124,92,255,.06) 42%, transparent 66%);
   transition:opacity .5s; opacity:0;
 }
 html.has-spot .bg-spot{ opacity:1; }
@@ -152,7 +153,7 @@ html.bg-static .bg{
     var(--void);
 }
 html[data-theme="light"] .bg-veil{
-  background:radial-gradient(ellipse 120% 80% at 50% 0%, transparent 40%, rgba(247,248,252,.75) 82%, #f7f8fc 100%);
+  background:radial-gradient(ellipse 120% 80% at 50% 0%, transparent 40%, rgba(250,247,242,.75) 82%, #faf7f2 100%);
 }
 html[data-theme="light"] .bg-noise{ display:none; }
 html[data-theme="light"] #bgCanvas{ opacity:.5; }

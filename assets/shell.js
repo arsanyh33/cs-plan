@@ -27,7 +27,7 @@
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const meta = $('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', theme === 'light' ? '#f7f8fc' : '#000000');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#faf7f2' : '#05060b');
     const btn = $('#themeBtn');
     if (btn) {
       btn.textContent = theme === 'light' ? '🌙' : '☀️';
@@ -363,7 +363,16 @@
       prefs({ device: 'auto', deviceMigratedV1: true });
       p = prefs();
     }
-    const mode = p.device || 'auto';
+    let mode = p.device || 'auto';
+    /* ترقيع إضافي: لو عندك 'لابتوب' متسجّل من زمان (حتى بعد الترقيع اللي فوق
+       اتعمل مرة، ساعتها كانت القيمة اترجّعت لابتوب تاني من غلطة قديمة)،
+       وشاشتك الحقيقية فعلاً موبايل ضيقة — نرجّعه 'تلقائي' تلقائيًا كل مرة.
+       ده آمن 100%: لو فعلاً بتستخدم لابتوب حقيقي (شاشة عريضة)، الشرط
+       ده مش هيتفعّل خالص واختيارك هيفضل زي ما هو. */
+    if (mode === 'laptop' && innerWidth < 900) {
+      mode = 'auto';
+      prefs({ device: 'auto' });
+    }
     applyDevice(mode);
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);

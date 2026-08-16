@@ -6,7 +6,7 @@
 <title>التشخيص والنسخ الاحتياطي — Top Computer Science Students</title>
 <meta name="description" content="حالة التخزين والكاش، وتصدير واستيراد بياناتك.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#faf7f2">
 <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/app.css">
@@ -380,7 +380,7 @@
   var th=P().theme||'light';
   function theme(t){ document.documentElement.setAttribute('data-theme',t); P({theme:t});
     var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'🌙':'☀️';
-    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#ffffff':'#000000'); }
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#faf7f2':'#05060b'); }
   theme(th);
   var tb=document.getElementById('themeBtn');
   if(tb) tb.onclick=function(){ theme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'); };

@@ -6,7 +6,7 @@
 <title>تثبيت التطبيق — Top Computer Science Students</title>
 <meta name="description" content="تعليمات تثبيت تطبيق Top Computer Science Students على موبايلك — تتغير تلقائيًا حسب جهازك.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#faf7f2">
 <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -320,7 +320,7 @@
   var th=P().theme||'light';
   function theme(t){ document.documentElement.setAttribute('data-theme',t); P({theme:t});
     var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'🌙':'☀️';
-    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#ffffff':'#000000'); }
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#faf7f2':'#05060b'); }
   theme(th);
   var tb=document.getElementById('themeBtn');
   if(tb) tb.onclick=function(){ theme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'); };

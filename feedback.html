@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ملاحظاتك — Top Computer Science Students</title>
+<meta name="description" content="عندك اقتراح أو لاحظت مشكلة؟ قولنا هنا مباشرة.">
+<meta name="theme-color" content="#faf7f2">
+<link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <canvas id="bgCanvas"></canvas>
+  <div class="bg-veil"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<header class="appbar">
+  <div class="appbar-in">
+    <a class="logo" href="index.html" style="color:inherit">
+      <div class="logo-mark">CS</div>
+      <div class="logo-tx"><b>Top Computer Science Students</b><small>ملاحظاتك</small></div>
+    </a>
+    <div class="appbar-grow"></div>
+    <div class="appbar-tools">
+    <div class="fs-grp">
+      <span class="fs-label">حجم الخط</span>
+      <div class="fs-segmented">
+        <button class="fs-btn" id="fsMinus" title="تصغير الخط">A−</button>
+        <button class="fs-btn" id="fsReset" title="الحجم الافتراضي">A</button>
+        <button class="fs-btn" id="fsPlus"  title="تكبير الخط">A+</button>
+      </div>
+    </div>
+    <span class="tool-divider" aria-hidden="true"></span>
+    <button class="icon-btn" id="themeBtn" title="تبديل الوضع" aria-label="تبديل الوضع">☀️</button>
+    <a class="icon-btn" href="index.html" title="الرئيسية" aria-label="الرئيسية">◀</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" style="padding-bottom:6px">
+    <div class="hero-kicker">💬 رأيك يهمنا</div>
+    <h1>عندك <span class="grad">اقتراح أو مشكلة؟</span></h1>
+    <p>اكتبها هنا وهتوصلنا على طول. مش لازم تسجّل دخول في أي مكان — ابعت وخلاص.</p>
+  </section>
+
+  <section class="wrap sec">
+    <div class="card" style="box-shadow:none">
+      <form id="fbForm">
+        <div style="margin-bottom:14px">
+          <label for="fbType" style="display:block;font-size:.83rem;color:var(--muted);margin-bottom:6px">نوع الملاحظة</label>
+          <select id="fbType" name="نوع الملاحظة" class="tool-select" style="width:100%;max-width:none">
+            <option value="اقتراح">💡 اقتراح</option>
+            <option value="مشكلة/خطأ">🐞 مشكلة أو خطأ</option>
+            <option value="تحسين">✨ تحسين</option>
+            <option value="حاجة تانية">📝 حاجة تانية</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label for="fbMsg" style="display:block;font-size:.83rem;color:var(--muted);margin-bottom:6px">رسالتك *</label>
+          <textarea id="fbMsg" name="الرسالة" required rows="6" placeholder="اكتب هنا بالتفصيل…"
+            style="width:100%;padding:12px;border:1px solid var(--line-strong);border-radius:11px;background:var(--surface2);color:var(--text);font-family:inherit;font-size:.9rem;resize:vertical"></textarea>
+        </div>
+
+        <div style="margin-bottom:6px">
+          <label for="fbEmail" style="display:block;font-size:.83rem;color:var(--muted);margin-bottom:6px">إيميلك (اختياري — لو عايز نرد عليك)</label>
+          <input type="email" id="fbEmail" name="_replyto" placeholder="example@email.com"
+            style="width:100%;padding:11px;border:1px solid var(--line-strong);border-radius:11px;background:var(--surface2);color:var(--text);font-family:inherit;font-size:.9rem">
+        </div>
+
+        <input type="hidden" name="_subject" value="ملاحظة جديدة — Top Computer Science Students">
+
+        <div class="btn-row" style="margin-top:16px">
+          <button class="btn primary sm" id="fbSubmit" type="submit">📩 ابعت الملاحظة</button>
+        </div>
+        <div id="fbOut" style="margin-top:12px"></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<script src="assets/bg.js"></script>
+<script>
+(function(){
+  'use strict';
+  var form = document.getElementById('fbForm');
+  var out  = document.getElementById('fbOut');
+  var btn  = document.getElementById('fbSubmit');
+  var ENDPOINT = 'https://formspree.io/f/mbgrpqyv';
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var msg = document.getElementById('fbMsg').value.trim();
+    if (!msg) { out.innerHTML = '<div class="note bad">⚠️ من فضلك اكتب رسالتك الأول.</div>'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'بيتبعت…';
+    out.innerHTML = '';
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    }).then(function(res){
+      if (res.ok) {
+        out.innerHTML = '<div class="note ok"><b>✅ وصلت رسالتك</b><br>شكرًا لك، هنشوفها قريب.</div>';
+        form.reset();
+      } else {
+        return res.json().then(function(data){
+          var err = (data && data.errors && data.errors.length) ? data.errors.map(function(x){return x.message;}).join('، ') : 'حصل خطأ غير متوقع';
+          throw new Error(err);
+        });
+      }
+    }).catch(function(err){
+      out.innerHTML = '<div class="note bad">⚠️ الرسالة معتوصلتش: ' + (err.message || 'حاول تاني كمان شوية') + '</div>';
+    }).then(function(){
+      btn.disabled = false;
+      btn.textContent = '📩 ابعت الملاحظة';
+    });
+  });
+})();
+</script>
+
+<script>
+/* أدوات الصفحة: حجم الخط + الوضع */
+(function(){
+  var K='uniShellPrefs_v1', MIN=.85, MAX=1.35, ST=.075;
+  function P(patch){ var p={}; try{p=JSON.parse(localStorage.getItem(K)||'{}');}catch(e){}
+    if(patch){ Object.assign(p,patch); try{localStorage.setItem(K,JSON.stringify(p));}catch(e){} } return p; }
+  var fs = (typeof P().fs==='number' && P().fs>=MIN && P().fs<=MAX) ? P().fs : 1;
+  function set(v){ fs=Math.min(MAX,Math.max(MIN,+Number(v).toFixed(3)));
+    document.documentElement.style.setProperty('--fs-scale',fs); P({fs:fs}); }
+  set(fs);
+  var m=document.getElementById('fsMinus'), r=document.getElementById('fsReset'), p2=document.getElementById('fsPlus');
+  if(m) m.onclick=function(){ set(fs-ST); };
+  if(r) r.onclick=function(){ set(1); };
+  if(p2) p2.onclick=function(){ set(fs+ST); };
+
+  var th=P().theme||'light';
+  function theme(t){ document.documentElement.setAttribute('data-theme',t); P({theme:t});
+    var b=document.getElementById('themeBtn'); if(b) b.textContent = t==='light'?'🌙':'☀️';
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', t==='light'?'#faf7f2':'#05060b'); }
+  theme(th);
+  var tb=document.getElementById('themeBtn');
+  if(tb) tb.onclick=function(){ theme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light'); };
+})();
+</script>
+</body>
+</html>

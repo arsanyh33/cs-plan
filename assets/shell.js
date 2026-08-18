@@ -11,7 +11,7 @@
   const PREFS_KEY = 'uniShellPrefs_v1';
 
   let REG = null;
-  let deferredPrompt = null;
+
 
   /* --------------------------------------------------------------- prefs */
   function prefs(patch) {
@@ -588,7 +588,6 @@
       });
     });
     [
-      { t: 'تثبيت التطبيق على الشاشة', s: 'تعليمات حسب جهازك', u: 'install.html', i: '📲' },
       { t: 'نسخة احتياطية وتصدير البيانات', s: 'نزّل كل بياناتك ملف واحد', u: 'diagnostics.html', i: '⤓' },
       { t: 'استيراد نسخة احتياطية', s: 'رجّع بياناتك من ملف', u: 'diagnostics.html', i: '⤒' },
       { t: 'حالة التخزين والكاش', s: 'المساحة والملفات المحفوظة', u: 'diagnostics.html', i: '🩺' },
@@ -644,119 +643,6 @@
         </a>`).join('');
     });
   }
-
-  /* ------------------------------------------------------------ install */
-  function setupInstall() {
-    const btns = [$('#installBtn'), $('#installBtn2')].filter(Boolean);
-    const btn = btns[0];
-    const card = $('#installCard');
-    const info = global.UniInApp ? global.UniInApp.detect() : { installed: false };
-
-    if (info.installed) {
-      if (card) card.classList.add('hide');
-      return;
-    }
-
-    global.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      btns.forEach((b) => { b.classList.remove('hide'); });
-    });
-
-    const doInstall = () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((c) => {
-          if (c.outcome === 'accepted' && card) card.classList.add('hide');
-          deferredPrompt = null;
-        }).catch(() => {});
-      } else {
-        location.href = 'install.html';
-      }
-    };
-    btns.forEach((b) => b.addEventListener('click', doInstall));
-
-    global.addEventListener('appinstalled', () => {
-      if (card) card.classList.add('hide');
-      toast('🎉 اتثبّت! دوّر على الأيقونة على شاشتك');
-      document.documentElement.classList.add('celebrate');
-      setTimeout(() => document.documentElement.classList.remove('celebrate'), 900);
-    });
-  }
-
-  /* ------------------------------------------------- service worker + boot */
-  let swAutoReloading = false;
-  function setupSW() {
-    if (!('serviceWorker' in navigator)) {
-      setBoot('المتصفح ده مش بيدعم الشغل بدون نت', 100, true);
-      return;
-    }
-    if (location.protocol === 'file:') {
-      setBoot('التطبيق مفتوح كملف محلي — الشغل بدون نت محتاج سيرفر', 100, true);
-      return;
-    }
-
-    /* لما نسخة SW جديدة تاخد السيطرة (تلقائيًا دلوقتي بفضل skipWaiting)،
-       بنعمل ريفريش مرة واحدة بس عشان الصفحة تاخد آخر HTML/CSS/JS فعليًا.
-       بنعمل كده بس لو كان فيه SW شغال بالفعل من زيارة سابقة (يعني ده
-       تحديث حقيقي، مش أول مرة المستخدم بيفتح فيها التطبيق).
-       البيانات في localStorage/IndexedDB مالهاش دعوة، آمن 100%. */
-    const hadController = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (swAutoReloading || !hadController) return;
-      swAutoReloading = true;
-      toast('🔄 فيه تحديث جديد، بيتفعّل دلوقتي...', 2000);
-      setTimeout(() => location.reload(), 350);
-    });
-
-    navigator.serviceWorker.register('sw.js', { scope: './' }).then((reg) => {
-      /* تحديث متاح؟ */
-      reg.addEventListener('updatefound', () => {});
-      if (reg.waiting) showUpdate(reg);
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        if (!nw) return;
-        nw.addEventListener('statechange', () => {
-          if (nw.state === 'installed' && navigator.serviceWorker.controller) showUpdate(reg);
-        });
-      });
-      setTimeout(() => reg.update().catch(() => {}), 4000);
-    }).catch(() => {
-      setBoot('تعذّر تحضير الشغل بدون نت', 100, true);
-    });
-
-    navigator.serviceWorker.addEventListener('message', (ev) => {
-      const d = ev.data || {};
-      if (d.type === 'PRECACHE_DONE') {
-        const pct = d.total ? Math.round((d.ok / d.total) * 100) : 100;
-        setBoot(`جاهز — ${d.ok}/${d.total} ملف محفوظ`, pct, true);
-        if (d.failed) toast(`⚠️ ${d.failed} ملف مانزلوش — افتح التطبيق بالنت تاني`, 6000);
-        else toast('✅ التطبيق بقى شغال بدون نت', 4200);
-      }
-    });
-
-    if (navigator.serviceWorker.controller) {
-      setBoot('محفوظ ومتاح بدون نت', 100, true);
-    }
-  }
-
-  function showUpdate(reg) {
-    const bar = document.createElement('div');
-    bar.className = 'note info';
-    bar.style.cssText = 'position:fixed;inset-inline:14px;bottom:16px;z-index:9600;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow)';
-    bar.innerHTML = `<b>🔄 فيه إصدار جديد</b>
-      <span style="color:var(--muted);font-size:.85rem">بياناتك مش هتتأثر خالص.</span>
-      <button class="btn sm primary" id="updNow" style="margin-inline-start:auto">حدّث الآن</button>
-      <button class="btn sm ghost" id="updLater">بعدين</button>`;
-    document.body.appendChild(bar);
-    $('#updNow', bar).addEventListener('click', () => {
-      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-      setTimeout(() => location.reload(), 400);
-    });
-    $('#updLater', bar).addEventListener('click', () => bar.remove());
-  }
-
-
 
   /* -------------------------------------------------------- storage card */
   function renderStorage() {
@@ -876,14 +762,14 @@
         renderModules();
         renderOverall();
         revealScan();
+        setBoot('جاهز', 100, true);
       })
       .catch(() => {
         const host = $('#modHost');
         if (host) host.innerHTML = '<div class="note bad">تعذّر تحميل قائمة الخطط. جرّب تحديث الصفحة.</div>';
+        setBoot('جاهز', 100, true);
       });
 
-    setupInstall();
-    setupSW();
     renderStorage();
 
     if (global.UniStore) {
@@ -908,7 +794,7 @@
       if (bootDone) { clearInterval(creep); return; }
       setBoot(null, Math.min(88, 12 + tick * 9));
     }, 260);
-    setTimeout(() => { clearInterval(creep); setBoot('جاهز', 100, true); }, 5200);
+    setTimeout(() => { clearInterval(creep); setBoot('جاهز', 100, true); }, 2200);
   }
 
   if (document.readyState === 'loading') {

@@ -5,7 +5,6 @@
 <meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>التشخيص والنسخ الاحتياطي — Top Computer Science Students</title>
 <meta name="description" content="حالة التخزين والكاش، وتصدير واستيراد بياناتك.">
-<link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#faf7f2">
 <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -46,7 +45,7 @@
   <section class="wrap hero" style="padding-bottom:6px">
     <div class="hero-kicker">🩺 صحة التطبيق</div>
     <h1>بياناتك <span class="grad">وحالة التطبيق</span></h1>
-    <p>من هنا تنزّل نسخة احتياطية من كل حاجة، وترجّعها على أي جهاز، وتشوف التطبيق محفوظ للشغل بدون نت أو لأ.</p>
+    <p>من هنا تنزّل نسخة احتياطية من كل حاجة، وترجّعها على أي جهاز، وتشوف حالة تخزين بياناتك بالتفصيل.</p>
   </section>
 
   <!-- ============================ BACKUP ============================ -->
@@ -110,19 +109,6 @@
     </div>
   </section>
 
-  <!-- ============================ CACHE ============================= -->
-  <section class="wrap sec">
-    <div class="card">
-      <div class="card-t"><span class="ic">📴</span> الشغل بدون نت (الكاش)</div>
-      <div class="card-sub">دي الملفات المحفوظة على جهازك عشان التطبيق يفتح من غير اتصال.</div>
-      <div id="cacheHost" style="margin-top:14px"><div class="card-sub">بنفحص…</div></div>
-      <div class="btn-row" style="margin-top:16px">
-        <button class="btn sm" id="refreshCache">🔄 حدّث الملفات المحفوظة</button>
-        <button class="btn sm ghost" id="testOffline">🧪 اختبر الشغل بدون نت</button>
-      </div>
-    </div>
-  </section>
-
   <!-- ============================ DEVICE ============================ -->
   <section class="wrap sec">
     <div class="card">
@@ -147,7 +133,6 @@
 <footer class="foot">
   <div class="wrap foot-in">
     <a href="index.html">◀ الرئيسية</a>
-    <a href="install.html">التثبيت</a>
     <span class="appbar-grow"></span>
     <span id="verOut"></span>
   </div>
@@ -257,73 +242,6 @@
       + '<tbody>'+rows+'</tbody></table></div>';
   }
 
-  /* ---------------------------------------------------- الكاش */
-  function renderCache(){
-    if (!('serviceWorker' in navigator)) {
-      $('#cacheHost').innerHTML = '<div class="note bad">المتصفح ده مش بيدعم الشغل بدون نت.</div>';
-      return;
-    }
-    if (location.protocol === 'file:') {
-      $('#cacheHost').innerHTML = '<div class="note warn"><b>التطبيق مفتوح كملف محلي (file://)</b><br>'
-        + 'الشغل بدون نت محتاج التطبيق يكون على سيرفر (زي GitHub Pages).</div>';
-      return;
-    }
-    navigator.serviceWorker.getRegistration().then(function(reg){
-      if (!reg) {
-        $('#cacheHost').innerHTML = '<div class="note warn">الـ Service Worker مش مسجّل. '
-          + '<a href="index.html">افتح الرئيسية</a> وإنت متصل بالنت مرة واحدة.</div>';
-        return;
-      }
-      var sw = navigator.serviceWorker.controller;
-      if (!sw) {
-        $('#cacheHost').innerHTML = '<div class="note info">الـ Service Worker مسجّل بس لسه ماشتغلش. حدّث الصفحة.</div>';
-        return;
-      }
-      var done = false;
-      navigator.serviceWorker.addEventListener('message', function(ev){
-        var d = ev.data||{};
-        if (d.type === 'CACHE_STATUS_RESULT' && !done) {
-          done = true;
-          var pct = d.expected ? Math.round((d.files/d.expected)*100) : 0;
-          var healthy = d.files >= d.expected;
-          $('#cacheHost').innerHTML =
-              '<div class="note '+(healthy?'ok':'warn')+'"><b>'
-                +(healthy?'✅ التطبيق جاهز للشغل بدون نت':'⚠️ الحفظ ناقص — افتح التطبيق بالنت واستنى شوية')
-              +'</b></div>'
-            + '<div class="kv" style="margin-top:12px"><span>الإصدار</span><b class="mono">'+d.version+'</b></div>'
-            + '<div class="kv"><span>ملفات محفوظة</span><b>'+d.files+' من '+d.expected+' ('+pct+'%)</b></div>'
-            + '<div class="bar" style="margin:8px 0"><i style="width:'+Math.min(100,pct)+'%"></i></div>'
-            + '<div class="kv"><span>حجم الكاش</span><b>'+mb(d.bytes)+'</b></div>';
-          $('#verOut').textContent = 'الكاش: ' + d.version;
-        }
-        if (d.type === 'REFRESH_DONE') {
-          done = false; renderCache();
-          alert('✅ اتحدّثت الملفات المحفوظة');
-        }
-      });
-      sw.postMessage({ type: 'CACHE_STATUS' });
-      setTimeout(function(){
-        if (!done) $('#cacheHost').innerHTML = '<div class="note warn">مافيش رد من الـ Service Worker. حدّث الصفحة وجرّب تاني.</div>';
-      }, 6000);
-    });
-  }
-
-  $('#refreshCache').addEventListener('click', function(){
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-      this.disabled = true; var b = this;
-      navigator.serviceWorker.controller.postMessage({ type: 'REFRESH_CACHE' });
-      setTimeout(function(){ b.disabled = false; }, 4000);
-    }
-  });
-  $('#testOffline').addEventListener('click', function(){
-    alert('اختبار الشغل بدون نت:\n\n'
-      + '1) اقفل الواي فاي وبيانات الموبايل تمامًا\n'
-      + '2) اقفل التطبيق/التاب خالص\n'
-      + '3) افتحه تاني من الأيقونة\n\n'
-      + 'لو فتح عادي وبياناتك موجودة → كل حاجة تمام ✅\n'
-      + 'لو مافتحش → افتحه بالنت مرة واحدة واستنى لحد ما تشوف رسالة "بقى شغال بدون نت"');
-  });
-
   /* ---------------------------------------------------- الجهاز */
   function renderDevice(){
     var i = UniInApp.detect();
@@ -331,10 +249,8 @@
     $('#devHost').innerHTML =
         '<div class="kv"><span>النظام</span><b>'+(i.isIOS?'iOS / iPadOS':i.isAndroid?'Android':'كمبيوتر')+'</b></div>'
       + '<div class="kv"><span>المتصفح</span><b>'+({chrome:'كروم',safari:'سفاري',firefox:'فايرفوكس',edge:'إيدج',other:'تاني'}[i.browser])+'</b></div>'
-      + '<div class="kv"><span>مثبّت كتطبيق</span><b>'+(i.installed?yes:no)+'</b></div>'
       + '<div class="kv"><span>متصفح داخلي (واتساب/فيسبوك…)</span><b>'
           +(i.inApp?'<span style="color:var(--amber)">⚠️ نعم — '+((i.app&&i.app.name)||'')+'</span>':no)+'</b></div>'
-      + '<div class="kv"><span>يدعم الشغل بدون نت</span><b>'+(i.supportsSW?yes:no)+'</b></div>'
       + '<div class="kv"><span>ذاكرة الجهاز</span><b>'+(nav.deviceMemory?nav.deviceMemory+' GB (تقريبي)':'غير معروف')+'</b></div>'
       + '<div class="kv"><span>أنوية المعالج</span><b>'+(nav.hardwareConcurrency||'غير معروف')+'</b></div>'
       + '<div class="kv"><span>حالة الاتصال</span><b>'+(nav.onLine?'<span style="color:var(--green)">متصل</span>':'<span style="color:var(--amber)">بدون نت</span>')+'</b></div>'
@@ -351,7 +267,7 @@
     });
   });
 
-  renderStorage(); renderKeys(); renderCache(); renderDevice();
+  renderStorage(); renderKeys(); renderDevice();
   window.addEventListener('online', renderDevice);
   window.addEventListener('offline', renderDevice);
 })();

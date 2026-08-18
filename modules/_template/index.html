@@ -25,13 +25,9 @@
             "cache": true
           }
 
-     4) ضيف مسار الصفحة في sw.js جوه مصفوفة PRECACHE:
-          './modules/schedule/index.html',
-        وزوّد CACHE_VERSION (مثلاً 'v1.0.1').
+     4) زوّد رقم version في registry.json (مثلاً من 2.7.0 لـ 2.8.0).
 
-     5) زوّد version في registry.json كمان.
-
-     خلاص! الصفحة هتظهر في الداشبورد، تشتغل بدون نت، وتدخل في البحث.
+     خلاص! الصفحة هتظهر في الداشبورد وتدخل في البحث تلقائيًا.
 
      ملاحظة عن الحفظ: لو صفحتك بتحفظ بيانات، استخدم localStorage عادي
      بمفتاح يبدأ بـ cs مثلاً (زي csSchedule_v1) والجسر هيعمل نسخة احتياطية
@@ -44,19 +40,14 @@
 <meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>صفحة جديدة — Top Computer Science Students</title>
 
-<!-- الخطوط محليًا: مهم عشان الشكل مايبوظش بدون نت -->
+<!-- الخطوط محليًا: تحميل أسرع واستقرار أكتر في الشكل -->
 <link rel="stylesheet" href="../../assets/fonts/fonts.css">
 <link rel="stylesheet" href="../../assets/bridge.css">
 <link rel="stylesheet" href="../../assets/app.css">
 
-<!-- ربط التطبيق (PWA) -->
-<link rel="manifest" href="../../manifest.webmanifest">
 <link rel="icon" href="../../assets/icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../assets/icons/icon.svg">
 <meta name="theme-color" content="#ffffff">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="خطتي">
 
 <style>
   /* استايلات خاصة بالصفحة دي بس — الأساسيات جاية من app.css */

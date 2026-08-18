@@ -220,21 +220,12 @@
     if (weak || reduce) document.documentElement.classList.add('reduce-fx');
   }
 
-  /* ---------------------------------------- 6) تسجيل الـ Service Worker */
-
-  function registerSW() {
-    if (!('serviceWorker' in navigator)) return;
-    if (location.protocol === 'file:') return;   // مفتوح كملف محلي، مش هينفع
-    navigator.serviceWorker.register(BASE + 'sw.js', { scope: BASE }).catch(() => {});
-  }
-
   /* ------------------------------------------------------------- التشغيل */
 
   function boot() {
     tuneForDevice();
     hookStorage();
     guardExternalLinks();
-    registerSW();
 
     if (global.UniInApp) {
       try { global.UniInApp.guard({ url: new URL(BASE + 'index.html', location.href).href }); }

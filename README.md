@@ -3,7 +3,7 @@
 🔗 **https://arsanyh33.github.io/cs-plan/**
 
 دليل مقررات قسم الرياضيات وعلوم الحاسب — كلية العلوم، جامعة الإسكندرية.
-لائحة الساعات المعتمدة. يعمل بدون إنترنت ويتثبّت على الشاشة الرئيسية.
+لائحة الساعات المعتمدة. موقع أونلاين عادي — يشتغل من أي متصفح.
 
 ## المحتوى
 - حاسب (رئيسي) + إحصاء (فرعي) — 132 ساعة
@@ -16,17 +16,14 @@
 | معاينة الأجهزة | Auto / Mobile / Tablet / Laptop |
 | بحث | `/` أو `Ctrl+K` |
 | نسخة احتياطية | `diagnostics.html` |
-| تثبيت | `install.html` |
 
 ## هيكل المشروع
 ```
 index.html              الصفحة الرئيسية
-install.html            التثبيت (يكتشف الجهاز)
+about.html               عن المشروع
+404.html                 صفحة الخطأ
 diagnostics.html        التشخيص + تصدير/استيراد البيانات
-offline.html            صفحة الاحتياط
-sw.js                   Service Worker — الشغل بدون نت
 registry.json           ⭐ سجل الصفحات — هنا تضيف صفحة جديدة
-manifest.webmanifest    تعريف التطبيق
 
 originals/   🔒 الملفات الأصلية زي ما هي + checksums
 modules/     cs-stat · cs-special · _template
@@ -41,7 +38,7 @@ cp -r modules/_template modules/schedule
 ```
 1. اكتب صفحتك في `modules/schedule/index.html`
 2. ضيف object في `registry.json`
-3. ضيف المسار في `PRECACHE` جوه `sw.js` وزوّد `CACHE_VERSION`
+3. زوّد رقم `version` في `registry.json`
 
 مفتاح الحفظ يبدأ بـ `cs` + حرف كبير (مثال `csSchedule_v1`) → يدخل النسخ الاحتياطي تلقائيًا.
 
@@ -51,9 +48,8 @@ python3 tools/patch_modules.py    # لو عدّلت ملفات originals/
 python3 tools/verify_data.py      # يتأكد إن البيانات ما اتغيرتش
 node tools/test_logic.js          # 64 اختبار
 ```
-زوّد `CACHE_VERSION` في `sw.js` بعد أي تعديل.
 
 ## ملاحظات
-- الشغل بدون نت محتاج `https://` — يعني من اللينك، مش بفتح الملف مباشرة.
+- الموقع أونلاين بالكامل — مفيش تخزين أوفلاين ولا تثبيت PWA. بيانات المستخدم (تقدمه، تقديراته) بس هي اللي بتتخزن محليًا على جهازه.
 - الخطوط مدمجة base64 جوه `assets/fonts/fonts.css`. نسخة الملفات المنفصلة في `fonts.linked.css`.
 - `assets/icons/og.png` (صورة معاينة واتساب) لازم ترفعها يدويًا — الملفات الثنائية مابتترفعش عبر الـ API.

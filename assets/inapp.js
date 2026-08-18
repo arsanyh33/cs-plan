@@ -62,8 +62,6 @@
       app: app ? { id: app.id, name: app.name } : null,
       isIOS, isAndroid, installed, browser,
       isDesktop: !isIOS && !isAndroid,
-      supportsSW: 'serviceWorker' in navigator,
-      supportsPrompt: 'onbeforeinstallprompt' in global,
     };
   }
 

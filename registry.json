@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.8.2",
+    "version": "2.8.3",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -59,6 +59,30 @@
         "مرتبة الشرف",
         "شروط الالتحاق",
         "132 ساعة"
+      ],
+      "cache": true
+    },
+    {
+      "id": "stat-hasib",
+      "title": "إحصاء (رئيسي) + حاسب (فرعي)",
+      "short": "إحصاء + حاسب",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M4 19h16'/><rect x='6' y='11' width='3' height='8' rx='1'/><rect x='11' y='7' width='3' height='12' rx='1'/><rect x='16' y='13' width='3' height='6' rx='1'/></svg>",
+      "desc": "الخطة الكاملة للتخصص المزدوج: 132 ساعة موزّعة على إجبارية الإحصاء والحاسب واختيارياتهم ومتطلبات الكلية، مع خريطة المتطلبات السابقة وحاسبة المعدل والبيان الأكاديمي.",
+      "entry": "modules/stat-hasib/index.html",
+      "color1": "#9c6fff",
+      "color2": "#9c6fff",
+      "storageKeys": [
+        "csStatHasibPlanState_v1",
+        "csStatHasibActualRegState_v1"
+      ],
+      "tags": [
+        "إحصاء",
+        "حاسب",
+        "رئيسي",
+        "فرعي",
+        "132 ساعة",
+        "GPA",
+        "متطلبات سابقة"
       ],
       "cache": true
     }

@@ -314,8 +314,16 @@
    * (transform: scale) يدويًا — ده بيشتغل 100% في كل المتصفحات لأنه
    * مش معتمد على أي سلوك اختياري من المتصفح.
    */
+  /* رقم "جيل" يتغيّر مع كل نداء — أي خطوة متأخرة (جوه requestAnimationFrame)
+     بتتحقق إنها لسه بتمثّل آخر طلب قبل ما تلمس الصفحة. لو حد غيّر الوضع
+     (رجّعناه Auto مثلًا) في نفس اللحظة، الخطوات القديمة المتأخرة دي
+     بتلاقي رقمها قديم وتلغي نفسها تلقائيًا، فمفيش احتمال إنها "تعلّق"
+     الصفحة في شكل مصغّر/مزنوق حتى بعد ما رجعنا الوضع الطبيعي. */
+  let laptopScaleGen = 0;
   function forceLaptopScale(on) {
     const body = document.body;
+    laptopScaleGen++;
+    const myGen = laptopScaleGen;
     if (!on) {
       body.style.width = '';
       body.style.transform = '';
@@ -325,11 +333,13 @@
       return;
     }
     requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (myGen !== laptopScaleGen) return;   /* اتغيّر الوضع في الأثناء — نتجاهل */
       if (document.documentElement.clientWidth >= 1150) return;   /* الميتا شغالة لوحدها */
       body.style.width = '1180px';
       body.style.transform = 'none';
       body.style.transformOrigin = 'top left';
       requestAnimationFrame(() => {
+        if (myGen !== laptopScaleGen) return;   /* اتغيّر الوضع في الأثناء — نتجاهل */
         const h = body.scrollHeight;
         const scale = Math.min(1, innerWidth / 1180);
         body.style.transform = `scale(${scale})`;
@@ -383,6 +393,21 @@
       prefs({ device: 'auto' });
     }
     applyDevice(mode);
+
+    /* شبكة أمان إضافية: لو الوضع الفعلي "تلقائي"، نتأكد إن مفيش أي تأثير
+       تكبير/تصغير أو كلاس جهاز عالق من أي سبب غير متوقع (تحميل بطيء،
+       تعارض توقيت، إلخ) — نمسحه بالقوة كذا مرة بعد التحميل. ده مش بديل
+       عن تصليح السبب الأساسي فوق، ده طبقة حماية زيادة بس. */
+    function ensureAutoIsClean() {
+      if ((prefs().device || 'auto') !== 'auto') return;
+      document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop');
+      forceLaptopScale(false);
+    }
+    if (mode === 'auto') {
+      setTimeout(ensureAutoIsClean, 400);
+      global.addEventListener('load', ensureAutoIsClean, { once: true });
+    }
+
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);
       global.scrollTo({ top: 0, behavior: 'smooth' });
@@ -392,7 +417,9 @@
     global.addEventListener('resize', () => {
       if (document.body.classList.contains('device-laptop')) {
         if (rt) clearTimeout(rt);
-        rt = setTimeout(() => forceLaptopScale(true), 200);
+        rt = setTimeout(() => {
+          if (document.body.classList.contains('device-laptop')) forceLaptopScale(true);
+        }, 200);
       }
     }, { passive: true });
   }

@@ -1,0 +1,3375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light" data-module="stat-hasib">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1.0">
+<title>خطة إحصاء (رئيسي) × حاسب (فرعي) | إسكندرية</title>
+<!-- الخطوط محليًا: نفس اتفاقية باقي الموديولات، عشان الشكل مايبوظش لو النت وقع -->
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<!-- bridge.css فيه أنماط شريط التنقل وشاشة اعتراض واتساب بس -->
+<link rel="stylesheet" href="../../assets/bridge.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/icons/icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="خطتي">
+<style>
+:root{
+  --bg:#02030b; --bg2:#050814; --surface:#070b1c; --surface2:#0d1330;
+  --line:rgba(90,120,255,.16); --line-strong:rgba(90,120,255,.4);
+  --text:#eef1fb; --muted:#9aa4c9; --muted2:#7a84ac;
+  --accent:#00e5ff; --accent2:#7c4dff; --amber:#f0b429; --rose:#ff4081; --violet:#9c6fff;
+  --req46:#f0b429; --req16:#ff4081; --elective:#9aa4c9; --college:#7c4dff; --support:#00e5ff;
+  --shadow: 0 10px 40px -12px rgba(0,0,0,.85);
+  --radius:14px; --fs-scale:1;
+  --font-display:'Cairo',sans-serif; --font-body:'Almarai',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+html[data-theme="light"]{
+  --bg:#f5f6fa; --bg2:#eef0f7; --surface:#ffffff; --surface2:#eaecf4;
+  --line:rgba(92,45,181,.16); --line-strong:rgba(92,45,181,.32);
+  --text:#1a2035; --muted:#5a6482; --muted2:#707a98;
+  --accent:#0077cc; --accent2:#5c2db5; --amber:#b8860b; --rose:#c2185b; --violet:#5c2db5;
+  --req46:#b8860b; --req16:#c2185b; --elective:#5a6482; --college:#5c2db5; --support:#0077cc;
+  --shadow: 0 10px 30px -14px rgba(30,20,60,.16);
+}
+html{ font-size: calc(16px * var(--fs-scale)); }
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background: radial-gradient(ellipse at 20% -10%, var(--bg2), var(--bg) 60%);
+  background-attachment: fixed;
+  color:var(--text); font-family:var(--font-body); font-weight:500; font-size:1.0625rem; line-height:1.9; letter-spacing:.15px; min-height:100vh;
+  transition:background .3s, color .3s;
+}
+.ltr{direction:ltr; unicode-bidi:isolate;}
+.code{font-family:var(--font-mono); direction:ltr; unicode-bidi:isolate; letter-spacing:.3px;}
+td.code{text-align:center;}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:800; letter-spacing:.2px;}
+a{color:var(--accent);}
+::selection{background:var(--accent); color:var(--bg);}
+
+/* ---------- topbar ---------- */
+@keyframes topbarGradientMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+@keyframes shineMove{
+  0%{transform:translateX(-120%);}
+  100%{transform:translateX(220%);}
+}
+.topbar{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+  transition:padding .35s cubic-bezier(.4,0,.2,1);
+  transform:translateZ(0); /* يعزل التوبار في طبقة رسم/تركيب مستقلة، عشان السكرول متجبرش باقي الصفحة تترسم من جديد معاه */
+}
+.topbar-bg{
+  position:absolute; inset:0; z-index:0; background-size:260% 260%;
+  animation:topbarGradientMove 22s ease infinite; transition:opacity 1s ease;
+  will-change:opacity;
+}
+.topbar.is-scrolling .topbar-bg{animation-play-state:paused;}
+.topbar-bg-light{background-image:linear-gradient(120deg, #05060f, #170f35, #2b1150, #142a4a, #0a3438); opacity:1;}
+.topbar-bg-dark{background-image:linear-gradient(120deg, var(--bg), var(--surface), var(--surface2), var(--bg)); opacity:0;}
+html[data-theme="dark"] .topbar-bg-light{opacity:0;}
+html[data-theme="dark"] .topbar-bg-dark{opacity:1;}
+.topbar::before{
+  content:''; position:absolute; bottom:0; right:0; width:36%; height:2px; z-index:2;
+  background:linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+  animation:shineMove 6s linear infinite; pointer-events:none;
+}
+.topbar::after{
+  content:''; position:absolute; inset:0; pointer-events:none; opacity:.16; z-index:1;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.6) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+  background-size: 24px 24px, 48px 48px, 48px 48px;
+}
+.topbar-inner{position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:14px 22px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; transition:padding .35s cubic-bezier(.4,0,.2,1);}
+.topbar-divider{width:1px; height:22px; background:rgba(255,255,255,.16); flex:none;}
+.sticky-progress{position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:0 22px 12px; display:flex; align-items:center; gap:12px;}
+.sticky-progress-track{flex:1; height:6px; border-radius:99px; background:rgba(255,255,255,.14); overflow:hidden;}
+.sticky-progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .35s ease; border-radius:99px;}
+.sticky-progress-text{font-size:0.6875rem; color:rgba(255,255,255,.75); white-space:nowrap; font-weight:700; font-family:var(--font-display);}
+body.device-mobile .sticky-progress{padding:0 12px 10px;}
+.brand{display:flex; align-items:center; gap:10px; margin-left:auto}
+.brand .mark{
+  width:34px; height:34px; border-radius:9px; background:#ffffff; color:#241259;
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:800; font-size:0.8125rem;
+  box-shadow:0 4px 14px -4px rgba(0,0,0,.4); transition:width .35s, height .35s;
+}
+.brand h1{font-size:1rem; color:#fff; transition:font-size .35s;}
+.brand span{color:rgba(255,255,255,.68); font-size:0.75rem; font-weight:400; font-family:var(--font-body); display:block; transition:opacity .25s, max-height .25s;}
+.theme-btn{
+  border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); color:#fff; border-radius:10px;
+  width:38px; height:38px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center;
+  transition:.2s;
+}
+.theme-btn:hover{border-color:var(--accent); background:rgba(255,255,255,.15);}
+select.theme-btn{width:auto; padding:0 10px; font-family:var(--font-body); font-size:0.7812rem; cursor:pointer;}
+select.theme-btn option{color:#000;}
+.fs-grp{display:flex; align-items:center; gap:8px;}
+.fs-label{font-size:0.6875rem; color:rgba(255,255,255,.65); white-space:nowrap;}
+.fs-segmented{display:flex; border:1px solid rgba(255,255,255,.2); border-radius:10px; overflow:hidden;}
+.fs-btn{
+  border:none; border-inline-end:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.08); color:#fff;
+  width:auto; height:36px; padding:0 11px; font-family:var(--font-mono); font-weight:700; font-size:0.8125rem; cursor:pointer; transition:.2s;
+}
+.fs-btn:last-child{border-inline-end:none;}
+.fs-btn:hover{background:rgba(255,255,255,.18); color:var(--accent);}
+
+/* ---------- theme toggle switch ---------- */
+.theme-toggle{border:none; background:none; cursor:pointer; padding:0; width:52px; height:28px; flex:none; direction:ltr;}
+.tt-track{
+  display:block; width:100%; height:100%; border-radius:100px; position:relative; overflow:hidden;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); transition:.2s;
+}
+.theme-toggle:hover .tt-track{background:rgba(255,255,255,.15); border-color:var(--accent);}
+.tt-thumb{
+  position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:#fff;
+  display:flex; align-items:center; justify-content:center; transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+html[data-theme="dark"] .tt-thumb{transform:translateX(24px);}
+.tt-ico{position:absolute; width:15px; height:15px; transition:opacity .35s ease, transform .35s ease;}
+.tt-sun{color:#b45309; opacity:1; transform:scale(1) rotate(0deg);}
+.tt-moon{color:#4c1d95; opacity:0; transform:scale(.4) rotate(-90deg);}
+html[data-theme="dark"] .tt-sun{opacity:0; transform:scale(.4) rotate(90deg);}
+html[data-theme="dark"] .tt-moon{opacity:1; transform:scale(1) rotate(0deg); color:#c4b5fd;}
+
+@media (prefers-reduced-motion: reduce){
+  .topbar-bg{animation:none;}
+  .topbar::before{animation:none;}
+  .tab-indicator, .tt-thumb, .tt-ico, .brand .mark, .brand h1, .brand span, .topbar, .topbar-inner, .topbar-bg{transition:none !important;}
+}
+
+/* ---------- tabs: icons + sliding indicator ---------- */
+.tabs{position:relative; z-index:3; display:flex; flex-wrap:wrap; gap:4px; padding:0 22px 14px; transition:padding .3s;}
+.tab{
+  position:relative; z-index:2; background:transparent; border:none; color:rgba(255,255,255,.72);
+  padding:8px 14px; border-radius:100px; font-family:var(--font-body); font-size:0.8125rem; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; gap:6px; transition:color .2s, padding .3s, width .3s, height .3s;
+  white-space:nowrap; flex:none;
+}
+.tab:hover{color:#fff;}
+.tab.active{color:#fff;}
+.tab-ico{font-size:0.9375rem; line-height:1; flex:none;}
+.tab-label{transition:opacity .2s, width .2s;}
+.tab-indicator{
+  position:absolute; z-index:1; top:0; right:0; height:0; width:0; border-radius:100px;
+  background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.32);
+  box-shadow:0 4px 14px -4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.15); pointer-events:none;
+  transition: transform .38s cubic-bezier(.34,1.56,.64,1), width .32s cubic-bezier(.34,1.56,.64,1), height .3s ease, border-radius .3s ease;
+}
+
+/* ---------- shrinking header on scroll ---------- */
+.topbar.shrink .topbar-inner{padding:8px 22px;}
+.topbar.shrink .brand .mark{width:26px; height:26px; font-size:0.6875rem;}
+.topbar.shrink .brand h1{font-size:0.8125rem;}
+.topbar.shrink .brand span{opacity:0; max-height:0; overflow:hidden; display:none;}
+.topbar.shrink .tabs{flex-wrap:nowrap; overflow-x:auto; padding:0 22px 10px; gap:6px; scrollbar-width:thin;}
+.topbar.shrink .tabs::-webkit-scrollbar{height:4px;}
+.topbar.shrink .tab{padding:8px; border-radius:50%; width:36px; height:36px; justify-content:center;}
+.topbar.shrink .tab-label{position:absolute; width:1px; height:1px; overflow:hidden; opacity:0;}
+.topbar.shrink .tab-indicator{border-radius:50%;}
+
+/* ---------- device preview ---------- */
+#deviceStage{display:block;}
+body.device-mobile #deviceStage, body.device-tablet #deviceStage{
+  display:flex; justify-content:center; padding:26px 0; background:var(--bg2); min-height:100vh;
+}
+body.device-mobile #appFrame{max-width:390px; border:1px solid var(--line-strong); border-radius:26px; box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden; max-height:844px; overflow-y:auto;}
+body.device-tablet #appFrame{max-width:768px; border:1px solid var(--line-strong); border-radius:18px; box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden; max-height:1024px; overflow-y:auto;}
+body.device-laptop #appFrame{max-width:1180px; margin:0 auto;}
+body.device-mobile .tabs{padding:0 12px 12px;}
+body.device-mobile .topbar-inner{padding:12px;}
+body.device-mobile .fs-label{display:none;}
+body.device-mobile main{padding:18px 14px 60px;}
+
+/* ---------- device modal ---------- */
+#devModalOverlay{
+  position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s ease;
+}
+#devModalOverlay.open{opacity:1; pointer-events:all;}
+#devModal{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:30px 26px 22px;
+  max-width:420px; width:90%; text-align:center; box-shadow:0 24px 70px rgba(0,0,0,.7);
+  transform:translateY(16px); transition:transform .3s ease;
+}
+#devModalOverlay.open #devModal{transform:translateY(0);}
+#devModal h3{font-size:1.125rem; margin-bottom:6px; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
+#devModal p{font-size:0.8125rem; color:var(--muted); line-height:1.7; margin-bottom:20px;}
+.dev-options{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+.dev-btn{
+  display:flex; align-items:center; gap:14px; background:var(--surface2); border:1px solid var(--line); border-radius:12px;
+  padding:13px 15px; cursor:pointer; text-align:right; width:100%; transition:.2s;
+}
+.dev-btn:hover, .dev-btn.dev-highlight{border-color:var(--accent);}
+.dev-btn .dev-ico{font-size:1.625rem; flex:none;}
+.dev-btn .dev-txt h4{font-size:0.8438rem; margin-bottom:2px; color:var(--text);}
+.dev-btn .dev-txt p{font-size:0.7188rem; color:var(--muted); line-height:1.5;}
+.dev-close{font-size:0.75rem; color:var(--muted); cursor:pointer; text-decoration:underline; background:none; border:none;}
+.dev-close:hover{color:var(--text);}
+#removeModalOverlay{
+  position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s ease;
+}
+#removeModalOverlay.open{opacity:1; pointer-events:all;}
+#removeModal{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:26px 24px 20px;
+  max-width:480px; width:92%; text-align:right; box-shadow:0 24px 70px rgba(0,0,0,.7);
+  transform:translateY(16px); transition:transform .3s ease; max-height:85vh; overflow-y:auto;
+}
+#removeModalOverlay.open #removeModal{transform:translateY(0);}
+#removeModal h3{font-size:1.0625rem; margin-bottom:4px; color:var(--rose);}
+#removeModal .rm-meta{font-family:var(--font-mono); font-size:0.75rem; color:var(--muted); margin-bottom:12px; direction:ltr; text-align:right; unicode-bidi:isolate;}
+#removeModal .rm-section-title{font-size:0.8125rem; font-weight:700; margin:14px 0 8px;}
+#removeModal .rm-chips{display:flex; flex-wrap:wrap; gap:6px;}
+#removeModal .rm-chip{background:var(--surface2); border:1px solid var(--line); border-radius:9px; padding:5px 10px; font-size:0.75rem;}
+#removeModal .rm-chip.indirect{border-style:dashed; color:var(--muted);}
+#removeModal .rm-actions{display:flex; gap:10px; margin-top:18px;}
+#devFab{
+  position:fixed; bottom:22px; left:22px; width:48px; height:48px; border-radius:50%; z-index:9989;
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#1a1508; font-size:1.25rem; cursor:pointer;
+  box-shadow:0 6px 20px -4px rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; transition:transform .2s;
+}
+#devFab:hover{transform:scale(1.1);}
+
+/* ---------- add-term modal ---------- */
+#addTermModalOverlay{
+  position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s ease;
+}
+#addTermModalOverlay.open{opacity:1; pointer-events:all;}
+#addTermModal{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:26px 24px 22px;
+  max-width:460px; width:92%; text-align:right; box-shadow:0 24px 70px rgba(0,0,0,.7);
+  transform:translateY(16px); transition:transform .3s ease; max-height:88vh; overflow-y:auto;
+}
+#addTermModalOverlay.open #addTermModal{transform:translateY(0);}
+.atm-group{margin-bottom:16px;}
+.atm-label{font-size:0.8125rem; font-weight:700; margin-bottom:8px; color:var(--muted);}
+.atm-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px;}
+.atm-card{
+  display:flex; flex-direction:column; align-items:center; gap:4px; background:var(--surface2); border:1px solid var(--line);
+  border-radius:12px; padding:12px 8px; cursor:pointer; transition:.2s; color:var(--text); font-family:var(--font-body); font-size:0.8125rem;
+}
+.atm-card:hover{border-color:var(--accent);}
+.atm-card.active{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, var(--surface2)); color:var(--accent);}
+.atm-card .atm-ico{font-size:1.375rem;}
+.atm-card small{color:var(--muted); font-size:0.625rem; line-height:1.4;}
+.atm-year-input{
+  width:100%; background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:9px;
+  padding:9px 14px; font-family:var(--font-mono); font-size:0.875rem;
+}
+.atm-preview{
+  background:color-mix(in srgb, var(--accent) 10%, var(--surface2)); border:1px dashed var(--line-strong); border-radius:10px;
+  padding:12px 14px; font-size:0.8438rem; font-weight:700; text-align:center; color:var(--accent); margin-bottom:18px; font-family:var(--font-display);
+}
+
+/* ---------- command palette (Ctrl/⌘+K) ---------- */
+#paletteOverlay{
+  position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
+  display:flex; align-items:flex-start; justify-content:center; padding-top:11vh;
+  opacity:0; pointer-events:none; transition:opacity .25s ease;
+}
+#paletteOverlay.open{opacity:1; pointer-events:all;}
+#paletteModal{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; width:92%; max-width:560px;
+  box-shadow:0 24px 70px rgba(0,0,0,.7); transform:translateY(-10px); transition:transform .25s ease; overflow:hidden;
+}
+#paletteOverlay.open #paletteModal{transform:translateY(0);}
+.palette-input-row{display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line);}
+.palette-ico{font-size:1.0625rem; flex:none;}
+#paletteInput{
+  flex:1; background:transparent; border:none; color:var(--text); font-size:0.9375rem; font-family:var(--font-body); outline:none;
+}
+.palette-esc{
+  flex:none; font-family:var(--font-mono); font-size:0.6875rem; color:var(--muted); border:1px solid var(--line-strong);
+  border-radius:6px; padding:2px 6px;
+}
+#paletteResults{max-height:56vh; overflow-y:auto; padding:8px;}
+.palette-group-label{
+  font-family:var(--font-mono); font-size:0.6562rem; color:var(--muted2); font-weight:700; padding:8px 10px 4px;
+}
+.palette-item{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:9px; cursor:pointer; font-size:0.8438rem;
+}
+.palette-item .p-ico{flex:none; font-size:1rem;}
+.palette-item .p-main{flex:1; min-width:0;}
+.palette-item .p-code{flex:none; font-family:var(--font-mono); font-size:0.6875rem; color:var(--accent2);}
+.palette-item:hover, .palette-item.hl{background:var(--surface2);}
+.palette-empty{padding:16px 12px; text-align:center; color:var(--muted); font-size:0.8125rem;}
+
+@keyframes rowFlash{
+  0%, 100%{background:transparent;}
+  25%, 75%{background:color-mix(in srgb, var(--accent) 30%, transparent);}
+}
+tr.row-flash{animation:rowFlash 1.5s ease;}
+
+/* ---------- shared autocomplete dropdown (single instance, position:fixed) ---------- */
+.ac-list{
+  position:fixed; z-index:100000; background:var(--surface); border:1px solid var(--line-strong); border-radius:10px;
+  box-shadow:0 16px 40px -8px rgba(0,0,0,.6); max-height:320px; overflow-y:auto; display:none; min-width:220px;
+}
+.ac-list.open{display:block;}
+.ac-group-label{
+  font-family:var(--font-mono); font-size:0.6562rem; color:var(--muted2); font-weight:700; padding:8px 12px 4px; position:sticky; top:0; background:var(--surface);
+}
+.ac-item{
+  padding:8px 12px; font-size:0.8125rem; cursor:pointer; display:flex; justify-content:space-between; gap:8px; align-items:center;
+}
+.ac-item:hover, .ac-item.hl{background:var(--surface2);}
+.ac-item .ac-code{font-family:var(--font-mono); font-size:0.6875rem; color:var(--accent2);}
+.ac-item-custom{color:var(--accent); font-weight:700;}
+.ac-empty{padding:10px 12px; font-size:0.75rem; color:var(--muted);}
+
+/* ---------- actual registration term cards ---------- */
+.areg-card{border:1px solid var(--line); border-radius:12px; background:var(--surface2); overflow:hidden;}
+.areg-head{padding:12px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;}
+.areg-head h4{font-size:0.9062rem; font-family:var(--font-display);}
+.areg-head .areg-meta{font-size:0.6875rem; color:var(--muted); font-family:var(--font-mono);}
+.areg-head-right{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.areg-del{background:none; border:1px solid var(--line-strong); color:var(--muted); border-radius:8px; padding:5px 9px; cursor:pointer; font-size:0.75rem; transition:.2s;}
+.areg-del:hover{border-color:var(--rose); color:var(--rose);}
+.areg-dup-warn{
+  margin:10px 16px 0; color:var(--rose); font-size:0.75rem; font-weight:700; padding:8px 11px; border-radius:9px;
+  border:1px solid color-mix(in srgb, var(--rose) 45%, transparent); background:color-mix(in srgb, var(--rose) 12%, transparent);
+}
+.areg-list{list-style:none;}
+.areg-row{display:flex; align-items:center; gap:8px; padding:9px 16px; border-bottom:1px dashed var(--line); font-size:0.8rem;}
+.areg-row:last-child{border-bottom:none;}
+.areg-row .areg-name{flex:1;}
+.areg-row .areg-name small{display:block; color:var(--muted); font-family:var(--font-mono); font-size:0.6562rem;}
+.areg-row.excluded{opacity:.55;}
+.areg-row.excluded .areg-name{text-decoration:line-through;}
+.areg-tag{
+  font-family:var(--font-mono); font-size:0.625rem; font-weight:700; white-space:nowrap; padding:2px 7px; border-radius:100px; flex:none;
+}
+.areg-tag.latest{color:var(--accent); background:color-mix(in srgb, var(--accent) 15%, transparent); border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);}
+.areg-tag.excluded-tag{color:var(--muted2); background:var(--surface); border:1px solid var(--line);}
+.areg-row-del{background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.875rem; padding:2px 4px; flex:none;}
+.areg-row-del:hover{color:var(--rose);}
+.areg-add-row{padding:10px 16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--line);}
+.areg-add-row input.ac-input{flex:1; min-width:160px; background:var(--surface); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:8px 12px; font-size:0.8125rem; font-family:var(--font-body);}
+.areg-custom-fields{display:none; gap:8px; flex-wrap:wrap; align-items:center;}
+.areg-custom-fields.show{display:flex;}
+.areg-custom-fields select, .areg-custom-fields input{background:var(--surface); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:7px 10px; font-size:0.75rem;}
+.areg-custom-fields input[type=number]{width:80px;}
+.areg-add-btn{background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#04101c; border-radius:9px; padding:8px 14px; font-weight:700; font-size:0.75rem; cursor:pointer;}
+.equiv-badge{
+  font-family:var(--font-mono); font-size:0.625rem; font-weight:700; padding:2px 8px; border-radius:100px; color:var(--violet);
+  background:color-mix(in srgb, var(--violet) 15%, transparent); border:1px solid color-mix(in srgb, var(--violet) 40%, transparent);
+}
+.astat-row{display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:11px; border:1px solid var(--line);}
+.astat-row .astat-ico{font-size:1.375rem; flex:none;}
+.astat-row b{display:block; font-family:var(--font-display); font-size:0.875rem; margin-bottom:3px;}
+.astat-row p{font-size:0.75rem; color:var(--muted); margin:0;}
+.astat-row.ok{border-color:color-mix(in srgb, var(--accent) 40%, transparent); background:color-mix(in srgb, var(--accent) 8%, transparent);}
+.astat-row.warn1{border-color:color-mix(in srgb, var(--amber) 45%, transparent); background:color-mix(in srgb, var(--amber) 10%, transparent);}
+.astat-row.warn2{border-color:color-mix(in srgb, var(--rose) 45%, transparent); background:color-mix(in srgb, var(--rose) 10%, transparent);}
+.astat-row.honor{border-color:color-mix(in srgb, var(--violet) 45%, transparent); background:color-mix(in srgb, var(--violet) 10%, transparent);}
+.astat-row.neutral{border-color:var(--line); background:var(--surface2);}
+.astat-row.load{border-color:color-mix(in srgb, var(--accent2) 35%, transparent); background:color-mix(in srgb, var(--accent2) 6%, transparent);}
+
+/* ---------- layout ---------- */
+main{max-width:1180px; margin:0 auto; padding:28px 22px 90px;}
+section{display:none; animation:fade .35s ease;}
+section.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px;
+  box-shadow:var(--shadow);
+}
+.card + .card{margin-top:16px;}
+.section-head{margin-bottom:18px;}
+.eyebrow{
+  font-family:var(--font-mono); font-size:0.7188rem; color:var(--accent2); letter-spacing:1.5px; text-transform:uppercase;
+  display:block; margin-bottom:6px;
+}
+.section-head h2{font-size:1.5rem;}
+.section-head p{color:var(--muted); margin-top:6px; font-size:0.9062rem; max-width:74ch;}
+
+.grid{display:grid; gap:14px;}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:820px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+/* ---------- hero ---------- */
+.hero{
+  border-radius:18px; padding:36px 30px; position:relative; overflow:hidden;
+  background:linear-gradient(160deg, var(--surface), var(--surface2));
+  border:1px solid var(--line); box-shadow:var(--shadow); margin-bottom:22px;
+}
+.hero::before{
+  content:""; position:absolute; inset:0; opacity:.5; pointer-events:none;
+  background:
+   repeating-linear-gradient(0deg, transparent 0 27px, var(--line) 27px 28px),
+   repeating-linear-gradient(90deg, transparent 0 27px, var(--line) 27px 28px);
+  mask-image:radial-gradient(circle at 85% 20%, black, transparent 60%);
+}
+.hero-tag{font-family:var(--font-mono); font-size:0.75rem; color:var(--accent); border:1px solid var(--line-strong); padding:4px 10px; border-radius:100px; display:inline-block;}
+.hero h1{font-size:clamp(1.625rem,4vw,2.375rem); margin:14px 0 8px; max-width:34ch; line-height:1.35;}
+.hero h1.typing-cursor::after{content:'|'; display:inline-block; margin-inline-start:3px; color:var(--accent); animation:heroCaret .8s steps(1) infinite;}
+@keyframes heroCaret{50%{opacity:0;}}
+.hero p{color:var(--muted); max-width:60ch; font-size:0.9375rem;}
+.hero-stats{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; position:relative;}
+.stat{
+  background:color-mix(in srgb, var(--bg) 40%, transparent); border:1px solid var(--line); border-radius:12px;
+  padding:12px 18px; min-width:110px;
+}
+.stat b{font-family:var(--font-mono); font-size:1.375rem; color:var(--accent); display:block;}
+.stat span{font-size:0.7188rem; color:var(--muted);}
+
+/* ---------- tables ---------- */
+.table-wrap{overflow-x:auto; border-radius:10px; border:1px solid var(--line); max-width:100%;}
+table{width:100%; border-collapse:collapse; font-size:0.8438rem; min-width:560px;}
+table.table-info{min-width:0;}
+th{
+  background:var(--surface2); text-align:right; padding:10px 12px; font-family:var(--font-display); font-size:0.7812rem;
+  color:var(--muted); border-bottom:1px solid var(--line); white-space:nowrap; position:sticky; top:0;
+}
+td{padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:middle;}
+th:not(:first-child){text-align:center;}
+tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+.badge{
+  display:inline-flex; align-items:center; gap:5px; font-size:0.6875rem; font-family:var(--font-display); font-weight:700;
+  padding:3px 9px; border-radius:100px; white-space:nowrap;
+}
+.badge.reqMajor{color:var(--req46); background:color-mix(in srgb, var(--req46) 15%, transparent); border:1px solid color-mix(in srgb, var(--req46) 40%, transparent);}
+.badge.reqMinor{color:var(--req16); background:color-mix(in srgb, var(--req16) 15%, transparent); border:1px solid color-mix(in srgb, var(--req16) 40%, transparent);}
+.badge.electMajor{color:var(--elective); background:color-mix(in srgb, var(--elective) 15%, transparent); border:1px solid color-mix(in srgb, var(--elective) 40%, transparent);}
+.badge.electMinor{color:var(--violet); background:color-mix(in srgb, var(--violet) 15%, transparent); border:1px solid color-mix(in srgb, var(--violet) 40%, transparent);}
+.badge.college{color:var(--college); background:color-mix(in srgb, var(--college) 15%, transparent); border:1px solid color-mix(in srgb, var(--college) 40%, transparent);}
+.badge.support{color:var(--support); background:color-mix(in srgb, var(--support) 15%, transparent); border:1px solid color-mix(in srgb, var(--support) 40%, transparent);}
+.badge.conflict{color:var(--rose); background:color-mix(in srgb, var(--rose) 15%, transparent); border:1px solid color-mix(in srgb, var(--rose) 45%, transparent); cursor:help; font-size:0.7rem; padding:2px 8px;}
+.badge.critical{color:var(--amber); background:color-mix(in srgb, var(--amber) 15%, transparent); border:1px solid color-mix(in srgb, var(--amber) 45%, transparent); cursor:help; font-size:0.7rem; padding:2px 8px;}
+.badge.crit{color:var(--rose); background:color-mix(in srgb, var(--rose) 15%, transparent); border:1px solid color-mix(in srgb, var(--rose) 45%, transparent); margin-inline-start:6px;}
+
+/* ---------- notes / callouts ---------- */
+.note{border-radius:10px; padding:14px 16px; font-size:0.8438rem; border:1px solid; margin:14px 0; display:flex; gap:10px;}
+.note .ic{font-size:1rem; line-height:1.4;}
+.note.warn{border-color:color-mix(in srgb, var(--amber) 45%, transparent); background:color-mix(in srgb, var(--amber) 10%, transparent); color:var(--text);}
+.note.info{border-color:color-mix(in srgb, var(--accent) 45%, transparent); background:color-mix(in srgb, var(--accent) 10%, transparent);}
+.note.tip{border-color:color-mix(in srgb, var(--accent2) 45%, transparent); background:color-mix(in srgb, var(--accent2) 10%, transparent);}
+.source{font-family:var(--font-mono); font-size:0.6875rem; color:var(--muted2); margin-top:4px;}
+
+/* ---------- comparison ---------- */
+.compare-card{border-radius:12px; border:1px solid var(--line); padding:18px; background:var(--surface2);}
+.compare-card h3{font-size:1rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+.compare-card ul{padding-inline-start:20px; font-size:0.8438rem; color:var(--muted); display:flex; flex-direction:column; gap:6px;}
+.compare-card.special{border-color:color-mix(in srgb, var(--accent) 50%, transparent); background:linear-gradient(160deg, color-mix(in srgb, var(--accent) 8%, var(--surface2)), var(--surface2));}
+.compare-card b{color:var(--text);}
+
+/* ---------- decoder ---------- */
+.decoder{display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start; margin-top:14px;}
+.decoder input{
+  font-family:var(--font-mono); font-size:1.375rem; letter-spacing:3px; direction:ltr; text-align:center;
+  background:var(--surface2); border:1px solid var(--line-strong); color:var(--accent); border-radius:10px; padding:12px;
+  width:220px;
+}
+.decoder-out{flex:1; min-width:240px; display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+.decoder-out .chip{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:10px 12px;}
+.decoder-out .chip b{display:block; font-family:var(--font-mono); color:var(--accent); font-size:0.9375rem;}
+.decoder-out .chip span{font-size:0.7188rem; color:var(--muted);}
+
+/* ---------- accordion ---------- */
+.acc-item{border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:10px; background:var(--surface2);}
+.acc-head{padding:14px 18px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:0.9062rem;}
+.acc-head .arrow{transition:.25s; color:var(--accent);}
+.acc-item.open .arrow{transform:rotate(180deg);}
+.acc-body{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+.acc-body-inner{padding:0 18px 18px;}
+
+.search-row{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.search-row input, .search-row select{
+  background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:9px 14px; font-family:var(--font-body); font-size:0.8438rem;
+}
+.search-row input{flex:1; min-width:180px;}
+.search-row select{flex:1; min-width:0; max-width:100%;}
+
+/* ---------- term plan ---------- */
+.term-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
+.term-card{border:1px solid var(--line); border-radius:12px; background:var(--surface2); overflow:hidden;}
+.term-card-head{padding:12px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.term-card-head h4{font-size:0.9062rem;}
+.term-card-head .hrs{font-family:var(--font-mono); color:var(--accent); font-size:0.8125rem; white-space:nowrap;}
+.term-done-badge{
+  font-family:var(--font-mono); font-size:0.6875rem; font-weight:700; white-space:nowrap; padding:2px 9px; border-radius:100px;
+  color:var(--support); background:color-mix(in srgb, var(--support) 15%, transparent); border:1px solid color-mix(in srgb, var(--support) 40%, transparent);
+}
+.term-done-badge.complete{
+  color:#04101c; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent;
+}
+.prereq-warn{
+  color:var(--rose); font-size:0.75rem; font-weight:700; line-height:1.6; text-decoration:none;
+  margin-top:7px; padding:7px 11px; display:none; border-radius:9px;
+  border:1px solid color-mix(in srgb, var(--rose) 45%, transparent);
+  background:color-mix(in srgb, var(--rose) 12%, transparent);
+}
+.prereq-warn.show{display:block;}
+.term-card-head-right{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.term-mark-all{
+  font-family:var(--font-display); font-weight:700; font-size:0.6875rem; border-radius:7px; padding:5px 9px; cursor:pointer;
+  border:1px solid var(--line-strong); background:var(--surface); color:var(--muted); transition:.2s; white-space:nowrap;
+}
+.term-mark-all:hover{border-color:var(--accent); color:var(--accent);}
+.term-mark-all.all-done{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04101c; border-color:transparent;}
+.term-card ul{list-style:none;}
+.term-card li{
+  display:flex; align-items:flex-start; gap:8px; padding:8px 16px; border-bottom:1px dashed var(--line); font-size:0.8rem;
+}
+.term-card li:last-child{border-bottom:none;}
+.term-card li input{margin-top:3px; accent-color:var(--accent); cursor:pointer;}
+.term-card li.done label{color:var(--muted2); text-decoration:line-through;}
+.term-card .cname{flex:1;}
+.term-card .cname small{display:block; color:var(--muted); font-family:var(--font-mono); font-size:0.6562rem;}
+.grade-select{
+  flex:none; background:var(--surface); border:1px solid var(--line-strong); color:var(--text); border-radius:7px;
+  padding:3px 6px; font-family:var(--font-mono); font-size:0.6875rem; font-weight:700; cursor:pointer; transition:.2s;
+  max-width:78px;
+}
+.grade-select.has-grade{border-color:var(--accent); color:var(--accent);}
+.grade-select:disabled{display:none;}
+.grade-select option{color:#000; background:#fff;}
+.term-gpa{
+  font-family:var(--font-mono); font-size:0.75rem; font-weight:700; white-space:nowrap; padding:2px 8px; border-radius:100px;
+  color:var(--accent2); background:color-mix(in srgb, var(--accent2) 14%, transparent); border:1px solid color-mix(in srgb, var(--accent2) 40%, transparent);
+}
+.plan-cgpa-card{
+  margin-top:16px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  border:1px solid var(--line-strong); background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)), color-mix(in srgb, var(--accent2) 8%, var(--surface)));
+}
+.plan-cgpa-card .pcg-box{text-align:center;}
+.plan-cgpa-card .pcg-box b{display:block; font-family:var(--font-mono); font-size:1.5rem; color:var(--accent);}
+.plan-cgpa-card .pcg-box span{font-size:0.7188rem; color:var(--muted);}
+.term-card li.custom-li{align-items:center;}
+.term-card li.custom-li .cname small{color:var(--accent2);}
+.term-card li.removed-li{opacity:.55;}
+.term-card li.removed-li .cname{text-decoration:line-through; color:var(--muted2);}
+.course-del{
+  background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.875rem; line-height:1; padding:2px 4px; flex-shrink:0;
+}
+.course-del:hover{color:var(--rose);}
+.removed-li .course-del{color:var(--accent);}
+.removed-li .course-del:hover{color:var(--accent2);}
+.custom-del{
+  background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.875rem; line-height:1; padding:2px 4px; flex-shrink:0;
+}
+.custom-del:hover{color:var(--rose);}
+.term-add-row{
+  display:flex; gap:6px; padding:10px 12px; border-top:1px solid var(--line); background:var(--surface);
+}
+.term-add-row input{
+  background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:7px;
+  padding:6px 8px; font-family:var(--font-body); font-size:0.75rem; min-width:0;
+}
+.term-add-row .add-name{flex:1;}
+.term-add-row .add-hours{width:52px; text-align:center;}
+.term-add-btn{
+  font-family:var(--font-display); font-weight:800; font-size:0.875rem; border-radius:7px; padding:0 10px; cursor:pointer;
+  border:1px solid var(--line-strong); background:var(--surface2); color:var(--accent); flex-shrink:0;
+}
+.term-add-btn:hover{border-color:var(--accent); background:var(--accent); color:#04101c;}
+.progress-bar{height:8px; border-radius:100px; background:var(--surface2); border:1px solid var(--line); overflow:hidden; margin-top:6px;}
+.progress-bar > div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .4s;}
+
+/* ---------- category progress ---------- */
+.cat-progress{display:flex; flex-direction:column; gap:6px;}
+.cat-progress-head{display:flex; justify-content:space-between; font-size:0.8125rem;}
+.cat-progress-head b{font-family:var(--font-display);}
+.cat-progress-head span{font-family:var(--font-mono); color:var(--muted); font-size:0.75rem;}
+
+/* ---------- next term suggestion ---------- */
+.avail-chip{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:0.8rem; cursor:pointer; transition:.15s;}
+.avail-chip:hover{border-color:var(--accent);}
+.avail-chip .code{display:block; font-size:0.6875rem; color:var(--accent2); margin-bottom:3px;}
+
+/* ---------- prereq explorer ---------- */
+.explorer-graph{margin-bottom:6px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:10px;}
+.explorer-graph svg text{font-family:inherit;}
+.explorer{display:grid; grid-template-columns:1fr 1.2fr 1fr; gap:16px; align-items:stretch; margin-top:18px; position:relative;}
+.explorer-col{position:relative; z-index:1;}
+@media(max-width:820px){.explorer{grid-template-columns:1fr;}}
+.explorer-col{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:14px; min-height:160px;}
+.explorer-col h5{font-size:0.75rem; color:var(--muted); font-family:var(--font-display); margin-bottom:10px; text-align:center;}
+.explorer-col.center{border-color:var(--accent); background:linear-gradient(160deg, color-mix(in srgb, var(--accent) 10%, var(--surface2)), var(--surface2)); display:flex; flex-direction:column; justify-content:center; text-align:center;}
+.explorer-col.center .code{font-size:1.1875rem; color:var(--accent); margin-bottom:6px;}
+.explorer-col.center .name{font-family:var(--font-display); font-weight:700; font-size:0.9375rem;}
+.node-chip{
+  background:var(--surface); border:1px solid var(--line); border-radius:9px; padding:8px 10px; font-size:0.75rem; margin-bottom:8px; cursor:pointer;
+  transition:.15s;
+}
+.node-chip:hover{border-color:var(--accent); transform:translateX(-2px);}
+.node-chip.support{border-color:color-mix(in srgb, var(--support) 55%, transparent); background:color-mix(in srgb, var(--support) 8%, var(--surface));}
+.node-chip.support .code{color:var(--support);}
+.node-chip .code{display:block; font-size:0.6875rem; color:var(--accent2); margin-bottom:2px;}
+.empty-hint{color:var(--muted2); font-size:0.75rem; text-align:center; padding:20px 6px;}
+.note-inline{margin-top:5px; font-size:0.7188rem; color:var(--amber); background:color-mix(in srgb, var(--amber) 10%, transparent); border:1px solid color-mix(in srgb, var(--amber) 35%, transparent); border-radius:7px; padding:5px 8px; max-width:52ch;}
+
+/* ---------- tips ---------- */
+.tip-card{display:flex; gap:14px; border:1px solid var(--line); border-radius:12px; padding:16px; background:var(--surface2);}
+/* ---------- start-here banner ---------- */
+.start-here-card{border-color:color-mix(in srgb, var(--accent) 40%, var(--line));}
+.start-here-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+@media(max-width:820px){.start-here-steps{grid-template-columns:1fr;}}
+.start-here-step{display:flex; align-items:center; gap:12px; text-align:right; border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:var(--surface2); cursor:pointer; font-family:var(--font); color:var(--text); transition:.2s;}
+.start-here-step:hover{border-color:var(--accent); transform:translateY(-2px);}
+.start-here-step .num{flex:none; width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8125rem;}
+.start-here-step b{display:block; font-size:0.8438rem; margin-bottom:2px;}
+.start-here-step small{display:block; font-size:0.7188rem; color:var(--muted);}
+.tip-num{
+  font-family:var(--font-mono); font-weight:700; color:var(--accent); font-size:1.125rem; width:34px; height:34px; border-radius:9px;
+  border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; flex:none;
+}
+.tip-card h4{font-size:0.9062rem; margin-bottom:4px;}
+.tip-card p{font-size:0.8125rem; color:var(--muted);}
+
+/* ---------- checklist ---------- */
+.check-row{display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px dashed var(--line);}
+.check-row:last-child{border-bottom:none;}
+.check-row input{width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex:none;}
+.check-row label{font-size:0.8625rem; cursor:pointer;}
+.check-row.checked label{color:var(--muted2); text-decoration:line-through;}
+
+/* ---------- eligibility checker ---------- */
+.elig-field{display:flex; flex-direction:column; gap:6px;}
+.elig-field label{font-size:0.8125rem; color:var(--muted);}
+.elig-field input{background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:9px 12px; font-family:var(--font-mono); font-size:0.9375rem;}
+.elig-row{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; border:1px solid var(--line); margin-bottom:8px;}
+.elig-row .elig-ic{font-size:1.125rem; flex:none;}
+.elig-row.ok{border-color:color-mix(in srgb, var(--accent) 40%, transparent); background:color-mix(in srgb, var(--accent) 8%, transparent);}
+.elig-row.bad{border-color:color-mix(in srgb, var(--rose) 40%, transparent); background:color-mix(in srgb, var(--rose) 8%, transparent);}
+.elig-row.pending{border-color:color-mix(in srgb, var(--amber) 40%, transparent); background:color-mix(in srgb, var(--amber) 8%, transparent);}
+.elig-verdict{font-family:var(--font-display); font-weight:800; font-size:1rem; padding:14px 16px; border-radius:12px; margin-bottom:12px; text-align:center;}
+.elig-verdict.ok{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04101c;}
+.elig-verdict.bad{background:var(--surface2); border:1px solid color-mix(in srgb, var(--rose) 50%, transparent); color:var(--rose);}
+
+/* ---------- gpa ---------- */
+.gpa-table th, .gpa-table td{font-size:0.8125rem;}
+.gpa-table input, .gpa-table select{
+  width:100%; background:var(--surface); border:1px solid var(--line-strong); color:var(--text); border-radius:7px; padding:6px 8px; font-family:var(--font-body); font-size:0.8125rem;
+}
+.gpa-name-cell{display:flex; flex-direction:column; gap:6px;}
+.rowCourseSel{color:var(--accent);}
+.rowCourseSel option{color:#000;}
+.rowCourseSel option:disabled{color:var(--accent2); font-weight:700;}
+.gpa-table .rowHours[readonly]{opacity:.6; cursor:not-allowed;}
+
+/* ---------- gpa-table: table→cards on narrow screens ---------- */
+@media (max-width: 700px){
+  .gpa-table{min-width:0;}
+  .gpa-table thead{display:none;}
+  .gpa-table, .gpa-table tbody, .gpa-table tr, .gpa-table td{display:block; width:100%;}
+  .gpa-table tr{
+    background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px;
+  }
+  .gpa-table tr:last-child{margin-bottom:0;}
+  .gpa-table td{
+    border:none !important; padding:6px 0; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .gpa-table td[data-label]::before{
+    content:attr(data-label); flex:none; font-family:var(--font-display); font-weight:700; font-size:0.75rem; color:var(--muted);
+  }
+  .gpa-table td[data-label] input, .gpa-table td[data-label] select{width:auto; max-width:62%;}
+  .gpa-table .gpa-name-cell{flex-direction:column; align-items:stretch; gap:6px;}
+  .gpa-table .gpa-name-cell::before{margin-bottom:2px;}
+  .gpa-table .gpa-name-cell input, .gpa-table .gpa-name-cell select{max-width:100%; width:100%;}
+  .gpa-table .gpa-del-cell{justify-content:flex-end; border-top:1px dashed var(--line) !important; margin-top:4px; padding-top:10px !important;}
+  .gpa-table .gpa-del-cell::before{content:none;}
+  .table-wrap:has(.gpa-table){overflow-x:visible; border:none;}
+}
+.btn{
+  font-family:var(--font-display); font-weight:700; font-size:0.8125rem; border-radius:9px; padding:9px 16px; cursor:pointer;
+  border:1px solid var(--line-strong); background:var(--surface2); color:var(--text); transition:.2s;
+}
+.btn:hover{border-color:var(--accent); color:var(--accent);}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04101c; border:none;}
+.btn.danger:hover{border-color:var(--rose); color:var(--rose);}
+.toolbar{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+.gpa-result{display:flex; gap:14px; flex-wrap:wrap; margin-top:16px;}
+.gpa-result .box{flex:1; min-width:150px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:16px; text-align:center;}
+.gpa-result .box b{display:block; font-family:var(--font-mono); font-size:1.625rem; color:var(--accent);}
+.gpa-result .box span{font-size:0.7188rem; color:var(--muted);}
+
+textarea.jsonbox{
+  width:100%; min-height:90px; font-family:var(--font-mono); font-size:0.7188rem; direction:ltr; text-align:left;
+  background:var(--surface2); border:1px solid var(--line-strong); color:var(--muted); border-radius:9px; padding:10px;
+}
+
+footer{max-width:1180px; margin:0 auto; padding:20px 22px 60px; color:var(--muted2); font-size:0.75rem; text-align:center;}
+footer a{color:var(--muted2); text-decoration:underline;}
+
+.legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:10px;}
+.legend span{display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--muted);}
+.legend i{width:11px; height:11px; border-radius:3px; display:inline-block;}
+
+body.discussion-mode .fs-grp, body.discussion-mode #deviceSelect, body.discussion-mode #themeBtn, body.discussion-mode #printBtn,
+body.discussion-mode .toolbar, body.discussion-mode .term-add-row, body.discussion-mode .term-mark-all, body.discussion-mode #resetProgress,
+body.discussion-mode .search-row, body.discussion-mode .decoder, body.discussion-mode .filter-row, body.discussion-mode .custom-del,
+body.discussion-mode .sticky-progress, body.discussion-mode select, body.discussion-mode textarea, body.discussion-mode input:not([type=checkbox]),
+body.discussion-mode #devFab, body.discussion-mode .acc-head .arrow, body.discussion-mode .start-here-card{display:none !important;}
+body.discussion-mode .acc-body{max-height:none !important; overflow:visible !important;}
+body.discussion-mode .acc-head{cursor:default !important;}
+body.discussion-mode input[type=checkbox]{pointer-events:none;}
+body.discussion-mode #discussionBtn{color:var(--accent); border-color:var(--accent);}
+
+@media print{
+  body{background:#fff !important; color:#000 !important;}
+  .topbar, #devFab, #devModalOverlay, #addTermModalOverlay, #courseAutocompleteList, #paletteOverlay, .tabs, .term-add-row, .term-mark-all, #resetProgress, .toolbar, .search-row, .decoder, .filter-row, .acc-head .arrow, .custom-del, .areg-row-del, .areg-del, .sticky-progress, .start-here-card, button, select, textarea, input:not([type=checkbox]){display:none !important;}
+  section{display:block !important; page-break-after:always;}
+  .card{box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid;}
+  main{padding:0 !important; max-width:100% !important;}
+  #appFrame, #deviceStage{max-width:100% !important; border:none !important; box-shadow:none !important; overflow:visible !important; max-height:none !important;}
+  .acc-body{max-height:none !important; overflow:visible !important;}
+  .acc-head{cursor:default !important;}
+  input[type=checkbox]{pointer-events:none;}
+  table{page-break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+<div id="deviceStage">
+<div id="appFrame">
+
+<div class="topbar">
+  <div class="topbar-bg topbar-bg-light"></div>
+  <div class="topbar-bg topbar-bg-dark"></div>
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="mark">CS</div>
+      <div>
+        <h1>خطة إحصاء (رئيسي) × حاسب (فرعي)</h1>
+        <span>كلية العلوم، جامعة الإسكندرية · قسم الرياضيات وعلوم الحاسب · الدرجة العامة</span>
+      </div>
+    </div>
+    <div class="fs-grp">
+      <span class="fs-label">حجم الخط</span>
+      <div class="fs-segmented">
+        <button class="fs-btn" id="fsMinus" title="تصغير الخط" aria-label="تصغير الخط">A−</button>
+        <button class="fs-btn" id="fsReset" title="الحجم الافتراضي" aria-label="حجم الخط الافتراضي">A</button>
+        <button class="fs-btn" id="fsPlus" title="تكبير الخط" aria-label="تكبير الخط">A+</button>
+      </div>
+    </div>
+    <span class="topbar-divider"></span>
+    <select id="deviceSelect" class="theme-btn" title="معاينة على جهاز مختلف" aria-label="معاينة الصفحة على جهاز مختلف">
+      <option value="auto">🖥 Auto (Laptop)</option>
+      <option value="mobile">📱 Mobile</option>
+      <option value="tablet">📲 Tablet</option>
+      <option value="laptop">💻 Laptop</option>
+    </select>
+    <span class="topbar-divider"></span>
+    <button class="theme-toggle" id="themeBtn" title="تبديل الوضع الليلي/النهاري" aria-label="تبديل الوضع الليلي والنهاري" aria-pressed="false">
+      <span class="tt-track">
+        <span class="tt-thumb">
+          <svg class="tt-ico tt-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2v2.4M12 19.6V22M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2 12h2.4M19.6 12H22M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"></path></svg>
+          <svg class="tt-ico tt-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.7 14.9A8.9 8.9 0 1 1 9.1 3.3a7 7 0 0 0 11.6 11.6z"></path></svg>
+        </span>
+      </span>
+    </button>
+    <span class="topbar-divider"></span>
+    <button class="theme-btn" id="paletteBtn" title="بحث سريع (Ctrl/⌘ + K)" aria-label="فتح البحث السريع">🔎</button>
+    <button class="theme-btn" id="discussionBtn" title="عرض نضيف للمناقشة الجماعية (بدون أزرار أو تفاعل)" aria-label="تفعيل عرض المناقشة الجماعية">🗣️</button>
+    <button class="theme-btn" id="printBtn" title="طباعة/تصدير الخطة كـ PDF" aria-label="طباعة أو تصدير الخطة كـ PDF">🖨️</button>
+  </div>
+  <div class="sticky-progress" id="stickyProgress" title="بيتحدث تلقائيًا من تيكات تاب خطة الترمات" role="status" aria-live="polite">
+    <span class="sticky-progress-text" id="stickyProgressText">0 من 132 ساعة (0%)</span>
+    <div class="sticky-progress-track"><div class="sticky-progress-fill" id="stickyProgressFill"></div></div>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</div>
+
+<main>
+  <!-- ============ SECTION 1 ============ -->
+  <section id="sec-1">
+    <div class="hero">
+      <span class="hero-tag">علوم الإحصاء · رئيسي 66 ساعة + علوم الحاسب · فرعي 22 ساعة</span>
+      <h1 id="heroTitle"></h1>
+      <p>مرجع تفاعلي واحد لخطة "الدرجة العامة": تخصص رئيسي إحصاء (66 ساعة) + تخصص فرعي علوم الحاسب (22 ساعة)، بكلية العلوم، جامعة الإسكندرية. مبني على نفس فكرة وهيكلة ملف "علوم الحاسب — سبيشيال"، بس مُطبّق على تركيبة رئيسي/فرعي مختلفة تمامًا.</p>
+      <div class="hero-stats">
+        <div class="stat"><b>132</b><span>ساعة للتخرج</span></div>
+        <div class="stat"><b>66</b><span>رئيسي إحصاء</span></div>
+        <div class="stat"><b>22</b><span>فرعي حاسب</span></div>
+        <div class="stat"><b>8</b><span>ترمات</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-head">
+        <span class="eyebrow" style="text-align:left; display:block">📖</span>
+        <h2 style="font-size:1.0625rem">مسرد مصطلحات سريع (لو أول مرة تسمع الكلمات دي)</h2>
+      </div>
+      <div class="grid grid-2">
+        <div class="term-card" style="padding:14px 16px">
+          <div class="term-card-head" style="border:none; padding:0 0 6px">
+            <h4>متطلب سابق (Prerequisite)</h4>
+            <span style="color:var(--accent); font-size:1.0625rem">؟</span>
+          </div>
+          <p style="color:var(--muted); font-size:0.8438rem">مادة لازم تاخدها وتنجح فيها الأول، قبل ما تقدر تسجل مادة تانية بعدها. مثال: لازم تاخد "برمجة شيئية" قبل "تراكيب بيانات".</p>
+        </div>
+        <div class="term-card" style="padding:14px 16px">
+          <div class="term-card-head" style="border:none; padding:0 0 6px">
+            <h4>ساعة معتمدة (Credit Hour)</h4>
+            <span style="color:var(--accent); font-size:1.0625rem">؟</span>
+          </div>
+          <p style="color:var(--muted); font-size:0.8438rem">وحدة قياس "وزن" المادة. كل مادة ليها عدد ساعات معتمدة (غالبًا 2 أو 3)، ومجموعها كله لازم يوصل 132 ساعة عشان تتخرج.</p>
+        </div>
+        <div class="term-card" style="padding:14px 16px">
+          <div class="term-card-head" style="border:none; padding:0 0 6px">
+            <h4>CGPA (المعدل التراكمي العام)</h4>
+            <span style="color:var(--accent); font-size:1.0625rem">؟</span>
+          </div>
+          <p style="color:var(--muted); font-size:0.8438rem">متوسط درجاتك في كل الترمات من أول ما دخلت الكلية لحد دلوقتي — وده اللي بيتحدد بيه تقديرك النهائي وقت التخرج.</p>
+        </div>
+        <div class="term-card" style="padding:14px 16px">
+          <div class="term-card-head" style="border:none; padding:0 0 6px">
+            <h4>GPA (المعدل الفصلي)</h4>
+            <span style="color:var(--accent); font-size:1.0625rem">؟</span>
+          </div>
+          <p style="color:var(--muted); font-size:0.8438rem">متوسط درجاتك في ترم واحد بس، محسوب حسب الساعات المعتمدة لكل مادة.</p>
+        </div>
+        <div class="term-card" style="padding:14px 16px">
+          <div class="term-card-head" style="border:none; padding:0 0 6px">
+            <h4>رئيسي / فرعي (Major / Minor)</h4>
+            <span style="color:var(--accent); font-size:1.0625rem">؟</span>
+          </div>
+          <p style="color:var(--muted); font-size:0.8438rem">"رئيسي" هو التخصص الأساسي اللي بياخد أكبر عدد ساعات (عندك: إحصاء). "فرعي" تخصص إضافي أصغر بيدخل خلفية في مجال تاني (عندك: حاسب).</p>
+        </div>
+        <div class="term-card" style="padding:14px 16px">
+          <div class="term-card-head" style="border:none; padding:0 0 6px">
+            <h4>إجباري / اختياري</h4>
+            <span style="color:var(--accent); font-size:1.0625rem">؟</span>
+          </div>
+          <p style="color:var(--muted); font-size:0.8438rem">"إجباري" لازم تاخدها زي ما هي. "اختياري" تختار منها عدد ساعات معين من قائمة أكبر (مثلًا تختار 20 ساعة من قائمة فيها 68 ساعة).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px; text-align:center">
+      <p style="font-size:0.8125rem; color:var(--accent); line-height:1.8">
+        ملف مبني على "اللائحة الدراسية المعدلة لمرحلة البكالوريوس بنظام الساعات المعتمدة 2017/2018" وخارطة
+        <span class="ltr code">"Computer Science &amp; Statistics Specializations Diagram"</span>
+        (إعداد <span class="ltr code">Omar M. Gaber</span>). ده مرجع استرشادي غير رسمي — المرجع الرسمي دايمًا هو شئون الطلاب والمرشد الأكاديمي.
+      </p>
+      <div class="toolbar" style="justify-content:center; margin-top:16px">
+        <a class="btn" href="https://www.facebook.com/groups/426383584203461" target="_blank" rel="noopener">👥 جروب تخصص الحاسب</a>
+        <a class="btn" href="https://www.facebook.com/Math.CS.FOS" target="_blank" rel="noopener">📘 صفحة القسم الرسمية</a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============ SECTION GUIDE ============ -->
+  <section id="sec-guide">
+    <div class="section-head">
+      <span class="eyebrow">GUIDE — دليل الملف</span>
+      <h2>دليل سريع: الملف، مصادره، واستخدامه</h2>
+      <p>ملخص وافي في صفحة واحدة قبل ما تبدأ.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:1rem; margin-bottom:8px;">📌 نبذة عن الملف</h3>
+      <p style="font-size:0.875rem; color:var(--muted); max-width:80ch;">مرجع تفاعلي لخطة <b style="color:var(--text)">رئيسي إحصاء + فرعي علوم الحاسب</b> — كلية العلوم، جامعة الإسكندرية. بيلمّلك الساعات، المقررات، متطلباتها السابقة، وخطة توزيع مبدئية على 8 ترمات في مكان واحد.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:1rem; margin-bottom:12px;">📚 المصادر</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>المصدر</th><th>دوره</th></tr></thead>
+          <tbody>
+            <tr><td>📕 <b>اللائحة الدراسية المعدلة</b> — كلية العلوم، جامعة الإسكندرية <span class="code">2017/2018</span></td><td>المصدر الرسمي والأساسي لكل الأكواد والساعات والمتطلبات (جداول ج، د، 3-1، 4-1، 9-1، 5-1، 6-1، 12-1)</td></tr>
+            <tr><td>🗺️ خارطة <span class="ltr code">Computer Science & Statistics Specializations</span> — <span class="ltr code">Omar M. Gaber</span></td><td>مرجع ثانوي غير رسمي لمقارنة الأكواد والاعتماديات العامة</td></tr>
+            <tr><td>🗺️ خارطة <span class="ltr code">Major Statistics</span></td><td>مرجع ثانوي غير رسمي لمسار الإحصاء بالذات</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem; color:var(--muted); margin-top:10px;">عند أي تعارض بين المصادر، الأولوية دايمًا لأرقام <b style="color:var(--text)">اللائحة الرسمية</b>. بيانات الملف اتراجعت وتقابلت جدول بجدول مع نسخة اللائحة قبل النشر.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:1rem; margin-bottom:12px;">🧭 الأقسام في الملف</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>التاب</th><th>ملخص</th></tr></thead>
+          <tbody>
+            <tr><td>⏱️ توزيع الـ132 ساعة</td><td>توزيع الـ132 ساعة (جامعة/كلية/رئيسي/فرعي/حر)</td></tr>
+            <tr><td>🔀 رئيسي وفرعي</td><td>تركيبة الرئيسي (66) والفرعي (22) ومتى يبدأ كل منهم</td></tr>
+            <tr><td>🔢 ترقيم المواد</td><td>شرح كود المادة + أداة تفكيك كود</td></tr>
+            <tr><td>📋 بنك المواد الكامل</td><td>كل المقررات مبوبة وقابلة للبحث، مع مصدر كل جدول</td></tr>
+            <tr><td>🗂️ خطة الترمات</td><td>توزيع مبدئي (غير رسمي) على 8 ترمات، بتيك بوكس، مع تقديرات فعلية اختيارية لحساب GPA/CGPA تقديري لكل مادة متيكة</td></tr>
+            <tr><td>✅ خطتي الفعلية</td><td>تسجيل حقيقي بترم/سنة فعلية للمواد اللي أخدتها بالفعل ونتيجتها — منفصل تمامًا عن الخطة النظرية فوق، مع ترشيح ذكي للمواد الجاية ولوحة متابعة</td></tr>
+            <tr><td>📄 البيان الأكاديمي</td><td>بيان مطبوع بكل مادة سجّلتها فعليًا (مع علامات آخر محاولة/مستبعدة)، وحالتك الأكاديمية (إنذار حسب مادة 14، وأهلية مرتبة الشرف) محسوبة من تسجيلك الحقيقي</td></tr>
+            <tr><td>🧩 خريطة المتطلبات</td><td>متطلبات أي مادة قبلها وبعدها</td></tr>
+            <tr><td>📊 حاسبة GPA</td><td>جدول التقديرات الرسمي + حاسبة GPA</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:1rem; margin-bottom:8px;">📎 ملحق: كل مصدر ورقم صفحة اتاخدت منه معلومة في الملف</h3>
+      <p style="font-size:0.875rem; color:var(--muted); max-width:80ch; margin-bottom:12px;">قائمة واحدة مجمّعة بدل ما تكون موزّعة جوّه كل كارت — مفيدة لو حابب تتأكد بسرعة أو تراجع مع مرشد أكاديمي.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>المصدر</th><th>صفحة اللائحة</th><th>استُخدم في الملف عشان...</th></tr></thead>
+          <tbody>
+            <tr><td><b>جدول (ب)</b></td><td class="code">13</td><td>تأكيد إن القسم بيمنح "الدرجة الخاصة" في الرياضيات وعلوم الحاسب بس (مفيش سبيشيال إحصاء) — تاب 03</td></tr>
+            <tr><td><b>جدول (ج)</b></td><td class="code">15</td><td>إجمالي الـ132 ساعة (جامعة/كلية/رئيسي/فرعي/حر) + شروط تخرج إضافية بدون احتساب ساعات — تابات 01، 02، 03</td></tr>
+            <tr><td><b>جدول (د)</b></td><td class="code">16</td><td>توزيع ساعات الكلية الـ26 حسب الشعبة (الطبيعية)</td></tr>
+            <tr><td><b>جدول متطلبات أ</b></td><td class="code">24-25</td><td>أكواد وساعات ومتطلبات مواد الكلية (تفاضل، ميكانيكا، فيزياء، كيمياء) — تاب 05</td></tr>
+            <tr><td><b>مادة (9)</b></td><td class="code">16</td><td>نظام ترقيم المقررات، المستويات الأربعة، وقاعدة الأرقام الفردية/الزوجية — تاب 04</td></tr>
+            <tr><td><b>مادة (11) + جدول (و)</b></td><td class="code">18</td><td>سلم التقديرات الحرفية والنقاط (A إلى F) — تاب 08</td></tr>
+            <tr><td><b>مادة (12)</b></td><td class="code">20</td><td>تعريف وشروط "الدرجة الخاصة" (88 ساعة: 62 إجباري + 26 اختياري) — تاب 03</td></tr>
+            <tr><td><b>مادة (13)</b></td><td class="code">20</td><td>حدود العبء الدراسي (12-17 ساعة عادي) — تنبيه تحميل الترم في تاب 06</td></tr>
+            <tr><td><b>جدول 3-1</b></td><td class="code">32</td><td>المقررات الإجبارية لرئيسي الإحصاء (46 ساعة) — تاب 05</td></tr>
+            <tr><td><b>جدول 4-1</b></td><td class="code">33</td><td>المقررات الاختيارية لرئيسي الإحصاء (33 ساعة، يُختار 20) — تاب 05</td></tr>
+            <tr><td><b>جدول 5-1 و6-1</b></td><td class="code">33-36</td><td>مقررات رئيسي علوم الحاسب الإجبارية والاختيارية — مصدر مجموعة اختياري الفرعي (6 ساعات) — تاب 05</td></tr>
+            <tr><td><b>جدول 9-1</b></td><td class="code">37</td><td>مقررات فرعي علوم الحاسب (16 إجباري + 6 اختياري) — تاب 05</td></tr>
+            <tr><td><b>جدول 11-1</b></td><td class="code">38-39</td><td>تفاصيل "الدرجة الخاصة في علوم الحاسب" رقميًا للمقارنة — تاب 03</td></tr>
+            <tr><td><b>جدول 12-1</b></td><td class="code">39</td><td>مقررات لغير المتخصصين (مصفوفات، تحليل عددي 1، رياضيات عامة) — مواد "داعمة" في تاب 05</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.75rem; color:var(--muted); margin-top:12px;">بالإضافة لخارطتي <span class="ltr code">Computer Science & Statistics Specializations</span> و<span class="ltr code">Major Statistics</span> (Omar M. Gaber) كمرجع ثانوي للمقارنة فقط — الأولوية دايمًا لأرقام اللائحة الرسمية.</p>
+    </div>
+
+  </section>
+  <!-- ============ SECTION 2 ============ -->
+  <section id="sec-2">
+    <div class="section-head">
+      <span class="eyebrow">02 — الساعات المطلوبة</span>
+      <h2>إجمالي الساعات المطلوبة للتخرج</h2>
+      <p>132 ساعة معتمدة بحد أدنى، بمعدل تراكمي عام لا يقل عن 2.0. <span class="source">المصدر: جدول (ج) — اللائحة، صفحة 15</span></p>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>البند</th><th>الساعات الإجمالية</th><th>إجباري</th><th>اختياري</th></tr></thead>
+          <tbody>
+            <tr><td>متطلبات الجامعة</td><td class="code">10</td><td class="code">4</td><td class="code">6</td></tr>
+            <tr><td>متطلبات الكلية</td><td class="code">26</td><td class="code">26</td><td class="code">–</td></tr>
+            <tr><td>التخصص الرئيسي — الإحصاء</td><td class="code">66</td><td class="code">46</td><td class="code">20</td></tr>
+            <tr><td>التخصص الفرعي — علوم الحاسب</td><td class="code">22</td><td class="code">16</td><td class="code">6</td></tr>
+            <tr><td>مقررات الاختيار الحر</td><td class="code">8</td><td class="code">–</td><td class="code">8</td></tr>
+            <tr style="font-weight:800"><td>الإجمالي</td><td class="code">132</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:4px; border-radius:10px; overflow:hidden; height:26px;">
+        <div style="width:7.6%; background:var(--college)" title="متطلبات الجامعة 10h"></div>
+        <div style="width:19.7%; background:var(--support)" title="متطلبات الكلية 26h"></div>
+        <div style="width:50%; background:var(--req46)" title="رئيسي إحصاء 66h"></div>
+        <div style="width:16.7%; background:var(--req16)" title="فرعي حاسب 22h"></div>
+        <div style="width:6.1%; background:var(--elective)" title="اختيار حر 8h"></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--college)"></i>متطلبات الجامعة (10)</span>
+        <span><i style="background:var(--support)"></i>متطلبات الكلية (26)</span>
+        <span><i style="background:var(--req46)"></i>رئيسي إحصاء (66)</span>
+        <span><i style="background:var(--req16)"></i>فرعي حاسب (22)</span>
+        <span><i style="background:var(--elective)"></i>اختيار حر (8)</span>
+      </div>
+
+      <h3 style="font-size:0.9375rem; margin-top:24px;">تفاصيل متطلبات الجامعة (10 ساعات)</h3>
+      <p style="font-size:0.8438rem; color:var(--muted)">4 ساعات إجبارية: لغة عربية (2) + لغة إنجليزية (2). و6 ساعات اختيارية من قائمة: مبادئ الفلسفة، الإنسان والبيئة، أساسيات الإدارة، المحاسبة، مبادئ الصحة العامة، مقدمة في علم الآثار، أخلاقيات المهنة، إدارة الذات، مبادئ علم النفس، تصميم وفنون جميلة، مدخل القانون.</p>
+
+      <h3 style="font-size:0.9375rem; margin-top:18px;">متطلبات الكلية (26 ساعة، إجبارية بالكامل) — لشعبة العلوم الطبيعية</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>المادة</th><th>الساعات</th></tr></thead>
+          <tbody>
+            <tr><td>رياضيات بحتة (Calculus 1&2)</td><td class="code">6</td></tr>
+            <tr><td>رياضيات تطبيقية (Mechanics 1&2)</td><td class="code">4</td></tr>
+            <tr><td>حاسب آلي (Computer Programming and Applications)</td><td class="code">2</td></tr>
+            <tr><td>فيزياء (General Physics 1&2)</td><td class="code">6</td></tr>
+            <tr><td>كيمياء (General Chemistry 1&2&3 + معامل)</td><td class="code">8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note info">
+        <span class="ic">ℹ️</span>
+        <div>متطلبات إضافية للتخرج بدون احتساب ساعات: اجتياز "حقوق الإنسان" و"مقدمة في الحاسب الآلي" بنجاح (بدون احتساب في المعدل)، أداء دورة التربية العسكرية، والتدريب الصيفي (4-6 أسابيع في التخصص الرئيسي بدون احتساب ساعات).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 3 ============ -->
+  <section id="sec-3">
+    <div class="section-head">
+      <span class="eyebrow">03 — رئيسي أم فرعي؟</span>
+      <h2>تركيبة "الدرجة العامة" — رئيسي إحصاء + فرعي علوم الحاسب</h2>
+      <p><span class="source">المصدر: جدول (ج) صفحة 15، وجداول 3-1 (صفحة 32) / 4-1 (صفحة 33) / 9-1 (صفحة 37) في اللائحة</span></p>
+    </div>
+    <div class="card">
+      <div class="grid grid-2">
+        <div class="compare-card special">
+          <h3>📊 التخصص الرئيسي — الإحصاء (66 ساعة)</h3>
+          <ul>
+            <li><b>46 ساعة إجبارية</b> — جدول (3-1): كل مقررات الإحصاء الأساسية + جبر خطي وتحليل رياضي وبحوث عمليات.</li>
+            <li><b>20 ساعة اختيارية</b> — تُختار من مجموعة 33 ساعة في جدول (4-1) (رقابة جودة، تحليل بيانات نوعية، تنقيب بيانات، نظرية احتمالات...).</li>
+            <li>مقررات الرئيسي تبدأ من <b>الفصل الدراسي الأول</b>.</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <h3>💻 التخصص الفرعي — علوم الحاسب (22 ساعة)</h3>
+          <ul>
+            <li><b>16 ساعة إجبارية</b> — جدول (9-1): برمجة شيئية، تراكيب بيانات، تراكيب متقطعة، برمجة شبكات، قواعد بيانات، ذكاء اصطناعي.</li>
+            <li><b>6 ساعات اختيارية</b> — تُختار من نفس مقررات جدولي (5-1) و(6-1) الخاصة بتخصص علوم الحاسب الرئيسي، بعد استبعاد الـ16 ساعة الإجبارية أعلاه.</li>
+            <li>مقررات الفرعي تبدأ من <b>الفصل الدراسي الخامس</b>، بعد اختيار التخصص الفرعي.</li>
+          </ul>
+          <p style="font-size:0.75rem; color:var(--muted); margin-top:8px;">ملحوظة: مادتا "تحليل رياضي" (1232) و"طرق عددية" (1333) موجودتين أصلًا ضمن حساب التخصص الرئيسي (إحصاء) في هذا الملف، فمش مكررين تاني في قائمة اختيار الفرعي، رغم إنهم من ضمن جدول (6-1) نفسه.</p>
+        </div>
+      </div>
+
+      <div class="note info" style="margin-top:16px">
+        <span class="ic">ℹ️</span>
+        <div>الفرق الجوهري عن "السبيشيال": في الدرجة العامة، كل الـ88 ساعة تخصص (66+22) بتتقسم على <b>تخصصين مختلفين</b> (رئيسي وفرعي)، مقابل السبيشيال اللي بتحط الـ88 ساعة كلها في تخصص واحد بس. الرئيسي هنا هو الإحصاء مش علوم الحاسب — يعني معظم حِمل مقرراتك (66 من 88) هيكون في الإحصاء، وعلوم الحاسب هيبقى تكملة أصغر (22 ساعة).</div>
+      </div>
+
+      <h3 style="font-size:0.9375rem; margin-top:22px;">📌 حسب اللائحة، الفرعي بيبدأ إمتى وليه؟</h3>
+      <p style="font-size:0.8438rem; color:var(--muted); max-width:80ch;">اللائحة بتنص على إن الطالب يبدأ دراسة مقررات التخصص الرئيسي من الفصل الأول (بمجرد التحاقه بالقسم)، بينما مقررات التخصص الفرعي بتبدأ من <b class="code">الفصل الخامس</b> فقط، وده بعد ما يكون الطالب اختار الفرعي رسميًا. عمليًا كده الترمين 1-4 غالبًا هيكونوا مقررات كلية + رئيسي بس، والفرعي بيدخل بداية من الترم 5.</p>
+
+      <h3 style="font-size:0.9375rem; margin-top:22px;">🔢 مقارنة رقمية: الدرجة العامة (ملفك) مقابل السبيشيال</h3>
+      <div class="note warn" style="margin:10px 0 14px;">
+        <span class="ic">⚠️</span>
+        <div>اكتشاف مهم من <b>جدول (ب)</b> في اللائحة (صفحة 13): القسم بيمنح "الدرجة الخاصة" في تخصصي <b>الرياضيات</b> و<b>علوم الحاسب</b> بس — <b>مفيش سبيشيال إحصاء أصلًا</b>. يعني لو فكّرت تحوّل لسبيشيال، الخيار الوحيد المرتبط بمسارك عمليًا هو سبيشيال علوم الحاسب (نفس فكرة ملفك التاني).</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>الدرجة العامة — إحصاء (رئيسي) + حاسب (فرعي)</th><th>سبيشيال علوم الحاسب — جدول 11-1</th></tr></thead>
+          <tbody>
+            <tr><td>إجمالي ساعات التخصص</td><td>88 ساعة</td><td>88 ساعة</td></tr>
+            <tr><td>موزّعة على</td><td><b>مجالين</b>: 66 إحصاء + 22 حاسب</td><td><b>مجال واحد</b>: 88 حاسب بالكامل</td></tr>
+            <tr><td>إجباري</td><td>46 (إحصاء) + 16 (حاسب) = 62</td><td>46 (جدول 5-1) + 16 إضافية (جدول 11-1) = 62</td></tr>
+            <tr><td>اختياري</td><td>20 (إحصاء) + 6 (حاسب) = 26</td><td>26 من جدول 6-1</td></tr>
+            <tr><td>مواد إحصاء هتاخدها</td><td>66 ساعة</td><td>صفر</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 4 ============ -->
+  <section id="sec-4">
+    <div class="section-head">
+      <span class="eyebrow">04 — ترقيم المواد</span>
+      <h2>نظام ترقيم المواد وتحديد المستوى</h2>
+      <p><span class="source">المصدر: مادة (9) في اللائحة، وخارطة Omar M. Gaber</span></p>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>المستوى</th><th>الساعات المجتازة</th><th>ترقيم كود المادة</th></tr></thead>
+          <tbody>
+            <tr><td>الأول (Freshman)</td><td class="code">0 – 32</td><td class="code">1xx</td></tr>
+            <tr><td>الثاني (Sophomore)</td><td class="code">33 – 66</td><td class="code">2xx</td></tr>
+            <tr><td>الثالث (Junior)</td><td class="code">67 – 99</td><td class="code">3xx</td></tr>
+            <tr><td>الرابع (Senior)</td><td class="code">100+</td><td class="code">4xx</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note tip">
+        <span class="ic">💡</span>
+        <div>الأرقام الفردية (201، 203...) غالبًا تُطرح في فصل الخريف، والزوجية (202، 204...) غالبًا في فصل الربيع. الحمل الدراسي: 12-13 ساعة كحد أدنى إلى 17 كحد أقصى عادي، وممكن يوصل لـ19 ساعة بمعدل 3+ واجتياز 33 ساعة على الأقل وموافقة المرشد.</div>
+      </div>
+
+      <h3 style="font-size:0.9375rem; margin-top:22px;">🔎 فك كود المادة</h3>
+      <p style="font-size:0.8125rem; color:var(--muted)">اكتب أي كود مادة (زي 040102201 لمادة إحصاء، أو 040103201 لمادة حاسب) واعرف يعني إيه كل رقم فيه.</p>
+      <div class="decoder">
+        <input type="text" id="decoderInput" maxlength="9" placeholder="040102201" class="ltr">
+        <div class="decoder-out" id="decoderOut"></div>
+      </div>
+    </div>
+
+    <div class="note tip">
+      <span class="ic">🙂</span>
+      <div>
+        <div>قاعدة "فردي/زوجي" فوق تقريبية بس، مش قانون ثابت — طبيعي جدًا وعادي إن القسم يطرح إن مادة عكس كودها (مثلًا مادة بكود زوجي بتتاخد في فصل فردي)، وده مش خطأ ولا حاجة تقلق منها. الجدول الحقيقي لأي مادة (فين بالظبط بتتاخد) موجود في خطة الترمات (قسم 06)، ومبني على معلومات حقيقية من طلاب في القسم مش بس على الكود.</div>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="showSection('sec-6')">📅 شوف خطة الترمات</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ============ SECTION 5 ============ -->
+  <section id="sec-5">
+    <div class="section-head">
+      <span class="eyebrow">05 — الجداول التفصيلية</span>
+      <h2>جداول المواد التفصيلية (من اللائحة)</h2>
+      <p>ابحث بالاسم أو الكود، أو افتح كل جدول لوحده.</p>
+    </div>
+    <div class="card">
+      <div class="search-row">
+        <input type="text" id="courseSearch" placeholder="ابحث عن مادة بالاسم أو الكود..." aria-label="بحث عن مادة بالاسم أو الكود">
+        <select id="courseFilter" aria-label="فلترة المواد حسب النوع">
+          <option value="all">كل الفئات</option>
+          <option value="reqMajor">إجباري الرئيسي — إحصاء (46 ساعة)</option>
+          <option value="electMajor">اختياري الرئيسي — إحصاء (يُختار 20 من 33)</option>
+          <option value="reqMinor">إجباري الفرعي — حاسب (16 ساعة)</option>
+          <option value="electMinor">اختياري الفرعي — حاسب (يُختار 6)</option>
+          <option value="college">متطلبات كلية / مستوى أول</option>
+          <option value="support">مادة داعمة</option>
+        </select>
+      </div>
+      <div id="accordionHost"></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 6 ============ -->
+  <section id="sec-6">
+    <div class="section-head">
+      <span class="eyebrow">06 — التوزيع الزمني</span>
+      <h2>اقتراح توزيع على 8 ترمات</h2>
+      <p>غير رسمي، يحتاج تأكيد من المرشد الأكاديمي — لكنه محسوب بحيث كل مادة متاحة فعليًا بعد متطلبها السابق، ومقررات الفرعي تبدأ من الترم 5، ومجموع الساعات = 132 بالظبط.</p>
+    </div>
+    <div class="note warn">
+      <span class="ic">⚠️</span>
+      <div>اللائحة نفسها مفهاش جدول رسمي جاهز بترم بترم — هي بس بتحدد المستوى والحمل الدراسي المسموح، ومتى يبدأ كل من الرئيسي والفرعي. رتّب المواد الفعلي بيعتمد على جدول الأقسام كل ترم. علامة <span style="color:var(--rose)">⚠️</span> جنب أي مادة تحت معناها إن متطلبها السابق متحط في نفس الترم أو بعده في الترتيب الحالي — لو غيّرت أماكن المواد راجع الترتيب.</div>
+    </div>
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;">
+        <div>
+          <b style="font-family:var(--font-display)">تقدّمك في الخطة</b>
+          <div style="font-size:0.75rem; color:var(--muted)" id="progressText">0 من 132 ساعة متبقّية عليها تيك</div>
+        </div>
+        <div style="min-width:220px; flex:1">
+          <div class="progress-bar"><div id="progressFill" style="width:0%"></div></div>
+        </div>
+        <button class="btn" id="resetProgress">تصفير</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <b style="font-family:var(--font-display); display:block; margin-bottom:12px;">تقدّمك حسب فئة المواد</b>
+      <div id="catProgressHost" class="grid grid-2" style="gap:12px;"></div>
+    </div>
+
+    <div class="term-grid" id="termGrid" style="margin-top:16px;"></div>
+    <div class="card plan-cgpa-card" id="planCgpaCard" style="display:none;">
+      <div>
+        <b style="font-family:var(--font-display); display:block; margin-bottom:2px;">📊 معدلك التراكمي من التقديرات اللي دخلتها هنا</b>
+        <span style="font-size:0.75rem; color:var(--muted);">بيتحدّث لحظيًا كل ما تحط تقدير جنب مادة متيكة — منفصل عن حاسبة GPA اليدوية تحت (قسم 10)</span>
+      </div>
+      <div style="display:flex; gap:22px;">
+        <div class="pcg-box"><b id="planCgpaValue">0.00</b><span>CGPA</span></div>
+        <div class="pcg-box"><b id="planCgpaHours">0</b><span>ساعة مُقيَّمة</span></div>
+      </div>
+    </div>
+    <div class="note info" style="margin-top:16px">
+      <span class="ic">ℹ️</span>
+      <div>التيك هنا بيتحفظ تلقائيًا في المتصفح ده على الجهاز ده (حتى لو قفلت الصفحة وفتحتها تاني). لو عايز تنقل تقدمك لجهاز أو متصفح تاني، في قسم "حاسبة GPA" تحت (10) تقدر تصدّر تقدمك كنص وتحطه في مكان آمن، وترجع تلصقه تاني في أي وقت.</div>
+    </div>
+
+    <div class="card" id="nextTermCard" style="margin-top:16px;">
+      <b style="font-family:var(--font-display); display:block; margin-bottom:6px;">🚦 المواد المتاحة تسجيلها دلوقتي</b>
+      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">محسوبة تلقائيًا من المواد اللي عليها تيك تحت — أي مادة متطلبها السابق خلص، بتظهر هنا حتى لو ترمها المقترح مختلف.</p>
+      <div id="nextTermHost" class="grid grid-3" style="gap:10px;"></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION: خطتي الفعلية ============ -->
+  <section id="sec-actual">
+    <div class="section-head">
+      <span class="eyebrow">08 — تسجيل حقيقي</span>
+      <h2>خطتي الفعلية</h2>
+      <p>ده تسجيل حقيقي لمواد أخدتها بالفعل، بترمها ونتيجتها — <b>منفصل تمامًا</b> عن "خطة الترمات" النظرية فوق (اللي هي بس اقتراح توزيع غير رسمي). البيانات هنا بتتخزن في مكان مستقل خالص، ومحسوبة من نتائجك الحقيقية بس، مش من أي تيك في تاب تاني.</p>
+    </div>
+    <div class="note warn">
+      <span class="ic">⚠️</span>
+      <div>متلخبطش بين التابين: تاب "خطة الترمات" هو اقتراح افتراضي بتتيك عليه عشان تخطط، أما هنا فبتسجّل اللي حصل بالفعل (ترم حقيقي، مادة سجّلتها فعلًا، وتقديرك فيها لو خلص). الترشيح الذكي والفحوصات هنا بتعتمد على التسجيل الحقيقي فقط.</div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;">
+        <div>
+          <b style="font-family:var(--font-display)">تقدّمك الفعلي نحو التخرج</b>
+          <div style="font-size:0.75rem; color:var(--muted)" id="actualProgressText">0 ساعة مكتسبة (نجحت فيها) من 132 · 0 ساعة مسجّلة إجمالًا</div>
+        </div>
+        <div style="min-width:220px; flex:1">
+          <div class="progress-bar"><div id="actualProgressFill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <b style="font-family:var(--font-display); display:block; margin-bottom:12px;">تقدّمك حسب فئة المواد (ساعات مكتسبة فقط)</b>
+      <div id="actualCatProgressHost" class="grid grid-2" style="gap:12px;"></div>
+    </div>
+    <div class="card plan-cgpa-card" id="actualCgpaCard" style="display:none;">
+      <div>
+        <b style="font-family:var(--font-display); display:block; margin-bottom:2px;">📊 معدلك التراكمي الفعلي</b>
+        <span style="font-size:0.75rem; color:var(--muted);">محسوب من آخر محاولة بس لكل مادة (لو أعدتها) وبيستبعد أي ترم "معادلة"</span>
+      </div>
+      <div style="display:flex; gap:22px;">
+        <div class="pcg-box"><b id="actualCgpaValue">0.00</b><span>CGPA</span></div>
+        <div class="pcg-box"><b id="actualCgpaHours">0</b><span>ساعة داخلة في المعدل</span></div>
+      </div>
+    </div>
+    <div class="note info" style="margin-top:16px">
+      <span class="ic">ℹ️</span>
+      <div>عايز تشوف حالتك الأكاديمية الكاملة (إنذار/مرتبة الشرف) أو بيان مطبوع بكل مواد سجّلتها؟ اتنقل لتاب "البيان الأكاديمي".</div>
+    </div>
+
+    <div class="card" style="margin-top:16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+      <b style="font-family:var(--font-display)">الترمات المسجّلة</b>
+      <button class="btn primary" id="addTermBtn" type="button">+ سجّل ترم جديد</button>
+    </div>
+    <div id="actualTermsHost" style="margin-top:14px; display:flex; flex-direction:column; gap:14px;"></div>
+
+    <div class="card" id="actualNextTermCard" style="margin-top:16px;">
+      <b style="font-family:var(--font-display); display:block; margin-bottom:6px;">🚦 مواد مقترحة للترم الجاي (من تسجيلك الفعلي)</b>
+      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">محسوبة من المواد اللي سجّلتها ونجحت فيها فعلًا هنا بس. المواد بعلامة <span class="badge crit" style="margin:0">⚡</span> من "المسار الحرج" (تاب خريطة المتطلبات) — سجّلها بالأولوية. العبء الدراسي العادي حسب اللائحة 12-17 ساعة، وممكن يوصل لـ19 بموافقة المرشد لو معدلك 3.0+ واجتزت 33 ساعة، أو 21 في آخر ترم تخرج بموافقة لجنة شئون التعليم.</p>
+      <div id="actualNextTermHost" class="grid grid-3" style="gap:10px;"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 style="font-size:0.9375rem; margin-bottom:10px;">💾 تصدير / استيراد تسجيلك الفعلي (منفصل عن أي تصدير تاني في الملف)</h3>
+      <div class="search-row">
+        <button class="btn" id="actualExportBtn" type="button">تصدير كنص</button>
+        <button class="btn" id="actualImportBtn" type="button">استيراد من نص</button>
+      </div>
+      <textarea id="actualJsonBox" rows="3" style="width:100%; margin-top:10px; background:var(--surface2); border:1px solid var(--line-strong); border-radius:9px; color:var(--text); font-family:var(--font-mono); font-size:0.75rem; padding:10px;" placeholder="هيظهر هنا نص التصدير، أو الصق نص استيراد هنا"></textarea>
+    </div>
+  </section>
+
+  <!-- ============ SECTION: البيان الأكاديمي ============ -->
+  <section id="sec-transcript">
+    <div class="section-head">
+      <span class="eyebrow">09 — بيان وحالة</span>
+      <h2>البيان الأكاديمي</h2>
+      <p>بيان كامل بكل مادة سجّلتها فعليًا في تاب "خطتي الفعلية"، وحالتك الأكاديمية المحسوبة منها.</p>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <b style="font-family:var(--font-display)">📄 بيان الحالة (Transcript)</b>
+        <button class="btn" id="transcriptPrintBtn" title="طباعة البيان" aria-label="طباعة البيان">🖨️ طباعة البيان</button>
+      </div>
+      <div class="table-wrap" style="margin-top:12px;">
+        <table id="transcriptTable" class="gpa-table">
+          <thead><tr><th>الترم</th><th>الكود</th><th>المادة</th><th>الساعات</th><th>التقدير</th><th>النقاط</th><th>التصنيف</th><th>الحالة</th></tr></thead>
+          <tbody id="transcriptBody"></tbody>
+        </table>
+      </div>
+      <div id="transcriptEmptyHint" class="empty-hint" style="display:none;">لسه مفيش أي مادة مسجّلة في "خطتي الفعلية" — البيان هيتملى تلقائي أول ما تسجّل حاجة هناك.</div>
+    </div>
+
+    <div class="card" id="academicStatusCard" style="margin-top:16px; display:none;">
+      <b style="font-family:var(--font-display); display:block; margin-bottom:12px;">🎓 الحالة الأكاديمية (حسب مادة 14 من اللائحة)</b>
+      <div id="academicStatusHost" style="display:flex; flex-direction:column; gap:12px;"></div>
+      <p style="font-size:0.6875rem; color:var(--muted); margin-top:10px;">حساب تقريبي بيتبني على تسجيلك الفعلي في تاب "خطتي الفعلية" بس — مش بديل عن الحالة الرسمية عند شئون الطلاب.</p>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 7 ============ -->
+  <section id="sec-7">
+    <div class="section-head">
+      <span class="eyebrow">07 — خريطة المتطلبات</span>
+      <h2>دليل المتطلبات السابقة الكامل</h2>
+      <p>أهم حاجة تعرفها: مادة <b class="code">طرق إحصائية</b> ومادة <b class="code">برمجة شيئية (OOP)</b> هما مفاتيح رئيسية بتفتح عدة مواد. اختار أي مادة تحت واعرف بتفتح إيه وبيفتحها إيه.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:4px;">🔑 المسار الحرج — مواد لو اتأخرت هتأخّرك</h3>
+      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">محسوبة تلقائيًا: أي مادة (غير مواد الكلية) بتفتح 5 مواد تانية أو أكتر بالتخصص (مباشرة وغير مباشرة). سجّلها أول ما تقدر — تأخيرها بيأخّر سلسلة طويلة وراها.</p>
+      <div class="grid grid-2" id="criticalPathHost" style="gap:8px;"></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:10px;">🗺️ رسم بصري للمتطلبات</h3>
+      <div class="search-row">
+        <select id="explorerSelect" aria-label="اختر مادة لعرض متطلباتها"></select>
+      </div>
+      <div id="explorerGraph" class="explorer-graph"></div>
+      <div class="explorer">
+        <div class="explorer-col" id="prereqCol"><h5>⬅ المتطلب السابق</h5></div>
+        <div class="explorer-col center" id="centerCol"></div>
+        <div class="explorer-col" id="opensCol"><h5>بتفتح ⬅</h5></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:4px;">🔗 السلسلة الكاملة (مش بس المباشرة)</h3>
+      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">كل المواد اللي لازم تخلصها قبل الوصول للمادة دي (حتى لو مش متطلب مباشر)، وكل المواد اللي هتتفتحلك في النهاية بعد ما تخلصها (مباشرة وغير مباشرة).</p>
+      <div class="grid grid-2">
+        <div>
+          <b style="font-size:0.8125rem; display:block; margin-bottom:8px;">⬅ لازم تخلص الأول (كل السلسلة)</b>
+          <div id="fullChainPrereq" class="grid" style="gap:6px;"></div>
+        </div>
+        <div>
+          <b style="font-size:0.8125rem; display:block; margin-bottom:8px;">بتفتح في النهاية ⬅ (كل السلسلة)</b>
+          <div id="fullChainOpens" class="grid" style="gap:6px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:10px;">📋 الجدول الكامل</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الكود</th><th>المادة</th><th>الساعات</th><th>المتطلب السابق</th><th>بتفتح</th></tr></thead>
+          <tbody id="fullPrereqTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 10 ============ -->
+  <section id="sec-10">
+    <div class="section-head">
+      <span class="eyebrow">08 — سجل الأداء</span>
+      <h2>سجل التقديرات وحاسبة المعدل التراكمي</h2>
+      <p>مبنية على الدلائل الرقمية والرمزية الرسمية للتقديرات (جدول و، مادة 11 في اللائحة).</p>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table id="gradeScaleTable">
+          <thead><tr><th>الرمز</th><th>الدرجة</th><th>النقاط</th><th>التقدير</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table class="gpa-table">
+          <thead><tr><th style="width:34%">اسم المادة</th><th>الساعات</th><th>التقدير</th><th></th></tr></thead>
+          <tbody id="gpaRows"></tbody>
+        </table>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="addRow">+ إضافة مادة</button>
+        <button class="btn primary" id="calcGpa">احسب معدل الترم</button>
+      </div>
+      <div class="gpa-result" id="gpaResult" style="display:none">
+        <div class="box"><b id="termGpa">0.00</b><span>معدل الترم (GPA)</span></div>
+        <div class="box"><b id="termHours">0</b><span>ساعات الترم</span></div>
+      </div>
+      <div class="toolbar" id="saveCumRow" style="display:none">
+        <input type="text" id="cumTermLabel" placeholder="اسم الترم (مثال: ترم 3)" style="flex:1; min-width:140px; background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:9px 12px; font-size:0.8125rem;">
+        <button class="btn" id="saveCumBtn">➕ احفظ هذا الترم في السجل التراكمي</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:10px;">📈 السجل التراكمي (كل الترمات مع بعض)</h3>
+      <p style="font-size:0.8125rem; color:var(--muted); margin-bottom:10px;">كل ترم بتحسبه فوق وتحفظه هيتضاف هنا، والمعدل التراكمي العام بيتحسب تلقائيًا من كل الترمات المحفوظة.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الترم</th><th>الساعات</th><th>معدل الترم</th><th></th></tr></thead>
+          <tbody id="cumRows"></tbody>
+        </table>
+      </div>
+      <div class="gpa-result" id="cumResult" style="display:none">
+        <div class="box"><b id="cumGpa">0.00</b><span>المعدل التراكمي العام</span></div>
+        <div class="box"><b id="cumHours">0</b><span>إجمالي الساعات المحفوظة</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:6px;">🎯 عايز أوصل لمعدل كام؟ (حاسبة عكسية)</h3>
+      <p style="font-size:0.8125rem; color:var(--muted); margin-bottom:12px;">بتاخد معدلك التراكمي المحفوظ فوق، وبتقولك محتاج تجيب كام في الساعات الباقية عليك عشان توصل للمعدل اللي عايزه.</p>
+      <div class="toolbar" style="flex-wrap:wrap; gap:12px; align-items:flex-end;">
+        <label style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--muted);">المعدل المستهدف (من 4)
+          <input type="number" id="targetCgpa" min="0" max="4" step="0.01" value="3.00" style="background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:9px 12px; font-size:0.875rem; width:120px;">
+        </label>
+        <label style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem; color:var(--muted);">الساعات الباقية عليك للتخرج
+          <input type="number" id="remainingHours" min="1" step="1" value="132" style="background:var(--surface2); border:1px solid var(--line-strong); color:var(--text); border-radius:9px; padding:9px 12px; font-size:0.875rem; width:140px;">
+        </label>
+        <button class="btn primary" id="calcReverseBtn">احسب</button>
+      </div>
+      <div id="reverseResult" style="margin-top:14px;"></div>
+      <div class="source" style="margin-top:10px;">الحساب معتمد على نفس صيغة المعدل التراكمي (مادة 11)، بافتراض إن إجمالي ساعات التخرج 132 ساعة ما لم تحدد رقم مختلف.</div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:0.9375rem; margin-bottom:10px;">💾 تصدير / استيراد تقدمك</h3>
+      <p style="font-size:0.8125rem; color:var(--muted); margin-bottom:10px;">الصفحة بتحفظ تيكاتك وبياناتك مؤقتًا وانت شغال بس. قبل ما تقفل الصفحة، اضغط "تصدير" وخزّن النص اللي هيظهر في أي مكان (نوت أو رسالة لنفسك)، ولما ترجع الصق النص واضغط "استيراد".</p>
+      <textarea class="jsonbox" id="jsonBox" placeholder="هنا هيظهر/تلصق كود التصدير..."></textarea>
+      <div class="toolbar">
+        <button class="btn" id="exportBtn">تصدير الحالة</button>
+        <button class="btn primary" id="importBtn">استيراد الحالة</button>
+      </div>
+      <div class="note info" style="margin-top:12px">
+        <span class="ic">ℹ️</span>
+        <div>الصفحة دلوقتي بتحفظ تقدمك تلقائيًا في متصفحك (تيكاتك، المواد المضافة أو المحذوفة، وحاسبة الـGPA) — من غير ما تحتاج تعمل تصدير كل مرة. الحفظ ده مرتبط بالمتصفح والجهاز ده بس، فلو هتفتح الملف من جهاز أو متصفح تاني استخدم التصدير/الاستيراد فوق.</div>
+      </div>
+      <div class="toolbar" style="margin-top:6px">
+        <button class="btn danger" id="clearLocalBtn">🗑️ امسح الحفظ المحلي وابدأ من جديد</button>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+</div><!-- #appFrame -->
+</div><!-- #deviceStage -->
+
+<!-- ============ DEVICE OPEN MODAL ============ -->
+<div id="devModalOverlay" onclick="if(event.target===this) DevModal.close()">
+  <div id="devModal">
+    <h3>🖥 اعرض الصفحة كإيه؟</h3>
+    <p>اختار حجم العرض اللي عايز تشوف بيه الصفحة — نفس اختيارات القايمة اللي فوق بالظبط.</p>
+    <div class="dev-options">
+      <button class="dev-btn" data-mode="auto" onclick="DevModal.select('auto')">
+        <span class="dev-ico">🖥</span>
+        <div class="dev-txt"><h4>Auto (Laptop)</h4></div>
+      </button>
+      <button class="dev-btn" data-mode="mobile" onclick="DevModal.select('mobile')">
+        <span class="dev-ico">📱</span>
+        <div class="dev-txt"><h4>Mobile</h4></div>
+      </button>
+      <button class="dev-btn" data-mode="tablet" onclick="DevModal.select('tablet')">
+        <span class="dev-ico">📲</span>
+        <div class="dev-txt"><h4>Tablet</h4></div>
+      </button>
+      <button class="dev-btn" data-mode="laptop" onclick="DevModal.select('laptop')">
+        <span class="dev-ico">💻</span>
+        <div class="dev-txt"><h4>Laptop</h4></div>
+      </button>
+    </div>
+    <button class="dev-close" onclick="DevModal.close()">إغلاق ✕</button>
+  </div>
+</div>
+<button id="devFab" onclick="DevModal.open()" title="معاينة على جهاز مختلف" aria-label="معاينة الصفحة على جهاز مختلف">📂</button>
+
+<!-- ============ REMOVE COURSE CONFIRM MODAL ============ -->
+<div id="removeModalOverlay" onclick="if(event.target===this) RemoveModal.close()">
+  <div id="removeModal">
+    <h3 id="removeModalTitle">حذف مادة؟</h3>
+    <div class="rm-meta" id="removeModalMeta"></div>
+    <div class="note warn" id="removeModalWarnNote"></div>
+    <div id="removeModalDirectWrap">
+      <div class="rm-section-title">📌 مواد بتتأثر مباشرة (متطلبها السابق هي المادة دي):</div>
+      <div class="rm-chips" id="removeModalDirect"></div>
+    </div>
+    <div id="removeModalChainWrap">
+      <div class="rm-section-title">🔗 باقي السلسلة المتأثرة (بشكل غير مباشر):</div>
+      <div class="rm-chips" id="removeModalChain"></div>
+    </div>
+    <div class="rm-actions">
+      <button class="btn danger" id="removeModalConfirmBtn">🗑️ تأكيد الحذف</button>
+      <button class="dev-close" id="removeModalCancelBtn">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div id="addTermModalOverlay" onclick="if(event.target===this) AddTermModal.close()">
+  <div id="addTermModal">
+    <h3>سجّل ترم جديد</h3>
+    <p style="font-size:0.8125rem; color:var(--muted); margin-bottom:18px;">اختار نوع الترم والفصل والسنة، وهنكوّنلك اسم الترم أوتوماتيك.</p>
+
+    <div class="atm-group">
+      <div class="atm-label">نوع الترم</div>
+      <div class="atm-cards" id="atmKindCards">
+        <button type="button" class="atm-card" data-kind="normal"><span class="atm-ico">📘</span><span>ترم عادي</span></button>
+        <button type="button" class="atm-card" data-kind="equiv"><span class="atm-ico">🔁</span><span>ترم معادلة</span><small>مواد منقولة من مؤسسة تانية</small></button>
+      </div>
+    </div>
+
+    <div class="atm-group">
+      <div class="atm-label">الفصل الدراسي</div>
+      <div class="atm-cards" id="atmSeasonCards">
+        <button type="button" class="atm-card" data-season="fall"><span class="atm-ico">🍂</span><span>خريف</span></button>
+        <button type="button" class="atm-card" data-season="spring"><span class="atm-ico">🌱</span><span>ربيع</span></button>
+        <button type="button" class="atm-card" data-season="summer"><span class="atm-ico">☀️</span><span>صيفي</span></button>
+      </div>
+    </div>
+
+    <div class="atm-group">
+      <div class="atm-label">السنة الدراسية</div>
+      <input type="number" id="atmYear" min="2015" max="2035" placeholder="مثلًا 2025" class="atm-year-input">
+    </div>
+
+    <div class="atm-preview" id="atmPreview">اختار الخيارات فوق لمعاينة اسم الترم</div>
+
+    <div class="rm-actions">
+      <button class="btn primary" id="atmConfirmBtn" type="button">✓ تأكيد وإضافة الترم</button>
+      <button class="dev-close" id="atmCancelBtn" type="button">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- عنصر واحد مشترك لقائمة اقتراحات البحث (autocomplete) -->
+<div id="courseAutocompleteList" class="ac-list"></div>
+
+<div id="paletteOverlay" onclick="if(event.target===this) CommandPalette.close()">
+  <div id="paletteModal">
+    <div class="palette-input-row">
+      <span class="palette-ico">🔎</span>
+      <input type="text" id="paletteInput" placeholder="دور على تاب أو مادة... (بالاسم أو الكود)" autocomplete="off" aria-label="بحث سريع">
+      <span class="palette-esc">Esc</span>
+    </div>
+    <div id="paletteResults"></div>
+  </div>
+</div>
+
+<script>
+/* ============================= DEVICE MODAL + FONT ZOOM ============================= */
+var DevModal = (function(){
+  function el(){ return document.getElementById('devModalOverlay'); }
+  function markActive(mode){
+    document.querySelectorAll('#devModal .dev-btn').forEach(function(b){
+      b.classList.toggle('dev-highlight', b.dataset.mode===mode);
+    });
+  }
+  function open(){ el().classList.add('open'); document.body.style.overflow='hidden'; markActive(deviceSelect.value); }
+  function close(){ el().classList.remove('open'); document.body.style.overflow=''; }
+  function select(mode){
+    deviceSelect.value = mode;
+    applyDeviceMode(mode);
+    markActive(mode);
+    close();
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  return {open:open, close:close, select:select};
+})();
+
+var deviceSelect = document.getElementById('deviceSelect');
+var viewportMeta = document.getElementById('viewportMeta');
+var RESPONSIVE_VIEWPORT = 'width=device-width, initial-scale=1.0';
+var DESKTOP_VIEWPORT = 'width=900';
+function applyDeviceMode(value){
+  document.body.classList.remove('device-mobile','device-tablet','device-laptop');
+  if(value==='mobile' || value==='tablet' || value==='laptop') document.body.classList.add('device-'+value);
+  // "لابتوب" بيفرض عرض اللابتوب الحقيقي (900px) عبر تغيير viewport meta، فالمتصفح يعامل
+  // الصفحة كأنها بعرض لابتوب فعليًا مهما كان الجهاز، وبيزوّم اوت تلقائي عشان كل التفاصيل
+  // تتناسب مع الشاشة. "تلقائي" مش بيفرض حاجة أصلًا — سايب الصفحة على وضعها الطبيعي المتجاوب
+  // (ده مهم علشان لو الملف مفتوح من لابتوب/ديسكتوب حقيقي بالفعل يفضل زي ما هو من غير تغيير).
+  viewportMeta.setAttribute('content', value==='laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
+}
+deviceSelect.addEventListener('change', function(){ applyDeviceMode(this.value); });
+// الوضع الافتراضي عند فتح الملف: لو الشاشة فعلاً صغيرة (فون/تابلت) بيفرض شكل اللابتوب
+// بالتفاصيل كاملة تلقائيًا. لو الفتح من لابتوب/ديسكتوب حقيقي (شاشة كبيرة already)، بيسيبه
+// طبيعي تمامًا من غير أي تدخل — مفيش لازمة نفرض حاجة وهو أصلًا فاتح من لابتوب.
+var isSmallScreen = Math.min(window.innerWidth, window.screen.width) < 900;
+var defaultMode = isSmallScreen ? 'laptop' : 'auto';
+deviceSelect.value = defaultMode;
+applyDeviceMode(defaultMode);
+
+var fsScale = 1;
+function applyFs(){ document.documentElement.style.setProperty('--fs-scale', fsScale); }
+document.getElementById('fsPlus').onclick = ()=>{ fsScale = Math.min(1.35, +(fsScale+0.075).toFixed(3)); applyFs(); };
+document.getElementById('fsMinus').onclick = ()=>{ fsScale = Math.max(0.85, +(fsScale-0.075).toFixed(3)); applyFs(); };
+document.getElementById('fsReset').onclick = ()=>{ fsScale = 1; applyFs(); };
+</script>
+<script>
+/* ============================= DATA ============================= */
+const courses = [
+  // ---- college / freshman level (26h, same physical-sciences division as CS-Special) ----
+  {id:'101101', code:'040101101', ar:'تفاضل وتكامل (1) وهندسة', en:'Calculus (1) and Geometry', hours:3, cat:'college', term:1, prereq:[]},
+  {id:'101102', code:'040101102', ar:'تفاضل وتكامل (2) وجبر', en:'Calculus (2) and Algebra', hours:3, cat:'college', term:2, prereq:['101101']},
+  {id:'101151', code:'040101151', ar:'ميكانيكا (1)', en:'Mechanics (1)', hours:2, cat:'college', term:1, prereq:[]},
+  {id:'101152', code:'040101152', ar:'ميكانيكا (2)', en:'Mechanics (2)', hours:2, cat:'college', term:2, prereq:['101151']},
+  {id:'103102', code:'040103102', ar:'برمجة وتطبيقات الحاسب الآلي', en:'Computer Programming and Applications', hours:2, cat:'college', term:2, prereq:[]},
+  {id:'204101', code:'040204101', ar:'فيزياء عامة (1)', en:'General Physics (1)', hours:3, cat:'college', term:1, prereq:[]},
+  {id:'204102', code:'040204102', ar:'فيزياء عامة (2)', en:'General Physics (2)', hours:3, cat:'college', term:2, prereq:[]},
+  {id:'306101', code:'040306101', ar:'كيمياء عامة (1)', en:'General Chemistry (1)', hours:2, cat:'college', term:1, prereq:[]},
+  {id:'306102', code:'040306102', ar:'كيمياء عامة (2)', en:'General Chemistry (2)', hours:2, cat:'college', term:2, prereq:[]},
+  {id:'306103', code:'040306103', ar:'كيمياء عامة عملي (1)', en:'General Chemistry Lab (1)', hours:1, cat:'college', term:1, prereq:[]},
+  {id:'306104', code:'040306104', ar:'كيمياء عامة عملي (2)', en:'General Chemistry Lab (2)', hours:1, cat:'college', term:2, prereq:[]},
+  {id:'306106', code:'040306106', ar:'كيمياء عامة (3)', en:'General Chemistry (3)', hours:2, cat:'college', term:2, prereq:[]},
+
+  // ---- MAJOR (إحصاء) required 46h — جدول 3-1 ----
+  {id:'102102', code:'040102102', ar:'مقدمة في الاحتمالات والإحصاء', en:'Introduction to Probability and Statistics', hours:2, cat:'reqMajor', term:3, prereq:['101101'], note:'اللائحة بتذكر بديل ثاني للمتطلب السابق: 040101111 (رياضيات عامة) — لكنه مقرر متطلبات كلية خاص بشعبتي العلوم البيولوجية والجيولوجية بديلًا عن "تفاضل وتكامل (1)"، ومش بيخص طلاب شعبة العلوم الطبيعية (تخصص رياضيات وعلوم الحاسب). فبالنسبالك الشرط الفعلي هو 040101101 بس.'},
+  {id:'102201', code:'040102201', ar:'طرق إحصائية', en:'Statistical Methods', hours:3, cat:'reqMajor', term:4, prereq:['102102']},
+  {id:'102202', code:'040102202', ar:'تحليل الانحدار', en:'Regression Analysis', hours:3, cat:'reqMajor', term:6, prereq:['101203','102201']},
+  {id:'102203', code:'040102203', ar:'نظرية الإحصاء (1)', en:'Theory of Statistics (1)', hours:3, cat:'reqMajor', term:4, prereq:['102102']},
+  {id:'101203', code:'040101203', ar:'جبر خطي', en:'Linear Algebra', hours:3, cat:'reqMajor', term:3, prereq:['101102']},
+  {id:'101232', code:'040101232', ar:'تحليل رياضي', en:'Mathematical Analysis', hours:3, cat:'reqMajor', term:6, prereq:['101102'], note:'نفس ملحوظة 040102102: اللائحة بتذكر 040101111 كبديل، لكنه مقرر بيخص شعبتي العلوم البيولوجية والجيولوجية بس، فمش شرط عليك.'},
+  {id:'102301', code:'040102301', ar:'الإحصاء اللامعلمي', en:'Non-Parametric Statistics', hours:2, cat:'reqMajor', term:5, prereq:['102201']},
+  {id:'102302', code:'040102302', ar:'أساليب المحاكاة والمعاينة', en:'Simulation and Sampling Techniques', hours:3, cat:'reqMajor', term:6, prereq:['102201']},
+  {id:'102303', code:'040102303', ar:'نظرية الإحصاء (2)', en:'Theory of Statistics (2)', hours:3, cat:'reqMajor', term:7, prereq:['102203']},
+  {id:'102304', code:'040102304', ar:'تحليل المتغيرات المتعددة الإحصائية', en:'Multivariate Statistical Analysis', hours:3, cat:'reqMajor', term:6, prereq:['101203','102201']},
+  {id:'102305', code:'040102305', ar:'تحليل السلاسل الزمنية', en:'Time Series Analysis', hours:3, cat:'reqMajor', term:6, prereq:['102201']},
+  {id:'102306', code:'040102306', ar:'إحصاء حسابي', en:'Statistical Computing', hours:3, cat:'reqMajor', term:5, prereq:['102201']},
+  {id:'101308', code:'040101308', ar:'بحوث العمليات (1)', en:'Operations Research (1)', hours:3, cat:'reqMajor', term:4, prereq:['101203']},
+  {id:'102401', code:'040102401', ar:'النماذج الإحصائية الخطية', en:'Linear Statistical Models', hours:2, cat:'reqMajor', term:8, prereq:['102201']},
+  {id:'102402', code:'040102402', ar:'عمليات عشوائية', en:'Stochastic Processes', hours:2, cat:'reqMajor', term:8, prereq:['102203']},
+  {id:'102403', code:'040102403', ar:'بحوث العمليات (2)', en:'Operations Research (2)', hours:3, cat:'reqMajor', term:7, prereq:['101308']},
+  {id:'102490', code:'040102490', ar:'المشروع البحثي', en:'Research Project', hours:2, cat:'reqMajor', term:8, prereq:[]},
+
+  // ---- MAJOR (إحصاء) elective pool 33h، يُختار منها 20h — جدول 4-1 ----
+  // النسخة الافتراضية هنا اختارت 7 مواد = 20 ساعة بالظبط، وسايبة الباقي كبدائل ممكن تستبدل بيها
+  {id:'102404', code:'040102404', ar:'تنقيب البيانات', en:'Data Mining', hours:3, cat:'electMajor', term:7, chosen:true, prereq:['102201']},
+  {id:'102405', code:'040102405', ar:'اختبارات الحياة والصلاحية', en:'Life-Testing and Reliability', hours:3, cat:'electMajor', term:7, chosen:true, prereq:['102203']},
+  {id:'102407', code:'040102407', ar:'نظرية الاحتمالات', en:'Theory of Probability', hours:3, cat:'electMajor', term:8, chosen:true, prereq:['102203']},
+  {id:'102406', code:'040102406', ar:'الإحصاءات المرتبة', en:'Order Statistics', hours:2, cat:'electMajor', term:7, chosen:true, prereq:['102301']},
+  {id:'102408', code:'040102408', ar:'طرق بحثية في إدارة الأعمال', en:'Research Methods in Business', hours:3, cat:'electMajor', term:5, chosen:true, prereq:['102201']},
+  {id:'102409', code:'040102409', ar:'إدارة المشروعات', en:'Project Management', hours:3, cat:'electMajor', term:8, chosen:true, prereq:['102201']},
+  {id:'102410', code:'040102410', ar:'موضوعات مختارة في الإحصاء', en:'Selected Topics in Statistics', hours:3, cat:'electMajor', term:7, chosen:true, prereq:[], note:'الشرط الرسمي في اللائحة: يكون الطالب في المستوى الرابع — مش شرط اجتياز مقرر معين.'},
+  // بدائل متاحة (مش مختارة افتراضيًا) — لسه جزء من مجموعة الـ33 ساعة المسموح تختار منها
+  {id:'102307', code:'040102307', ar:'الرقابة الإحصائية للجودة', en:'Statistical Quality Control', hours:2, cat:'electMajor', term:null, prereq:['102201']},
+  {id:'102308', code:'040102308', ar:'تحليل البيانات النوعية', en:'Analysis of Categorical Data', hours:3, cat:'electMajor', term:null, prereq:['102201']},
+  {id:'101311', code:'040101311', ar:'معادلات الفروق', en:'Difference Equations', hours:2, cat:'electMajor', term:null, prereq:['101305','101333']},
+  {id:'101331', code:'040101331', ar:'معادلات تفاضلية وتحويلات', en:'Differential Equations and Transformations', hours:3, cat:'electMajor', term:null, prereq:['101232']},
+  {id:'101333', code:'040101333', ar:'طرق عددية', en:'Numerical Methods', hours:3, cat:'electMajor', term:null, prereq:['101203','101231']},
+
+  // ---- MINOR (علوم الحاسب) required 16h — جدول 9-1 (أ) ----
+  {id:'103201', code:'040103201', ar:'برمجة شيئية (OOP)', en:'Object Oriented Programming', hours:2, cat:'reqMinor', term:3, prereq:['103102']},
+  {id:'103202', code:'040103202', ar:'تراكيب بيانات ومعالجة ملفات', en:'Data Structures and File Processing', hours:3, cat:'reqMinor', term:4, prereq:['103201']},
+  {id:'103203', code:'040103203', ar:'تراكيب متقطعة', en:'Discrete Structures', hours:2, cat:'reqMinor', term:3, prereq:[]},
+  {id:'103205', code:'040103205', ar:'برمجة الشبكات والإنترنت', en:'Network and Internet Programming', hours:3, cat:'reqMinor', term:3, prereq:['103102']},
+  {id:'103302', code:'040103302', ar:'نظم قواعد البيانات', en:'Database Management Systems', hours:3, cat:'reqMinor', term:5, prereq:['103202']},
+  {id:'103303', code:'040103303', ar:'ذكاء اصطناعي', en:'Artificial Intelligence', hours:3, cat:'reqMinor', term:5, prereq:['103203']},
+
+  // ---- MINOR (علوم الحاسب) elective 6h — من جدولي 5-1 و6-1 الخاصين بتخصص الحاسب الرئيسي، بعد استبعاد مقررات جدول 9-1 ----
+  {id:'103301', code:'040103301', ar:'نظم تشغيل', en:'Operating Systems', hours:3, cat:'electMinor', term:5, chosen:true, prereq:['103202']},
+  {id:'103206', code:'040103206', ar:'برمجة متقدمة', en:'Advanced Programming', hours:3, cat:'electMinor', term:4, chosen:true, prereq:['103201']},
+  // بدائل متاحة (مش مختارة افتراضيًا)
+  {id:'103204', code:'040103204', ar:'نظرية الحسابات', en:'Theory of Computation', hours:2, cat:'electMinor', term:null, prereq:['103203']},
+  {id:'103305', code:'040103305', ar:'خوارزميات الحاسب', en:'Computing Algorithms', hours:3, cat:'electMinor', term:null, prereq:['103204']},
+  {id:'103207', code:'040103207', ar:'برمجة الحاسب الآلي (عملي)', en:'Computer Programming (Practical)', hours:1, cat:'electMinor', term:null, prereq:['103201','103205']},
+  {id:'103250', code:'040103250', ar:'دوائر منطقية رقمية', en:'Digital Logic Circuits', hours:2, cat:'electMinor', term:null, prereq:[]},
+  {id:'103304', code:'040103304', ar:'رسومات الحاسب', en:'Computer Graphics', hours:3, cat:'electMinor', term:null, prereq:['103201']},
+  {id:'103306', code:'040103306', ar:'برمجة نظم', en:'System Programming', hours:3, cat:'electMinor', term:null, prereq:['103201']},
+  {id:'103401', code:'040103401', ar:'شبكات الحاسب', en:'Computer Network', hours:3, cat:'electMinor', term:null, prereq:['103301']},
+  {id:'103490', code:'040103490', ar:'المشروع البحثي (حاسب)', en:'Research Project (CS)', hours:2, cat:'electMinor', term:null, prereq:[]},
+  {id:'103405', code:'040103405', ar:'سرية الحاسب والمعلومات', en:'Computer and Information Security', hours:3, cat:'electMinor', term:null, prereq:['103301']},
+  {id:'103406', code:'040103406', ar:'شبكات الحاسب المتقدمة', en:'Advanced Computer Networks', hours:3, cat:'electMinor', term:null, prereq:['103401']},
+  {id:'103407', code:'040103407', ar:'المكتبات الرقمية', en:'Digital Libraries', hours:3, cat:'electMinor', term:null, prereq:['103302']},
+  {id:'103408', code:'040103408', ar:'معالجة الصور الرقمية', en:'Digital Image Processing', hours:3, cat:'electMinor', term:null, prereq:['103304']},
+  {id:'103420', code:'040103420', ar:'موضوعات مختارة في الحاسب', en:'Selected Topics in Computer', hours:3, cat:'electMinor', term:null, prereq:[], note:'الشرط الرسمي: طالب مستوى رابع.'},
+  // باقي مقررات جدول (6-1) الاختيارية لتخصص الحاسب الرئيسي (نفس المجموعة اللي الفرعي بيختار الـ6 ساعات منها)
+  {id:'101204', code:'040101204', ar:'معادلات تفاضلية عادية', en:'Ordinary Differential Equations', hours:3, cat:'electMinor', term:null, prereq:['101102'], conflict:true, note:'تضارب حقيقي داخل اللائحة نفسها: نفس الكود (040101204) مسجّل بساعتين في جدول (1-1) الخاص برئيسي الرياضيات، وبـ3 ساعات في جدول (6-1) الخاص باختياري الحاسب. الرقم هنا (3 ساعات) من جدول (6-1) لأنه السياق المتعلق بالفرعي — أكّد الرقم الصحيح مع المرشد قبل التسجيل.'},
+  {id:'101205', code:'040101205', ar:'منطق رياضي (1)', en:'Mathematical Logic (1)', hours:2, cat:'electMinor', term:null, prereq:[]},
+  {id:'101206', code:'040101206', ar:'نظرية الأعداد', en:'Theory of Numbers', hours:2, cat:'electMinor', term:null, prereq:[]},
+  {id:'103208', code:'040103208', ar:'مقدمة لنظم المعلومات', en:'Introduction to Information Systems', hours:3, cat:'electMinor', term:null, prereq:[]},
+  {id:'103209', code:'040103209', ar:'مقدمة لهندسة البرمجيات', en:'Introduction to Software Engineering', hours:2, cat:'electMinor', term:null, prereq:['103201']},
+  {id:'103210', code:'040103210', ar:'مفاهيم لغات البرمجة', en:'Concepts of Programming Languages', hours:3, cat:'electMinor', term:null, prereq:['103201']},
+  {id:'103211', code:'040103211', ar:'تفاعل الإنسان والحاسب', en:'Human-Computer Interaction', hours:2, cat:'electMinor', term:null, prereq:['103102']},
+  {id:'103307', code:'040103307', ar:'عمارة الحاسب وتنظيمه', en:'Computer Architectural and Organization', hours:3, cat:'electMinor', term:null, prereq:['103250']},
+  {id:'103308', code:'040103308', ar:'وسائط متعددة والوصول للمعلومات', en:'Online Multimedia and Information Access', hours:3, cat:'electMinor', term:null, prereq:['103205']},
+  {id:'103309', code:'040103309', ar:'الآلات الذكية', en:'Intelligent Machines', hours:3, cat:'electMinor', term:null, prereq:['103303']},
+  {id:'103310', code:'040103310', ar:'خوارزميات في المعلوماتية الحيوية', en:'Algorithms in Bioinformatics', hours:3, cat:'electMinor', term:null, prereq:['103305']},
+  {id:'103311', code:'040103311', ar:'هندسة وتصميم البرامج الوسطية', en:'Intermediate Software Design and Engineering', hours:3, cat:'electMinor', term:null, prereq:['103209']},
+  {id:'103312', code:'040103312', ar:'اختبار وجودة البرمجيات', en:'Software Testing and Quality', hours:3, cat:'electMinor', term:null, prereq:['103209']},
+  {id:'103313', code:'040103313', ar:'تصميم برامج شيئية', en:'ObjectOriented Design', hours:3, cat:'electMinor', term:null, prereq:['103209']},
+  {id:'103402', code:'040103402', ar:'محاكاة ونمذجة النظم', en:'System Simulation and Modeling', hours:3, cat:'electMinor', term:null, prereq:['103305']},
+  {id:'103403', code:'040103403', ar:'أنظمة موزعة ومتوازية', en:'Distributed and Parallel Systems', hours:3, cat:'electMinor', term:null, prereq:['103304']},
+  {id:'103404', code:'040103404', ar:'تخزين واسترداد المعلومات', en:'Information Storage and Retrieval', hours:3, cat:'electMinor', term:null, prereq:['103202']},
+
+  // ---- support (not counted in 132) ----
+  {id:'101111', code:'040101111', ar:'رياضيات عامة', en:'General Mathematics', hours:3, cat:'support', term:null, prereq:[], note:'مقرر متطلبات كلية لشعبتي العلوم البيولوجية والجيولوجية (بديل "تفاضل وتكامل (1)" لطلاب الشعب دي). ظاهر في اللائحة كبديل للمتطلب السابق لمادتي "مقدمة في الاحتمالات والإحصاء" و"تحليل رياضي"، لكنه مش بيخص طالب شعبة العلوم الطبيعية (رياضيات وعلوم الحاسب) ومش جزء من الـ132 ساعة بتاعتك.'},
+  {id:'101231', code:'040101231', ar:'مصفوفات', en:'Matrices', hours:2, cat:'support', term:null, prereq:[], note:'مطروحة لغير المتخصصين — مطلوبة فقط كمتطلب سابق لمادة "طرق عددية"، ولا تُحتسب من الـ132 ساعة.'},
+  {id:'101305', code:'040101305', ar:'تحليل عددي (1)', en:'Numerical Analysis (1)', hours:2, cat:'support', term:null, prereq:['101203'], note:'مادة قسم الرياضيات — مش جزء من هذا التخصص (رئيسي/فرعي)، ظاهرة هنا بس كمتطلب سابق لمادة "معادلات الفروق" الاختيارية.'},
+];
+
+const extras = {
+  1:[{name:'اللغة العربية', hours:2},{name:'اللغة الإنجليزية', hours:2}],
+  2:[{name:'مادة جامعة اختيارية (1)', hours:2}],
+  3:[{name:'مادة جامعة اختيارية (2)', hours:2},{name:'مقرر اختيار حر (3)', hours:3}],
+  4:[{name:'مادة جامعة اختيارية (3)', hours:2}],
+  6:[{name:'مقرر اختيار حر (1)', hours:2}],
+  8:[{name:'مقرر اختيار حر (2)', hours:3}],
+};
+
+const gradeScale = [
+  {sym:'A',  score:'90 فأكثر',       pts:'4.00', tag:'ممتاز'},
+  {sym:'A-', score:'85 إلى أقل من 90', pts:'3.67', tag:'ممتاز'},
+  {sym:'B+', score:'80 إلى أقل من 85', pts:'3.33', tag:'جيد جدًا'},
+  {sym:'B',  score:'75 إلى أقل من 80', pts:'3.00', tag:'جيد جدًا'},
+  {sym:'B-', score:'70 إلى أقل من 75', pts:'2.67', tag:'جيد'},
+  {sym:'C+', score:'65 إلى أقل من 70', pts:'2.33', tag:'جيد'},
+  {sym:'C',  score:'60 إلى أقل من 65', pts:'2.00', tag:'جيد'},
+  {sym:'C-', score:'56 إلى أقل من 60', pts:'1.67', tag:'مقبول'},
+  {sym:'D+', score:'53 إلى أقل من 56', pts:'1.33', tag:'مقبول'},
+  {sym:'D',  score:'50 إلى أقل من 53', pts:'1.00', tag:'مقبول'},
+  {sym:'F',  score:'أقل من 50',        pts:'0.00', tag:'ضعيف'},
+];
+</script>
+<script>
+/* ============================= STATE ============================= */
+const state = { done:{}, tips:{}, gpaRows:0, customExtras:{}, cumulative:[], removed:{}, grades:{} };
+let lastTermCalc = null;
+
+/* ============================= TABS ============================= */
+const sectionsMeta = [
+  {id:'sec-1', label:'نظرة عامة', icon:'🏠'}, {id:'sec-guide', label:'دليل الملف', icon:'📖'},
+  {id:'sec-2', label:'توزيع الـ132 ساعة', icon:'⏱️'}, {id:'sec-3', label:'رئيسي وفرعي', icon:'🔀'},
+  {id:'sec-4', label:'ترقيم المواد', icon:'🔢'}, {id:'sec-5', label:'بنك المواد الكامل', icon:'📋'},
+  {id:'sec-6', label:'خطة الترمات', icon:'🗂️'},
+  {id:'sec-actual', label:'خطتي الفعلية', icon:'✅'}, {id:'sec-transcript', label:'البيان الأكاديمي', icon:'📄'},
+  {id:'sec-7', label:'خريطة المتطلبات', icon:'🧩'}, {id:'sec-10', label:'حاسبة GPA', icon:'📊'},
+];
+const tabsHost = document.getElementById('tabs');
+const tabIndicator = document.createElement('span');
+tabIndicator.className = 'tab-indicator';
+tabsHost.appendChild(tabIndicator);
+sectionsMeta.forEach((s,i)=>{
+  const b = document.createElement('button');
+  b.className = 'tab'+(i===0?' active':'');
+  b.innerHTML = `<span class="tab-ico">${s.icon}</span><span class="tab-label">${s.label}</span>`;
+  b.onclick = ()=> showSection(s.id);
+  b.dataset.target = s.id;
+  tabsHost.appendChild(b);
+});
+function positionIndicator(immediate){
+  const activeTab = tabsHost.querySelector('.tab.active');
+  if(!activeTab || !tabIndicator) return;
+  const hostRect = tabsHost.getBoundingClientRect();
+  const tabRect = activeTab.getBoundingClientRect();
+  if(immediate) tabIndicator.style.transition = 'none';
+  tabIndicator.style.width = tabRect.width+'px';
+  tabIndicator.style.height = tabRect.height+'px';
+  tabIndicator.style.transform = `translate(${tabRect.left - hostRect.left}px, ${tabRect.top - hostRect.top}px)`;
+  if(immediate){
+    void tabIndicator.offsetWidth; // force reflow before re-enabling transition
+    tabIndicator.style.transition = '';
+  }
+}
+function showSection(id){
+  document.querySelectorAll('section').forEach(s=> s.classList.toggle('active', s.id===id));
+  document.querySelectorAll('.tab').forEach(t=> t.classList.toggle('active', t.dataset.target===id));
+  positionIndicator();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(id==='sec-1') typeHeroTitle();
+  const stickyProgressEl = document.getElementById('stickyProgress');
+  if(stickyProgressEl) stickyProgressEl.style.display = (id==='sec-6') ? '' : 'none';
+  // تصحيح موضع المؤشر: مرة فورية، ومرة بعد ما السكرول الناعم لفوق يخلص تقريبًا (بدل تكديس 4 تصحيحات فوق بعض)
+  [50, 450].forEach(delay=> setTimeout(()=> positionIndicator(true), delay));
+}
+document.getElementById('sec-1').classList.add('active');
+document.getElementById('stickyProgress').style.display = 'none';
+positionIndicator(true);
+window.addEventListener('resize', ()=> positionIndicator(true));
+// المقاس الأول لازم يتاخد بعد ما الخط العربي المخصص (Cairo/Almarai) يخلص تحميل فعليًا —
+// لو اتقاس قبل كده (بخط بديل مؤقت)، المؤشر بيتثبّت بمقاس غلط ومفيش أي حدث تاني هيصححه لتاب "نظرة عامة" الافتراضي
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=> positionIndicator(true));
+}
+[100, 400, 900].forEach(delay=> setTimeout(()=> positionIndicator(true), delay));
+
+/* ---------- تصغير الهيدر عند السكرول ---------- */
+const topbarEl = document.querySelector('.topbar');
+let headerShrunk = false;
+function applyShrinkState(){
+  const threshold = headerShrunk ? 12 : 64;
+  const shouldShrink = window.scrollY > threshold;
+  if(shouldShrink !== headerShrunk){
+    headerShrunk = shouldShrink;
+    topbarEl.classList.toggle('shrink', shouldShrink);
+    // تصحيح واحد بس فورًا (بموضع ما قبل الأنيميشن)، وتصحيح واحد لما الأنيميشن يخلص فعليًا —
+    // مش أكتر، عشان منعملش "layout thrashing" (قراءة/فرض تخطيط الصفحة أكتر من مرة) وإحنا وسط ترانزيشن بيغيّر الـpadding (خاصية بتأثر على تخطيط الصفحة)
+    positionIndicator(true);
+    const onEnd = (e)=>{
+      if(e.target!==topbarEl || e.propertyName!=='padding') return;
+      positionIndicator(true);
+      topbarEl.removeEventListener('transitionend', onEnd);
+    };
+    topbarEl.addEventListener('transitionend', onEnd);
+  }
+}
+// تشغيل منطق السكرول مرة واحدة بس لكل فريم (requestAnimationFrame) بدل ما يتنفذ مع كل حدث scroll خام،
+// اللي ممكن يبقى متكرر جدًا على بعض الأجهزة ويسبب حِس "لاج" أثناء التمرير
+let scrollTicking = false;
+let scrollDebounceTimer = null;
+window.addEventListener('scroll', ()=>{
+  topbarEl.classList.add('is-scrolling');
+  if(!scrollTicking){
+    scrollTicking = true;
+    requestAnimationFrame(()=>{
+      applyShrinkState();
+      scrollTicking = false;
+    });
+  }
+  clearTimeout(scrollDebounceTimer);
+  scrollDebounceTimer = setTimeout(()=>{
+    positionIndicator(true);
+    topbarEl.classList.remove('is-scrolling');
+  }, 150);
+}, {passive:true});
+if('onscrollend' in window){
+  window.addEventListener('scrollend', ()=> positionIndicator(true));
+}
+
+/* ============================= HERO TITLE TYPEWRITER ============================= */
+const heroTitleLine1 = 'مرجعك الكامل لخطة';
+const heroTitleLine2 = '"إحصاء رئيسي + حاسب فرعي"';
+const heroTitleEl = document.getElementById('heroTitle');
+let heroTypeTimer = null;
+function typeHeroTitle(){
+  if(heroTypeTimer) clearInterval(heroTypeTimer);
+  heroTitleEl.innerHTML = '';
+  heroTitleEl.classList.add('typing-cursor');
+  let phase = 1, i = 0;
+  heroTypeTimer = setInterval(()=>{
+    if(phase === 1){
+      i++;
+      heroTitleEl.innerHTML = heroTitleLine1.slice(0, i);
+      if(i >= heroTitleLine1.length){ phase = 2; i = 0; }
+    } else {
+      i++;
+      heroTitleEl.innerHTML = heroTitleLine1 + '<br>' + heroTitleLine2.slice(0, i);
+      if(i >= heroTitleLine2.length){
+        clearInterval(heroTypeTimer);
+        heroTitleEl.classList.remove('typing-cursor');
+      }
+    }
+  }, 38);
+}
+typeHeroTitle();
+
+/* ============================= THEME ============================= */
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.onclick = ()=>{
+  const html = document.documentElement;
+  const now = html.getAttribute('data-theme')==='dark' ? 'light':'dark';
+  html.setAttribute('data-theme', now);
+  themeBtn.setAttribute('aria-pressed', now==='dark' ? 'true':'false');
+};
+document.getElementById('printBtn').onclick = ()=> window.print();
+const discussionBtn = document.getElementById('discussionBtn');
+discussionBtn.onclick = ()=>{
+  const on = document.body.classList.toggle('discussion-mode');
+  discussionBtn.textContent = on ? '✅' : '🗣️';
+  discussionBtn.title = on ? 'رجوع للوضع العادي' : 'عرض نضيف للمناقشة الجماعية (بدون أزرار أو تفاعل)';
+};
+
+/* ============================= HELPERS ============================= */
+function courseById(id){ return courses.find(c=>c.id===id); }
+function dependentsOf(id){ return courses.filter(c=> c.prereq.includes(id)); }
+/* ---- المسار الحرج: مواد لو اتأخرت بتأخر عليك سلسلة طويلة من مواد التخصص ---- */
+function allDescendantsOf(id, seen=new Set()){
+  dependentsOf(id).forEach(d=>{ if(!seen.has(d.id)){ seen.add(d.id); allDescendantsOf(d.id, seen); } });
+  return seen;
+}
+const CRITICAL_THRESHOLD = 5;
+const criticalCounts = {};
+courses.forEach(c=>{ criticalCounts[c.id] = allDescendantsOf(c.id).size; });
+const criticalIds = new Set(courses.filter(c=> c.cat!=='college' && c.cat!=='support' && criticalCounts[c.id] >= CRITICAL_THRESHOLD).map(c=>c.id));
+function isCritical(id){ return criticalIds.has(id); }
+function criticalBadge(id){
+  if(!isCritical(id)) return '';
+  return ` <span class="badge critical" title="مادة على المسار الحرج: بتفتح ${criticalCounts[id]} مادة تانية (مباشرة وغير مباشرة) — لو اتأخرت هتأخر سلسلة طويلة من مواد تخصصك">🔑 مسار حرج</span>`;
+}
+function catLabel(cat){
+  return {
+    reqMajor:'إجباري الرئيسي (إحصاء)', electMajor:'اختياري الرئيسي (إحصاء)',
+    reqMinor:'إجباري الفرعي (حاسب)', electMinor:'اختياري الفرعي (حاسب)',
+    college:'متطلب كلية / مستوى أول', support:'مادة داعمة'
+  }[cat] || cat;
+}
+function badgeHtml(cat){ return `<span class="badge ${cat}">${catLabel(cat)}</span>`; }
+function prereqNames(c){
+  if(!c.prereq.length) return 'لا يوجد';
+  return c.prereq.map(pid=>{
+    const p=courseById(pid);
+    if(!p) return pid;
+    return p.cat==='support' ? `<span style="color:var(--support)" title="مادة داعمة — مش جزء من الـ132 ساعة، بس لازمة كمتطلب سابق">${p.ar} 🔗</span>` : p.ar;
+  }).join(' + ');
+}
+function opensNames(c){
+  const deps = dependentsOf(c.id);
+  if(!deps.length) return '—';
+  return deps.map(d=>d.ar).join('، ');
+}
+function jumpTo(id){ explorerSelect.value = id; renderExplorer(id); }
+function catColorVar(cat){
+  const map = {reqMajor:'req46', electMajor:'elective', reqMinor:'req16', electMinor:'violet', college:'college', support:'support'};
+  return `var(--${map[cat]||'accent'})`;
+}
+function shortAr(s){ return s.length>20 ? s.slice(0,18)+'…' : s; }
+
+/* ============================= SECTION 4: DECODER ============================= */
+const decoderInput = document.getElementById('decoderInput');
+const decoderOut = document.getElementById('decoderOut');
+function renderDecoder(){
+  const v = decoderInput.value.replace(/\D/g,'');
+  if(v.length < 9){
+    decoderOut.innerHTML = `<div class="empty-hint" style="grid-column:1/-1">اكتب كود من 9 أرقام كامل (زي 040102201)</div>`;
+    return;
+  }
+  // بنية الكود الحقيقية (مادة 9 باللائحة): كلية(2) - قسم(2) - تخصص(2) - مستوى(1) - تسلسل(2) = 9 أرقام
+  const faculty = v.slice(0,2);
+  const dept = v.slice(2,4);
+  const spec = v.slice(4,6);
+  const level = v.slice(6,7);
+  const serial = v.slice(7,9);
+  const specNames = {'01':'الرياضيات', '02':'الإحصاء', '03':'علوم الحاسب'};
+  const semester = (parseInt(serial,10) % 2 === 1) ? 'الفصل الأول (خريف) — رقم فردي' : 'الفصل الثاني (ربيع) — رقم زوجي';
+  decoderOut.innerHTML = `
+    <div class="chip"><b>${faculty}</b><span>رقم الكلية (04 = كلية العلوم)</span></div>
+    <div class="chip"><b>${dept}</b><span>رقم القسم في اللائحة (01 = الرياضيات وعلوم الحاسب)</span></div>
+    <div class="chip"><b>${spec} — ${specNames[spec]||'؟'}</b><span>رقم التخصص</span></div>
+    <div class="chip"><b>مستوى ${level}</b><span>المستوى المطروح له المقرر</span></div>
+    <div class="chip"><b>${semester} (${serial})</b><span>رقم تسلسل المقرر في الفصل الدراسي</span></div>
+  `;
+}
+decoderInput.addEventListener('input', renderDecoder);
+decoderInput.value = '040102201';
+renderDecoder();
+
+/* ============================= SECTION 5: ACCORDION TABLES ============================= */
+const accGroups = [
+  {cat:'reqMajor', title:'إجباري الرئيسي — الإحصاء (46 ساعة) — جدول 3-1', page:'اللائحة، صفحة 32'},
+  {cat:'electMajor', title:'اختياري الرئيسي — الإحصاء (يُختار 20 من مجموعة 33) — جدول 4-1', page:'اللائحة، صفحة 33'},
+  {cat:'reqMinor', title:'إجباري الفرعي — علوم الحاسب (16 ساعة) — جدول 9-1 (أ)', page:'اللائحة، صفحة 37'},
+  {cat:'electMinor', title:'اختياري الفرعي — علوم الحاسب (يُختار 6) — من جدولي 5-1 و6-1', page:'اللائحة، صفحات 33-36'},
+  {cat:'college', title:'متطلبات الكلية / المستوى الأول', page:'جدول متطلبات أ، اللائحة صفحات 24-25 (والإجمالي في جدول د، صفحة 16)'},
+  {cat:'support', title:'مواد داعمة (مش جزء من الخطة أصلًا)', page:'جدول 12-1، اللائحة صفحة 39'},
+];
+const accordionHost = document.getElementById('accordionHost');
+function renderAccordion(filterCat='all', q=''){
+  accordionHost.innerHTML = '';
+  accGroups.forEach(g=>{
+    if(filterCat!=='all' && filterCat!==g.cat) return;
+    let list = courses.filter(c=>c.cat===g.cat);
+    if(q) list = list.filter(c=> c.ar.includes(q) || c.en.toLowerCase().includes(q.toLowerCase()) || c.code.includes(q));
+    if(!list.length) return;
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.innerHTML = `
+      <div class="acc-head">
+        <span>${g.title} <span style="color:var(--muted); font-weight:400; font-size:0.75rem">(${list.length} مادة)</span></span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="acc-body"><div class="acc-body-inner">
+        <div class="note info" style="margin:0 0 12px;">
+          <span class="ic">📄</span>
+          <div>المصدر: ${g.page}</div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>الكود</th><th>المادة</th><th>ساعات</th><th>المتطلب السابق</th></tr></thead>
+          <tbody>
+            ${list.map(c=>`<tr data-course-id="${c.id}"><td class="code">${c.code}</td><td>${c.ar}${c.conflict?` <span class="badge conflict" title="${c.note}">⚠️ تضارب لائحة</span>`:''}${criticalBadge(c.id)}<br><small style="color:var(--muted)">${c.en}</small></td><td class="code">${c.hours}</td><td>${prereqNames(c)}</td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div></div>`;
+    const head = item.querySelector('.acc-head');
+    const body = item.querySelector('.acc-body');
+    head.onclick = ()=>{
+      const opening = !item.classList.contains('open');
+      item.classList.toggle('open');
+      body.style.maxHeight = opening ? body.scrollHeight+'px' : 0;
+    };
+    accordionHost.appendChild(item);
+  });
+  if(!accordionHost.children.length){
+    accordionHost.innerHTML = '<div class="empty-hint">مفيش نتائج مطابقة</div>';
+  }
+}
+renderAccordion();
+document.getElementById('courseSearch').addEventListener('input', e=> renderAccordion(document.getElementById('courseFilter').value, e.target.value.trim()));
+document.getElementById('courseFilter').addEventListener('change', e=> renderAccordion(e.target.value, document.getElementById('courseSearch').value.trim()));
+
+/* ============================= SECTION 6: TERM PLAN ============================= */
+const termGrid = document.getElementById('termGrid');
+let hoursById = {};
+let catById = {};
+const CATEGORY_TARGETS = {reqMajor:46, electMajor:20, reqMinor:16, electMinor:6, college:26, extras:18};
+const CATEGORY_LABELS = {reqMajor:'إجباري الرئيسي (46)', electMajor:'اختياري الرئيسي (20)', reqMinor:'إجباري الفرعي (16)', electMinor:'اختياري الفرعي (6)', college:'متطلبات كلية (26)', extras:'جامعة + اختيار حر (18)'};
+const CATEGORY_COLORVAR = {reqMajor:'req46', electMajor:'elective', reqMinor:'req16', electMinor:'violet', college:'college', extras:'support'};
+function termLabel(n){ return `ترم ${n} (${n%2===1?'خريف':'ربيع'})`; }
+function gradeSelectHTML(cid){
+  const g = state.grades[cid] || '';
+  const enabled = !!state.done[cid];
+  return `<select class="grade-select${g?' has-grade':''}" data-cid="${cid}" ${enabled?'':'disabled'} aria-label="التقدير الفعلي">
+    <option value="">تقديرات ▾</option>
+    ${gradeScale.map(gr=>`<option value="${gr.pts}" ${g===gr.pts?'selected':''}>${gr.sym}</option>`).join('')}
+  </select>`;
+}
+function renderTermGrid(){
+  termGrid.innerHTML='';
+  hoursById = {};
+  catById = {};
+  for(let t=1;t<=8;t++){
+    const list = courses.filter(c=>c.term===t);
+    const ex = extras[t] || [];
+    const cu = state.customExtras[t] || [];
+    list.forEach(c=>{ hoursById[c.id] = c.hours; catById[c.id] = c.cat; });
+    ex.forEach((e,i)=>{ hoursById[`extra-${t}-${i}`] = e.hours; catById[`extra-${t}-${i}`] = 'extras'; });
+    cu.forEach(e=>{ hoursById[e.id] = e.hours; catById[e.id] = 'extras'; });
+    let total = list.filter(c=>!state.removed[c.id]).reduce((s,c)=>s+c.hours,0) + ex.reduce((s,e)=>s+e.hours,0) + cu.reduce((s,e)=>s+e.hours,0);
+    const loadWarning = total>17 ? `<span class="badge conflict" title="العبء الدراسي العادي حسب اللائحة 12-17 ساعة (مادة 13). ممكن توصل لـ19 ساعة بموافقة المرشد الأكاديمي ورئيس مجلس القسم لو معدلك التراكمي 3.0+ واجتزت 33 ساعة على الأقل. الـ21 ساعة حالة استثنائية منفصلة: بس في آخر فصل دراسي عادي هتتخرج فيه فعلاً، وبموافقة لجنة شئون التعليم والطلاب (مش رئيس القسم) بناءً على اقتراح منسق الإرشاد الأكاديمي، وبشرط معدلك التراكمي 3.0+">⚠️ فوق الحد (17)</span>`
+      : (total>0 && total<12) ? `<span class="badge critical" title="العبء الدراسي العادي حسب اللائحة 12-17 ساعة (مادة 13) — أقل من كده يحتاج موافقة أو بيكون طبيعي في آخر ترم قبل التخرج">⚠️ تحت الحد (12)</span>` : '';
+    const card = document.createElement('div');
+    card.className='term-card';
+    card.innerHTML = `
+      <div class="term-card-head">
+        <h4>${termLabel(t)} <span style="font-size:0.625rem; color:var(--muted2); font-weight:400; cursor:help" title="توزيع الترمات هنا غير رسمي واجتهادي، مفيش جدول رسمي بالترم في اللائحة — أكّد الطرح الفعلي مع جدول القسم كل ترم">غير رسمي ⓘ</span></h4>
+        <div class="term-card-head-right">
+          <span class="hrs code">${total} ساعة</span>
+          <span class="term-gpa" id="termGpaBadge-${t}" style="display:none;"></span>
+          <span class="term-done-badge" id="termDoneBadge-${t}"></span>${loadWarning}
+          <button type="button" class="term-mark-all" data-term="${t}" aria-label="تحديد كل مواد الترم ${t}">✓ الترم كله</button>
+        </div>
+      </div>
+      <ul>
+        ${list.map(c=>{
+          const conflictPrereqs = c.prereq.map(courseById).filter(p=>p && p.term!=null && p.term>=t);
+          const conflictTitle = conflictPrereqs.length ? `تعارض: متطلبها السابق (${conflictPrereqs.map(p=>p.ar).join('، ')}) متحط في نفس الترم أو بعده` : '';
+          const isRemoved = !!state.removed[c.id];
+          return `
+          <li data-id="${c.id}" class="${isRemoved?'removed-li':''}">
+            <input type="checkbox" id="cb-${c.id}" data-cid="${c.id}" ${isRemoved?'disabled':''}>
+            <label class="cname" for="cb-${c.id}">${c.ar} ${c.chosen?'<span style="color:var(--accent2)">[اختياري]</span>':''}${conflictPrereqs.length?`<span title="${conflictTitle}" style="color:var(--rose)"> ⚠️</span>`:''}<small class="code">${c.code} · ${c.hours}h</small><div class="prereq-warn" id="prereqWarn-${c.id}"></div></label>
+            ${gradeSelectHTML(c.id)}
+            <button type="button" class="course-del" data-course-id="${c.id}" title="${isRemoved?'استرجاع المادة':'حذف المادة من هذا العرض'}" aria-label="${isRemoved?'استرجاع':'حذف'} مادة ${c.ar}">${isRemoved?'↺':'✕'}</button>
+          </li>`;}).join('')}
+        ${ex.map((e,i)=>`
+          <li>
+            <input type="checkbox" id="cb-extra-${t}-${i}" data-cid="extra-${t}-${i}">
+            <label class="cname" for="cb-extra-${t}-${i}">${e.name}<small>${e.hours}h</small></label>
+            ${gradeSelectHTML(`extra-${t}-${i}`)}
+          </li>`).join('')}
+        ${(state.customExtras[t]||[]).map(cu=>`
+          <li class="custom-li" data-custom-id="${cu.id}">
+            <input type="checkbox" id="cb-${cu.id}" data-cid="${cu.id}">
+            <label class="cname" for="cb-${cu.id}">${cu.name}<small>${cu.hours}h · مادة مضافة منك</small></label>
+            ${gradeSelectHTML(cu.id)}
+            <button type="button" class="custom-del" data-term="${t}" data-del-id="${cu.id}" title="حذف المادة" aria-label="حذف مادة ${cu.name}">✕</button>
+          </li>`).join('')}
+      </ul>
+      <div class="term-add-row">
+        <input type="text" class="add-name" placeholder="اسم مادة تضيفها بنفسك" data-term="${t}">
+        <input type="number" class="add-hours" placeholder="ساعات" min="1" max="10" data-term="${t}">
+        <button type="button" class="term-add-btn" data-term="${t}" title="إضافة" aria-label="إضافة مادة للترم ${t}">+</button>
+      </div>`;
+    termGrid.appendChild(card);
+  }
+  termGrid.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    const cid = cb.dataset.cid;
+    if(cid && state.done[cid]) cb.checked = true;
+    if(cb.checked) cb.closest('li').classList.add('done');
+    cb.addEventListener('change', ()=>{
+      cb.closest('li').classList.toggle('done', cb.checked);
+      if(cid) state.done[cid] = cb.checked;
+      const sel = cb.closest('li').querySelector('.grade-select');
+      if(sel) sel.disabled = !cb.checked;
+      updateProgress();
+      updateTermButtons();
+      updateGradeDisplays();
+      saveLocal();
+    });
+  });
+  termGrid.querySelectorAll('.grade-select').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const cid = sel.dataset.cid;
+      if(sel.value) state.grades[cid] = sel.value; else delete state.grades[cid];
+      sel.classList.toggle('has-grade', !!sel.value);
+      updateGradeDisplays();
+      saveLocal();
+    });
+  });
+  termGrid.querySelectorAll('.course-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const cid = btn.dataset.courseId;
+      if(state.removed[cid]){
+        delete state.removed[cid];
+        renderTermGrid();
+        saveLocal();
+      } else {
+        RemoveModal.open(cid);
+      }
+    });
+  });
+  termGrid.querySelectorAll('.term-mark-all').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const card = btn.closest('.term-card');
+      const boxes = card.querySelectorAll('input[type=checkbox]:not(:disabled)');
+      const allDone = Array.from(boxes).every(cb=>cb.checked);
+      const makeChecked = !allDone;
+      boxes.forEach(cb=>{
+        cb.checked = makeChecked;
+        cb.closest('li').classList.toggle('done', makeChecked);
+        const cid = cb.dataset.cid;
+        if(cid) state.done[cid] = makeChecked;
+        const sel = cb.closest('li').querySelector('.grade-select');
+        if(sel) sel.disabled = !makeChecked;
+      });
+      updateProgress();
+      updateTermButtons();
+      updateGradeDisplays();
+      saveLocal();
+    });
+  });
+  termGrid.querySelectorAll('.term-add-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const t = btn.dataset.term;
+      const card = btn.closest('.term-card');
+      const nameInput = card.querySelector('.add-name');
+      const hoursInput = card.querySelector('.add-hours');
+      const name = nameInput.value.trim();
+      const hours = parseFloat(hoursInput.value);
+      if(!name){ nameInput.focus(); return; }
+      if(!hours || hours<=0){ hoursInput.focus(); return; }
+      if(!state.customExtras[t]) state.customExtras[t] = [];
+      state.customExtras[t].push({ id:`cust-${t}-${Date.now()}-${Math.floor(Math.random()*1000)}`, name, hours });
+      renderTermGrid();
+      saveLocal();
+    });
+  });
+  termGrid.querySelectorAll('.custom-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const t = btn.dataset.term;
+      const delId = btn.dataset.delId;
+      if(state.customExtras[t]) state.customExtras[t] = state.customExtras[t].filter(c=>c.id!==delId);
+      delete state.done[delId];
+      delete state.grades[delId];
+      renderTermGrid();
+      updateGradeDisplays();
+      saveLocal();
+    });
+  });
+  termGrid.querySelectorAll('.add-name, .add-hours').forEach(inp=>{
+    inp.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); inp.closest('.term-add-row').querySelector('.term-add-btn').click(); }
+    });
+  });
+  updateProgress();
+  updateTermButtons();
+  updateGradeDisplays();
+}
+function updateTermButtons(){
+  termGrid.querySelectorAll('.term-card').forEach(card=>{
+    const boxes = card.querySelectorAll('input[type=checkbox]:not(:disabled)');
+    const btn = card.querySelector('.term-mark-all');
+    if(!boxes.length || !btn) return;
+    const allDone = Array.from(boxes).every(cb=>cb.checked);
+    btn.classList.toggle('all-done', allDone);
+    btn.textContent = allDone ? '↺ إلغاء التحديد' : '✓ الترم كله';
+  });
+}
+function updateProgress(){
+  let doneHours = 0;
+  Object.keys(state.done).forEach(id=>{
+    if(state.done[id] && hoursById[id]!==undefined) doneHours += hoursById[id];
+  });
+  const pct = Math.min(100, Math.round(doneHours/132*100));
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = `${doneHours} من 132 ساعة متبقّية عليها تيك (${pct}%)`;
+  document.getElementById('stickyProgressFill').style.width = pct+'%';
+  document.getElementById('stickyProgressText').textContent = `أنت خلصت ${doneHours} من 132 ساعة (${pct}%)`;
+  renderCatProgress();
+  renderNextTermSuggestions();
+  updateTermDoneBadges();
+  checkPrereqWarnings();
+}
+function updateGradeDisplays(){
+  let planTotalPts = 0, planTotalHours = 0;
+  for(let t=1;t<=8;t++){
+    let termPts = 0, termHours = 0;
+    Object.keys(state.grades).forEach(id=>{
+      const h = hoursById[id];
+      if(h===undefined) return;
+      // determine this id's term
+      const c = courseById(id);
+      const belongsToTerm = c ? c.term===t : id.startsWith(`extra-${t}-`) || (state.customExtras[t]||[]).some(cu=>cu.id===id);
+      if(!belongsToTerm || !state.done[id]) return;
+      termPts += h*parseFloat(state.grades[id]);
+      termHours += h;
+    });
+    const badge = document.getElementById(`termGpaBadge-${t}`);
+    if(badge){
+      if(termHours){
+        badge.style.display='';
+        badge.textContent = `GPA ${(termPts/termHours).toFixed(2)}`;
+      } else {
+        badge.style.display='none';
+      }
+    }
+    planTotalPts += termPts;
+    planTotalHours += termHours;
+  }
+  const card = document.getElementById('planCgpaCard');
+  if(card){
+    if(planTotalHours){
+      card.style.display='';
+      document.getElementById('planCgpaValue').textContent = (planTotalPts/planTotalHours).toFixed(2);
+      document.getElementById('planCgpaHours').textContent = planTotalHours;
+    } else {
+      card.style.display='none';
+    }
+  }
+}
+function checkPrereqWarnings(){
+  courses.forEach(c=>{
+    const box = document.getElementById(`prereqWarn-${c.id}`);
+    if(!box) return;
+    if(!state.done[c.id] || !c.prereq.length){ box.classList.remove('show'); box.textContent=''; return; }
+    const missing = c.prereq.filter(pid=> !state.done[pid]).map(pid=>{ const p=courseById(pid); return p?p.ar:pid; });
+    if(missing.length){
+      box.textContent = `⚠️ محتاج الأول: ${missing.join('، ')}`;
+      box.classList.add('show');
+    } else {
+      box.textContent = '';
+      box.classList.remove('show');
+    }
+  });
+}
+function updateTermDoneBadges(){
+  for(let t=1;t<=8;t++){
+    const badge = document.getElementById(`termDoneBadge-${t}`);
+    if(!badge) continue;
+    const list = courses.filter(c=>c.term===t);
+    const ex = extras[t] || [];
+    const cu = state.customExtras[t] || [];
+    let doneHours = 0, totalHours = 0;
+    list.forEach(c=>{ totalHours += c.hours; if(state.done[c.id]) doneHours += c.hours; });
+    ex.forEach((e,i)=>{ const cid = `extra-${t}-${i}`; totalHours += e.hours; if(state.done[cid]) doneHours += e.hours; });
+    cu.forEach(e=>{ totalHours += e.hours; if(state.done[e.id]) doneHours += e.hours; });
+    badge.textContent = `✓ ${doneHours}/${totalHours}`;
+    badge.classList.toggle('complete', totalHours>0 && doneHours>=totalHours);
+  }
+}
+function renderCatProgress(){
+  const host = document.getElementById('catProgressHost');
+  if(!host) return;
+  const doneByCat = {};
+  Object.keys(state.done).forEach(id=>{
+    if(!state.done[id]) return;
+    const cat = catById[id];
+    const h = hoursById[id];
+    if(cat===undefined || h===undefined) return;
+    doneByCat[cat] = (doneByCat[cat]||0) + h;
+  });
+  host.innerHTML = Object.keys(CATEGORY_TARGETS).map(cat=>{
+    const done = doneByCat[cat] || 0;
+    const target = CATEGORY_TARGETS[cat];
+    const pct = Math.min(100, Math.round(done/target*100));
+    return `
+      <div class="cat-progress">
+        <div class="cat-progress-head"><b>${CATEGORY_LABELS[cat]}</b><span>${done}/${target}h</span></div>
+        <div class="progress-bar"><div style="width:${pct}%; background:${pct>=100?'linear-gradient(90deg,var(--accent),var(--accent2))':`var(--${CATEGORY_COLORVAR[cat]})`}"></div></div>
+      </div>`;
+  }).join('');
+}
+function renderNextTermSuggestions(){
+  const host = document.getElementById('nextTermHost');
+  if(!host) return;
+  const available = courses.filter(c=>{
+    if(state.done[c.id]) return false; // خلصتها خلاص
+    if(state.removed[c.id]) return false; // محذوفة من العرض
+    if(c.term===null || c.term===undefined) return false; // مش جزء من الخطة الفعلية أصلًا
+    return c.prereq.every(pid=> state.done[pid]);
+  });
+  if(!available.length){
+    host.innerHTML = '<div class="empty-hint" style="grid-column:1/-1">مفيش مواد جديدة متاحة دلوقتي — إما لسه في البداية أو خلّصت كل اللي متاحله.</div>';
+    return;
+  }
+  host.innerHTML = available.map(c=>`
+    <div class="avail-chip" data-jump="${c.id}">
+      <span class="code">${c.code}</span>${c.ar}
+      <div style="color:var(--muted); font-size:0.6875rem; margin-top:3px;">${c.hours}h · ${catLabel(c.cat)}</div>
+    </div>`).join('');
+  host.querySelectorAll('.avail-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      showSection('sec-7');
+      explorerSelect.value = chip.dataset.jump;
+      renderExplorer(chip.dataset.jump);
+    });
+  });
+}
+document.getElementById('resetProgress').onclick = ()=>{
+  if(confirm('متأكد عايز تصفّر كل التيكات؟')){ state.done = {}; renderTermGrid(); saveLocal(); }
+};
+
+/* ============================= REMOVE COURSE MODAL ============================= */
+var RemoveModal = (function(){
+  let pendingId = null;
+  function el(){ return document.getElementById('removeModalOverlay'); }
+  function warnTextFor(cat){
+    const map = {
+      reqMajor: 'دي مادة إجبارية أساسية في تخصصك الرئيسي (إحصاء) — لازم تاخدها عشان تكمل الـ46 ساعة الإجبارية، مفيش بديل عنها.',
+      reqMinor: 'دي مادة إجبارية أساسية في تخصصك الفرعي (حاسب) — لازم تاخدها عشان تكمل الـ16 ساعة الإجبارية، مفيش بديل عنها.',
+      electMajor: 'دي مادة اختيارية من مجموعة الرئيسي (إحصاء) — لو مسحتها من هنا، محتاج تعوّضها بمادة اختيارية تانية من نفس المجموعة عشان توصل لـ20 ساعة اختيارية.',
+      electMinor: 'دي مادة اختيارية من مجموعة الفرعي (حاسب) — لو مسحتها من هنا، محتاج تعوّضها بمادة اختيارية تانية من نفس المجموعة عشان توصل لـ6 ساعات اختيارية.',
+      college: 'دي مادة متطلب كلية إجباري بالكامل — لازم تاخدها زي ما هي، مفيش بديل عنها.',
+      support: 'دي مادة داعمة (أصلًا مش محسوبة من الـ132 ساعة) — بس لو محتاجها كمتطلب سابق لمادة تانية، حذفها من هنا هيأثر على تسجيل اللي بعدها.',
+    };
+    return map[cat] || '';
+  }
+  function open(id){
+    const c = courseById(id);
+    if(!c) return;
+    pendingId = id;
+    document.getElementById('removeModalTitle').textContent = `تحذف مادة "${c.ar}"؟`;
+    document.getElementById('removeModalMeta').textContent = `${c.code} · ${c.hours} ساعة · ${termLabel(c.term)} · ${catLabel(c.cat)}`;
+    document.getElementById('removeModalWarnNote').innerHTML = `<span class="ic">⚠️</span><div>${warnTextFor(c.cat)}</div>`;
+    const direct = dependentsOf(c.id);
+    const chainAll = Array.from(allDescendants(c.id)).map(courseById).filter(Boolean);
+    const indirectOnly = chainAll.filter(d=> !direct.some(x=>x.id===d.id));
+    const directWrap = document.getElementById('removeModalDirectWrap');
+    const chainWrap = document.getElementById('removeModalChainWrap');
+    if(direct.length){
+      directWrap.style.display = '';
+      document.getElementById('removeModalDirect').innerHTML = direct.map(d=>`<span class="rm-chip">${d.ar}${d.term!=null?` (${termLabel(d.term)})`:' (غير مجدولة في الخطة)'}</span>`).join('');
+    } else {
+      directWrap.style.display = 'none';
+    }
+    if(indirectOnly.length){
+      chainWrap.style.display = '';
+      document.getElementById('removeModalChain').innerHTML = indirectOnly.map(d=>`<span class="rm-chip indirect">${d.ar}</span>`).join('');
+    } else {
+      chainWrap.style.display = 'none';
+    }
+    el().classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    el().classList.remove('open');
+    document.body.style.overflow = '';
+    pendingId = null;
+  }
+  function confirmRemove(){
+    if(pendingId){
+      state.removed[pendingId] = true;
+      delete state.done[pendingId];
+      delete state.grades[pendingId];
+      renderTermGrid();
+      updateGradeDisplays();
+      saveLocal();
+    }
+    close();
+  }
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+  return { open, close, confirmRemove };
+})();
+document.getElementById('removeModalConfirmBtn').onclick = ()=> RemoveModal.confirmRemove();
+document.getElementById('removeModalCancelBtn').onclick = ()=> RemoveModal.close();
+
+renderTermGrid();
+
+/* ============================= SECTION 7: EXPLORER ============================= */
+const explorerSelect = document.getElementById('explorerSelect');
+courses.forEach(c=>{
+  const opt = document.createElement('option');
+  opt.value = c.id; opt.textContent = `${c.ar} (${c.code})`;
+  explorerSelect.appendChild(opt);
+});
+function renderExplorer(id){
+  const c = courseById(id);
+  const prereqCol = document.getElementById('prereqCol');
+  const centerCol = document.getElementById('centerCol');
+  const opensCol = document.getElementById('opensCol');
+  prereqCol.innerHTML = '<h5>⬅ المتطلب السابق</h5>';
+  opensCol.innerHTML = '<h5>بتفتح ⬅</h5>';
+  if(!c.prereq.length){ prereqCol.innerHTML += '<div class="empty-hint">لا يوجد متطلب سابق</div>'; }
+  c.prereq.forEach(pid=>{
+    const p = courseById(pid);
+    if(!p) return;
+    const chip = document.createElement('div');
+    chip.className='node-chip'+(p.cat==='support'?' support':'');
+    chip.innerHTML = `<span class="code">${p.code}</span>${p.ar}`;
+    chip.onclick = ()=>{ explorerSelect.value = p.id; renderExplorer(p.id); };
+    prereqCol.appendChild(chip);
+  });
+  const deps = dependentsOf(c.id);
+  if(!deps.length){ opensCol.innerHTML += '<div class="empty-hint">مفيش مواد بتعتمد عليها مباشرة</div>'; }
+  deps.forEach(d=>{
+    const chip = document.createElement('div');
+    chip.className='node-chip'+(d.cat==='support'?' support':'');
+    chip.innerHTML = `<span class="code">${d.code}</span>${d.ar}`;
+    chip.onclick = ()=>{ explorerSelect.value = d.id; renderExplorer(d.id); };
+    opensCol.appendChild(chip);
+  });
+  centerCol.innerHTML = `<div class="code">${c.code}</div><div class="name">${c.ar}</div><div style="margin-top:8px">${badgeHtml(c.cat)}${criticalBadge(c.id)}</div><div style="margin-top:6px; font-size:0.75rem; color:var(--muted)">${c.hours} ساعة معتمدة</div>`;
+  renderFullChain(c);
+  renderExplorerSVG(id);
+}
+function renderExplorerSVG(id){
+  const c = courseById(id);
+  const host = document.getElementById('explorerGraph');
+  const prereqs = c.prereq.map(courseById).filter(Boolean);
+  const deps = dependentsOf(c.id);
+  const boxW=142, boxH=36, gapY=10;
+  const leftN = Math.max(prereqs.length,1), rightN = Math.max(deps.length,1);
+  const rows = Math.max(leftN, rightN);
+  const width = 640;
+  const height = Math.max(150, rows*(boxH+gapY)-gapY+30);
+  const leftX=8, midX=(width-boxW)/2, rightX=width-boxW-8;
+  const centerY=(height-boxH)/2;
+  function rowY(i,n){ return (height-(n*(boxH+gapY)-gapY))/2 + i*(boxH+gapY); }
+  let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">`;
+  svg += `<defs><marker id="explorerArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line-strong)"/></marker></defs>`;
+  if(prereqs.length){
+    prereqs.forEach((p,i)=>{
+      const y = rowY(i,leftN)+boxH/2;
+      svg += `<path d="M ${rightX} ${y} C ${midX+boxW+36} ${y} ${midX+boxW+36} ${centerY+boxH/2} ${midX+boxW+8} ${centerY+boxH/2}" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#explorerArrow)"/>`;
+    });
+  }
+  if(deps.length){
+    deps.forEach((d,i)=>{
+      const y = rowY(i,rightN)+boxH/2;
+      svg += `<path d="M ${midX} ${centerY+boxH/2} C ${midX-36} ${centerY+boxH/2} ${leftX+boxW+36} ${y} ${leftX+boxW+8} ${y}" fill="none" stroke="var(--line-strong)" stroke-width="1.5" marker-end="url(#explorerArrow)"/>`;
+    });
+  }
+  if(!prereqs.length){
+    svg += `<text x="${rightX+boxW/2}" y="${height/2}" text-anchor="middle" font-size="10" fill="var(--muted)">لا يوجد متطلب</text>`;
+  } else {
+    prereqs.forEach((p,i)=>{
+      const y = rowY(i,leftN);
+      svg += `<g style="cursor:pointer" onclick="jumpTo('${p.id}')"><rect x="${rightX}" y="${y}" width="${boxW}" height="${boxH}" rx="8" fill="var(--surface)" stroke="${catColorVar(p.cat)}" stroke-width="1.5"/><text x="${rightX+boxW/2}" y="${y+14}" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="var(--font-mono)">${p.code}</text><text x="${rightX+boxW/2}" y="${y+26}" text-anchor="middle" font-size="9" fill="var(--text)">${shortAr(p.ar)}</text></g>`;
+    });
+  }
+  svg += `<rect x="${midX}" y="${centerY}" width="${boxW}" height="${boxH}" rx="9" fill="var(--accent)" opacity="0.15" stroke="var(--accent)" stroke-width="2"/><text x="${midX+boxW/2}" y="${centerY+14}" text-anchor="middle" font-size="8" fill="var(--accent)" font-family="var(--font-mono)">${c.code}</text><text x="${midX+boxW/2}" y="${centerY+26}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--text)">${shortAr(c.ar)}</text>`;
+  if(!deps.length){
+    svg += `<text x="${leftX+boxW/2}" y="${height/2}" text-anchor="middle" font-size="10" fill="var(--muted)">مفيش مواد تانية</text>`;
+  } else {
+    deps.forEach((d,i)=>{
+      const y = rowY(i,rightN);
+      svg += `<g style="cursor:pointer" onclick="jumpTo('${d.id}')"><rect x="${leftX}" y="${y}" width="${boxW}" height="${boxH}" rx="8" fill="var(--surface)" stroke="${catColorVar(d.cat)}" stroke-width="1.5"/><text x="${leftX+boxW/2}" y="${y+14}" text-anchor="middle" font-size="8" fill="var(--muted)" font-family="var(--font-mono)">${d.code}</text><text x="${leftX+boxW/2}" y="${y+26}" text-anchor="middle" font-size="9" fill="var(--text)">${shortAr(d.ar)}</text></g>`;
+    });
+  }
+  svg += `</svg>`;
+  host.innerHTML = svg;
+}
+function allAncestors(id, seen=new Set()){
+  const c = courseById(id);
+  if(!c) return seen;
+  c.prereq.forEach(pid=>{
+    if(!seen.has(pid)){ seen.add(pid); allAncestors(pid, seen); }
+  });
+  return seen;
+}
+function allDescendants(id, seen=new Set()){
+  dependentsOf(id).forEach(d=>{
+    if(!seen.has(d.id)){ seen.add(d.id); allDescendants(d.id, seen); }
+  });
+  return seen;
+}
+function renderFullChain(c){
+  const prereqHost = document.getElementById('fullChainPrereq');
+  const opensHost = document.getElementById('fullChainOpens');
+  const ancestors = Array.from(allAncestors(c.id)).map(courseById).filter(Boolean);
+  const descendants = Array.from(allDescendants(c.id)).map(courseById).filter(Boolean);
+  prereqHost.innerHTML = ancestors.length ? ancestors.map(p=>`
+    <div class="node-chip${p.cat==='support'?' support':''}" data-jump="${p.id}"><span class="code">${p.code}</span>${p.ar}</div>`).join('')
+    : '<div class="empty-hint">مفيش أي متطلب — دي مادة بداية</div>';
+  opensHost.innerHTML = descendants.length ? descendants.map(d=>`
+    <div class="node-chip${d.cat==='support'?' support':''}" data-jump="${d.id}"><span class="code">${d.code}</span>${d.ar}</div>`).join('')
+    : '<div class="empty-hint">مفيش مواد بتعتمد عليها في السلسلة</div>';
+  [prereqHost, opensHost].forEach(host=>{
+    host.querySelectorAll('.node-chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{ explorerSelect.value = chip.dataset.jump; renderExplorer(chip.dataset.jump); });
+    });
+  });
+}
+explorerSelect.addEventListener('change', e=> renderExplorer(e.target.value));
+explorerSelect.value = '102201';
+renderExplorer('102201');
+
+function renderCriticalPathHost(){
+  const host = document.getElementById('criticalPathHost');
+  if(!host) return;
+  const list = Array.from(criticalIds).map(courseById).filter(Boolean).sort((a,b)=> criticalCounts[b.id] - criticalCounts[a.id]);
+  host.innerHTML = list.map(c=>`
+    <div class="node-chip" style="margin-bottom:0" onclick="jumpTo('${c.id}')" role="button" tabindex="0">
+      <span class="code">${c.code}</span>${c.ar} <span class="badge crit" style="margin-inline-start:6px">⚡ بتفتح ${criticalCounts[c.id]}</span>
+    </div>`).join('') || '<div class="empty-hint">مفيش مواد حرجة بالمعنى ده في الخطة</div>';
+}
+renderCriticalPathHost();
+
+const fullPrereqTable = document.getElementById('fullPrereqTable');
+fullPrereqTable.innerHTML = courses.map(c=>`
+  <tr>
+    <td class="code">${c.code}</td>
+    <td>${c.ar}</td>
+    <td class="code">${c.hours}</td>
+    <td style="font-size:0.75rem">${prereqNames(c)}</td>
+    <td style="font-size:0.75rem; color:var(--muted)">${opensNames(c)}</td>
+  </tr>`).join('');
+
+/* ============================= SECTION 8: خطتي الفعلية (ACTUAL REGISTRATION) ============================= */
+const AREG_KEY = 'csStatHasibActualRegState_v1';
+const aregState = { terms: [], regs: [] };
+const SEASON_LABELS = {fall:'خريف', spring:'ربيع', summer:'صيفي'};
+let aregTermSeq = 0;
+
+function aregTermLabel(term){
+  const kindTxt = term.kind==='equiv' ? ' (معادلة)' : '';
+  return `${SEASON_LABELS[term.season]} ${term.year}${kindTxt}`;
+}
+
+/* ---- Add Term Modal ---- */
+var AddTermModal = (function(){
+  let kind = null, season = null;
+  function el(){ return document.getElementById('addTermModalOverlay'); }
+  function updatePreview(){
+    const yearInput = document.getElementById('atmYear');
+    const year = yearInput.value.trim();
+    const preview = document.getElementById('atmPreview');
+    if(!kind || !season || !year){
+      preview.textContent = 'اختار الخيارات فوق لمعاينة اسم الترم';
+      return;
+    }
+    preview.textContent = aregTermLabel({kind, season, year});
+  }
+  function open(){
+    kind = null; season = null;
+    document.getElementById('atmYear').value = '';
+    document.querySelectorAll('#atmKindCards .atm-card').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('#atmSeasonCards .atm-card').forEach(b=>b.classList.remove('active'));
+    updatePreview();
+    el().classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function close(){
+    el().classList.remove('open');
+    document.body.style.overflow='';
+  }
+  function confirmAdd(){
+    const year = parseInt(document.getElementById('atmYear').value, 10);
+    if(!kind || !season || !year){
+      alert('اختار نوع الترم والفصل، واكتب السنة، قبل ما تأكد.');
+      return;
+    }
+    aregTermSeq += 1;
+    aregState.terms.push({ id:`term-${Date.now()}-${aregTermSeq}`, kind, season, year });
+    renderActualTerms();
+    updateActualDashboard();
+    saveAreg();
+    close();
+  }
+  document.querySelectorAll('#atmKindCards .atm-card').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      kind = btn.dataset.kind;
+      document.querySelectorAll('#atmKindCards .atm-card').forEach(b=>b.classList.toggle('active', b===btn));
+      updatePreview();
+    });
+  });
+  document.querySelectorAll('#atmSeasonCards .atm-card').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      season = btn.dataset.season;
+      document.querySelectorAll('#atmSeasonCards .atm-card').forEach(b=>b.classList.toggle('active', b===btn));
+      updatePreview();
+    });
+  });
+  document.getElementById('atmYear').addEventListener('input', updatePreview);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+  return { open, close, confirmAdd };
+})();
+document.getElementById('addTermBtn').onclick = ()=> AddTermModal.open();
+document.getElementById('atmConfirmBtn').onclick = ()=> AddTermModal.confirmAdd();
+document.getElementById('atmCancelBtn').onclick = ()=> AddTermModal.close();
+
+/* ---- Shared Autocomplete Dropdown (single element, position:fixed, listeners registered once) ---- */
+var CourseAutocomplete = (function(){
+  const listEl = document.getElementById('courseAutocompleteList');
+  let activeInput = null;
+  let activeTermId = null;
+  let currentItems = [];
+
+  function buildBankGroupedHTML(filterText){
+    const q = (filterText||'').trim().toLowerCase();
+    let items = [];
+    let html = '';
+    if(!q){
+      Object.keys(CATEGORY_LABELS).forEach(cat=>{
+        const list = courses.filter(c=>c.cat===cat);
+        if(!list.length) return;
+        html += `<div class="ac-group-label">${CATEGORY_LABELS[cat]}</div>`;
+        list.forEach(c=>{
+          html += `<div class="ac-item" data-idx="${items.length}"><span>${c.ar}</span><span class="ac-code">${c.code}</span></div>`;
+          items.push({type:'course', course:c});
+        });
+      });
+      if(!items.length) html = '<div class="ac-empty">مفيش مواد في البنك</div>';
+    } else {
+      const matches = courses.filter(c=> c.ar.toLowerCase().includes(q) || c.code.toLowerCase().includes(q) || (c.en||'').toLowerCase().includes(q));
+      matches.forEach(c=>{
+        html += `<div class="ac-item" data-idx="${items.length}"><span>${c.ar}</span><span class="ac-code">${c.code}</span></div>`;
+        items.push({type:'course', course:c});
+      });
+      html += `<div class="ac-item ac-item-custom" data-idx="${items.length}">✎ سجّلها كمادة مخصصة باسم "${filterText}"</div>`;
+      items.push({type:'custom', name:filterText});
+    }
+    currentItems = items;
+    listEl.innerHTML = html;
+  }
+
+  function position(input){
+    const r = input.getBoundingClientRect();
+    listEl.style.left = r.left + 'px';
+    listEl.style.top = (r.bottom + 4) + 'px';
+    listEl.style.width = Math.max(r.width, 220) + 'px';
+  }
+
+  function openFor(input, termId){
+    activeInput = input;
+    activeTermId = termId;
+    buildBankGroupedHTML(input.value);
+    position(input);
+    listEl.classList.add('open');
+  }
+  function closeList(){
+    listEl.classList.remove('open');
+    activeInput = null;
+    activeTermId = null;
+  }
+  function refresh(){
+    if(!activeInput) return;
+    buildBankGroupedHTML(activeInput.value);
+    position(activeInput);
+  }
+  function pickItem(termId, chosen, input){
+    if(chosen.type==='course'){
+      addRegistration(termId, { courseId: chosen.course.id, name: chosen.course.ar, hours: chosen.course.hours, cat: chosen.course.cat });
+      if(input) input.value = '';
+    } else {
+      openCustomFieldsFor(input, termId, chosen.name);
+    }
+  }
+
+  // listeners registered ONCE on the single shared element (not re-registered per render)
+  listEl.addEventListener('click', (e)=>{
+    const item = e.target.closest('.ac-item');
+    if(!item || !activeTermId) return;
+    const idx = parseInt(item.dataset.idx, 10);
+    const chosen = currentItems[idx];
+    const input = activeInput;
+    const termId = activeTermId;
+    if(chosen) pickItem(termId, chosen, input);
+    closeList();
+  });
+  window.addEventListener('resize', ()=>{ if(activeInput) position(activeInput); });
+  window.addEventListener('scroll', ()=>{ if(activeInput) position(activeInput); }, true);
+  document.addEventListener('click', (e)=>{
+    if(!activeInput) return;
+    if(e.target === activeInput || listEl.contains(e.target)) return;
+    closeList();
+  });
+
+  return { openFor, closeList, refresh };
+})();
+
+function openCustomFieldsFor(input, termId, name){
+  const row = input.closest('.areg-add-row');
+  if(!row) return;
+  const wrap = row.querySelector('.areg-custom-fields');
+  wrap.classList.add('show');
+  wrap.querySelector('.areg-custom-name').value = name;
+  wrap.dataset.termId = termId;
+}
+
+/* ---- Registration data helpers ---- */
+function addRegistration(termId, {courseId=null, name, hours, cat}){
+  aregState.regs.push({
+    id:`reg-${Date.now()}-${Math.floor(Math.random()*10000)}`,
+    termId, courseId, name, hours, cat, grade:''
+  });
+  renderActualTerms();
+  updateActualDashboard();
+  saveAreg();
+}
+function deleteRegistration(regId){
+  aregState.regs = aregState.regs.filter(r=>r.id!==regId);
+  renderActualTerms();
+  updateActualDashboard();
+  saveAreg();
+}
+function deleteAregTerm(termId){
+  if(!confirm('حذف الترم ده هيمسح كل المواد المسجلة فيه برضو. متأكد؟')) return;
+  aregState.terms = aregState.terms.filter(t=>t.id!==termId);
+  aregState.regs = aregState.regs.filter(r=>r.termId!==termId);
+  renderActualTerms();
+  updateActualDashboard();
+  saveAreg();
+}
+
+/* لكل مادة (courseId) من بنك المواد اتسجلت أكتر من مرة، حدد آخر محاولة بترتيب إضافة الترمات */
+function computeLatestMap(){
+  const termIndex = {};
+  aregState.terms.forEach((t,i)=> termIndex[t.id]=i);
+  const byCourseId = {};
+  aregState.regs.forEach(r=>{
+    if(!r.courseId) return;
+    if(!byCourseId[r.courseId]) byCourseId[r.courseId] = [];
+    byCourseId[r.courseId].push(r);
+  });
+  const latestRegId = {};
+  Object.keys(byCourseId).forEach(cid=>{
+    const list = byCourseId[cid];
+    let best = list[0];
+    list.forEach(r=>{
+      if((termIndex[r.termId] ?? -1) > (termIndex[best.termId] ?? -1)) best = r;
+    });
+    latestRegId[cid] = best.id;
+  });
+  return latestRegId;
+}
+
+function renderActualTerms(){
+  const host = document.getElementById('actualTermsHost');
+  const latestRegId = computeLatestMap();
+  if(!aregState.terms.length){
+    host.innerHTML = '<div class="empty-hint">لسه مفيش ترمات مسجّلة — دوس "+ سجّل ترم جديد" فوق عشان تبدأ.</div>';
+    return;
+  }
+  host.innerHTML = aregState.terms.map(t=>{
+    const regsInTerm = aregState.regs.filter(r=>r.termId===t.id);
+    const totalHours = regsInTerm.reduce((s,r)=>s+r.hours,0);
+    const countByCourse = {};
+    regsInTerm.forEach(r=>{ if(r.courseId){ countByCourse[r.courseId] = (countByCourse[r.courseId]||0)+1; } });
+    const dupNames = Object.keys(countByCourse).filter(cid=>countByCourse[cid]>1).map(cid=> courseById(cid)?.ar || cid);
+    const rowsHTML = regsInTerm.map(r=>{
+      const attemptsCount = r.courseId ? aregState.regs.filter(x=>x.courseId===r.courseId).length : 1;
+      const isRetakeCourse = attemptsCount > 1;
+      const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
+      const excluded = isRetakeCourse && !isLatest;
+      const gradeSel = `<select class="grade-select${r.grade?' has-grade':''}" data-reg-id="${r.id}">
+        <option value="">تقديرات ▾</option>
+        ${gradeScale.map(g=>`<option value="${g.pts}" ${r.grade===g.pts?'selected':''}>${g.sym}</option>`).join('')}
+      </select>`;
+      const tag = isRetakeCourse ? (excluded ? '<span class="areg-tag excluded-tag">⛔ مستبعدة</span>' : '<span class="areg-tag latest">🔁 آخر محاولة</span>') : '';
+      return `<li class="areg-row${excluded?' excluded':''}" data-reg-id="${r.id}">
+        <span class="areg-name">${r.name}<small>${r.courseId?(courseById(r.courseId)?.code+' · '):''}${r.hours}h · ${catLabel(r.cat)}</small></span>
+        ${tag}
+        ${gradeSel}
+        <button type="button" class="areg-row-del" data-reg-id="${r.id}" title="حذف التسجيل" aria-label="حذف">✕</button>
+      </li>`;
+    }).join('');
+    return `<div class="areg-card" data-term-id="${t.id}">
+      <div class="areg-head">
+        <div>
+          <h4>${aregTermLabel(t)} ${t.kind==='equiv'?'<span class="equiv-badge">معادلة — مستبعدة من GPA</span>':''}</h4>
+          <div class="areg-meta">${totalHours} ساعة مسجّلة</div>
+        </div>
+        <div class="areg-head-right">
+          <button type="button" class="areg-del" data-term-id="${t.id}">🗑️ حذف الترم</button>
+        </div>
+      </div>
+      ${dupNames.length?`<div class="areg-dup-warn">⚠️ سجّلت "${dupNames.join('، ')}" مرتين في نفس الترم ده — غالبًا غلطة إدخال، راجعها.</div>`:''}
+      <ul class="areg-list">${rowsHTML || '<li class="areg-row" style="color:var(--muted)">لسه مفيش مواد مسجّلة في الترم ده</li>'}</ul>
+      <div class="areg-add-row">
+        <input type="text" class="ac-input" placeholder="اكتب اسم/كود مادة، أو دوس فاضي لتصفح البنك" data-term-id="${t.id}">
+        <div class="areg-custom-fields">
+          <input type="text" class="areg-custom-name" placeholder="اسم المادة" readonly>
+          <select class="areg-custom-cat">${Object.keys(CATEGORY_LABELS).map(c=>`<option value="${c}">${CATEGORY_LABELS[c]}</option>`).join('')}</select>
+          <input type="number" class="areg-custom-hours" placeholder="ساعات" min="1" max="10">
+          <button type="button" class="areg-add-btn">إضافة</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  host.querySelectorAll('.areg-del').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteAregTerm(btn.dataset.termId));
+  });
+  host.querySelectorAll('.areg-row-del').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteRegistration(btn.dataset.regId));
+  });
+  host.querySelectorAll('.grade-select').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const reg = aregState.regs.find(r=>r.id===sel.dataset.regId);
+      if(reg){ reg.grade = sel.value; sel.classList.toggle('has-grade', !!sel.value); }
+      updateActualDashboard();
+      saveAreg();
+    });
+  });
+  host.querySelectorAll('.ac-input').forEach(input=>{
+    input.addEventListener('focus', ()=> CourseAutocomplete.openFor(input, input.dataset.termId));
+    input.addEventListener('input', ()=> CourseAutocomplete.refresh());
+  });
+  host.querySelectorAll('.areg-custom-fields').forEach(wrap=>{
+    wrap.querySelector('.areg-add-btn').addEventListener('click', ()=>{
+      const name = wrap.querySelector('.areg-custom-name').value.trim();
+      const cat = wrap.querySelector('.areg-custom-cat').value;
+      const hours = parseFloat(wrap.querySelector('.areg-custom-hours').value);
+      if(!name || !hours || hours<=0) return;
+      addRegistration(wrap.dataset.termId, { courseId:null, name, hours, cat });
+      wrap.classList.remove('show');
+    });
+  });
+}
+
+/* ---- Dashboard: مكتسبة (نجح فيها) مقابل مسجّلة (كل المحاولات) ---- */
+function updateActualDashboard(){
+  let acquiredHours = 0, registeredHours = 0;
+  const acquiredByCat = {};
+  const latestRegId = computeLatestMap();
+  aregState.regs.forEach(r=>{ registeredHours += r.hours; });
+  aregState.regs.forEach(r=>{
+    const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
+    if(!isLatest) return;
+    const passed = r.grade && parseFloat(r.grade) > 0;
+    if(passed){
+      acquiredHours += r.hours;
+      acquiredByCat[r.cat] = (acquiredByCat[r.cat]||0) + r.hours;
+    }
+  });
+  const pct = Math.min(100, Math.round(acquiredHours/132*100));
+  document.getElementById('actualProgressFill').style.width = pct+'%';
+  document.getElementById('actualProgressText').textContent = `${acquiredHours} ساعة مكتسبة (نجحت فيها) من 132 (${pct}%) · ${registeredHours} ساعة مسجّلة إجمالًا`;
+
+  const catHost = document.getElementById('actualCatProgressHost');
+  catHost.innerHTML = Object.keys(CATEGORY_TARGETS).map(cat=>{
+    const done = acquiredByCat[cat] || 0;
+    const target = CATEGORY_TARGETS[cat];
+    const pctC = Math.min(100, Math.round(done/target*100));
+    return `<div class="cat-progress">
+      <div class="cat-progress-head"><b>${CATEGORY_LABELS[cat]}</b><span>${done}/${target}h</span></div>
+      <div class="progress-bar"><div style="width:${pctC}%; background:${pctC>=100?'linear-gradient(90deg,var(--accent),var(--accent2))':`var(--${CATEGORY_COLORVAR[cat]})`}"></div></div>
+    </div>`;
+  }).join('');
+
+  let cgpaPts = 0, cgpaHours = 0;
+  aregState.regs.forEach(r=>{
+    const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
+    if(!isLatest) return;
+    const term = aregState.terms.find(t=>t.id===r.termId);
+    if(term && term.kind==='equiv') return;
+    if(!r.grade) return;
+    cgpaPts += r.hours * parseFloat(r.grade);
+    cgpaHours += r.hours;
+  });
+  const cgpaCard = document.getElementById('actualCgpaCard');
+  if(cgpaHours){
+    cgpaCard.style.display='';
+    document.getElementById('actualCgpaValue').textContent = (cgpaPts/cgpaHours).toFixed(2);
+    document.getElementById('actualCgpaHours').textContent = cgpaHours;
+  } else {
+    cgpaCard.style.display='none';
+  }
+
+  updateAcademicStatus();
+  renderTranscript();
+  renderActualNextTermSuggestions();
+}
+
+/* ---- الحالة الأكاديمية: إنذار (مادة 14) + مرتبة الشرف — نفس أرقام اللائحة العامة المستخدمة في ملف السبيشيال (لائحة كلية عامة، مش خاصة بتخصص) ---- */
+function computeAcademicStatus(){
+  const gradedTerms = aregState.terms.filter(t=>t.kind!=='equiv');
+  const termIndexMap = {}; gradedTerms.forEach((tt,i)=> termIndexMap[tt.id]=i);
+  let warningLevel = 0;
+  let anyGradedSoFar = false;
+  const termGpas = [];
+  gradedTerms.forEach((t, idx)=>{
+    const visibleTermIds = new Set(gradedTerms.slice(0, idx+1).map(x=>x.id));
+    const visibleRegs = aregState.regs.filter(r=> visibleTermIds.has(r.termId));
+    const byCid = {};
+    visibleRegs.forEach(r=>{ if(!r.courseId) return; if(!byCid[r.courseId]) byCid[r.courseId]=[]; byCid[r.courseId].push(r); });
+    const latestByCid = {};
+    Object.keys(byCid).forEach(cid=>{
+      let best = byCid[cid][0];
+      byCid[cid].forEach(r=>{ if((termIndexMap[r.termId] ?? -1) > (termIndexMap[best.termId] ?? -1)) best=r; });
+      latestByCid[cid] = best.id;
+    });
+    let cumPts=0, cumHours=0;
+    visibleRegs.forEach(r=>{
+      const isLatest = r.courseId ? latestByCid[r.courseId]===r.id : true;
+      if(!isLatest || !r.grade) return;
+      cumPts += r.hours*parseFloat(r.grade);
+      cumHours += r.hours;
+    });
+    const thisTermRegs = aregState.regs.filter(r=>r.termId===t.id && r.grade);
+    let termPts=0, termHours=0;
+    thisTermRegs.forEach(r=>{ termPts += r.hours*parseFloat(r.grade); termHours += r.hours; });
+    if(termHours>0) termGpas.push({term:t, gpa: termPts/termHours});
+    if(cumHours>0){
+      anyGradedSoFar = true;
+      const cgpaAtPoint = cumPts/cumHours;
+      if(warningLevel===0 && cgpaAtPoint < 1.67){ warningLevel = 1; }
+      else if(warningLevel>=1 && cgpaAtPoint < 2.0){ warningLevel = Math.max(warningLevel, 2); }
+      else if(cgpaAtPoint >= 2.0){ warningLevel = 0; }
+    }
+  });
+
+  const everFailed = aregState.regs.some(r=> r.grade === '0.00'); // أي رسوب في أي محاولة حتى المستبعدة — حقيقة تاريخية ما بتتمحيش
+  const allTermGpasOk = termGpas.length>0 && termGpas.every(x=> x.gpa >= 3.333);
+  const overallCgpaEl = document.getElementById('actualCgpaValue');
+  const overallCgpa = parseFloat(overallCgpaEl ? overallCgpaEl.textContent : '0') || 0;
+  const overallCgpaHoursEl = document.getElementById('actualCgpaHours');
+  const overallCgpaHours = parseInt(overallCgpaHoursEl ? overallCgpaHoursEl.textContent : '0', 10) || 0;
+  const termsCount = gradedTerms.length;
+  const withinTermRange = termsCount>=7 && termsCount<=9;
+  const honorEligibleSoFar = !everFailed && allTermGpasOk && overallCgpa >= 3.666 && overallCgpaHours>0;
+
+  // حدود العبء الدراسي (مادة 13) — نفس الأرقام المستخدمة بالظبط في تاب "خطتي الفعلية" وحاسبة GPA
+  const latestMapAll = computeLatestMap();
+  let acquiredHoursForLoad = 0;
+  aregState.regs.forEach(r=>{
+    const isLatest = r.courseId ? latestMapAll[r.courseId]===r.id : true;
+    if(!isLatest || !r.grade) return;
+    if(parseFloat(r.grade) > 0) acquiredHoursForLoad += r.hours;
+  });
+  let maxLoad = 17, maxLoadNote = 'الحد العادي حسب اللائحة.';
+  if(warningLevel===2){
+    maxLoad = 12;
+    maxLoadNote = 'محدود بسبب الإنذار الأكاديمي التاني.';
+  } else if(overallCgpa >= 3.0 && acquiredHoursForLoad >= 33){
+    maxLoad = 19;
+    maxLoadNote = 'ممكن يوصل لـ19 ساعة بموافقة المرشد ورئيس القسم (معدلك ≥3.0 وعدّيت 33 ساعة معتمدة).';
+  }
+  maxLoadNote += ' (لو ده ترم تخرجك، ممكن يوصل لـ21 ساعة بموافقة لجنة شئون التعليم مع معدل ≥3.0.)';
+
+  return { warningLevel, anyGradedSoFar, everFailed, allTermGpasOk, overallCgpa, termsCount, withinTermRange, honorEligibleSoFar, maxLoad, maxLoadNote };
+}
+function updateAcademicStatus(){
+  const card = document.getElementById('academicStatusCard');
+  const host = document.getElementById('academicStatusHost');
+  const status = computeAcademicStatus();
+  if(!status.anyGradedSoFar){ card.style.display='none'; return; }
+  card.style.display='';
+  let rows = '';
+  if(status.warningLevel===2){
+    rows += `<div class="astat-row warn2"><span class="astat-ico">⛔</span><div><b>إنذار أكاديمي تاني</b><p>معدلك التراكمي فضل تحت 2.0 بعد إنذار سابق — العبء الدراسي بيتحدد بـ12 ساعة كحد أقصى للترم الجاي حسب اللائحة (مادة 14).</p></div></div>`;
+  } else if(status.warningLevel===1){
+    rows += `<div class="astat-row warn1"><span class="astat-ico">⚠️</span><div><b>إنذار أكاديمي أول</b><p>معدلك التراكمي وصل تحت 1.67 في مرحلة ما — لازم ترفعه لـ2.0+ عشان ماتوصلش لإنذار تاني (اللي بيحدّ العبء بـ12 ساعة).</p></div></div>`;
+  } else {
+    rows += `<div class="astat-row ok"><span class="astat-ico">✅</span><div><b>لا يوجد إنذار أكاديمي حاليًا</b><p>معدلك التراكمي فوق 2.0 طول تسجيلك الفعلي لحد دلوقتي.</p></div></div>`;
+  }
+  rows += `<div class="astat-row load"><span class="astat-ico">📏</span><div><b>الحد الأقصى للعبء الدراسي حاليًا: ${status.maxLoad} ساعة</b><p>${status.maxLoadNote}</p></div></div>`;
+  if(status.honorEligibleSoFar){
+    const rangeNote = status.withinTermRange ? `وضمن مدى الـ7-9 فصول (${status.termsCount} لحد دلوقتي)` : `بس عدد فصولك لحد دلوقتي (${status.termsCount}) لسه برّه مدى الـ7-9 فصول المطلوب للتخرج بمرتبة الشرف`;
+    rows += `<div class="astat-row honor"><span class="astat-ico">🎓</span><div><b>مؤهل مبدئيًا لمرتبة الشرف (لغاية دلوقتي)</b><p>معدل كل فصل ≥3.333، والتراكمي ≥3.666، ومفيش رسوب في أي محاولة، ${rangeNote}. القرار النهائي بيتأكد بس عند التخرج فعليًا بـ132 ساعة.</p></div></div>`;
+  } else {
+    let reason = 'لسه محتاج بيانات أكتر للتأكد.';
+    if(status.everFailed) reason = 'فيه رسوب (F) مسجل في محاولة قديمة — وده بيلغي الأهلية نهائيًا حتى لو نجحت في إعادة التسجيل.';
+    else if(!status.allTermGpasOk) reason = 'معدل فصل واحد على الأقل من فصولك أقل من 3.333.';
+    else if(status.overallCgpa < 3.666) reason = `معدلك التراكمي الحالي (${status.overallCgpa.toFixed(2)}) لسه أقل من 3.666.`;
+    rows += `<div class="astat-row neutral"><span class="astat-ico">ℹ️</span><div><b>مش مؤهل لمرتبة الشرف لغاية دلوقتي</b><p>${reason}</p></div></div>`;
+  }
+  host.innerHTML = rows;
+}
+
+/* ---- بيان الحالة (Transcript) ---- */
+function renderTranscript(){
+  const tbody = document.getElementById('transcriptBody');
+  const emptyHint = document.getElementById('transcriptEmptyHint');
+  if(!tbody) return;
+  if(!aregState.regs.length){
+    tbody.innerHTML = '';
+    if(emptyHint) emptyHint.style.display = '';
+    return;
+  }
+  if(emptyHint) emptyHint.style.display = 'none';
+  const latestRegId = computeLatestMap();
+  const termIndexMap = {}; aregState.terms.forEach((t,i)=> termIndexMap[t.id]=i);
+  const sortedRegs = [...aregState.regs].sort((a,b)=> (termIndexMap[a.termId] ?? 0) - (termIndexMap[b.termId] ?? 0));
+  tbody.innerHTML = sortedRegs.map(r=>{
+    const term = aregState.terms.find(t=>t.id===r.termId);
+    const isRetakeCourse = r.courseId && aregState.regs.filter(x=>x.courseId===r.courseId).length>1;
+    const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
+    const excluded = isRetakeCourse && !isLatest;
+    const statusTxt = isRetakeCourse ? (excluded ? '⛔ مستبعدة' : '🔁 آخر محاولة') : '—';
+    const gradeInfo = gradeScale.find(g=>g.pts===r.grade);
+    return `<tr${excluded?' style="opacity:.55; text-decoration:line-through;"':''}>
+      <td class="code" data-label="الترم">${term?aregTermLabel(term):'—'}</td>
+      <td class="code" data-label="الكود">${r.courseId?(courseById(r.courseId)?.code||'—'):'—'}</td>
+      <td data-label="المادة">${r.name}</td>
+      <td class="code" data-label="الساعات">${r.hours}</td>
+      <td class="code" data-label="التقدير">${gradeInfo?gradeInfo.sym:(r.grade?r.grade:'—')}</td>
+      <td class="code" data-label="النقاط">${r.grade||'—'}</td>
+      <td data-label="التصنيف">${catLabel(r.cat)}</td>
+      <td data-label="الحالة">${statusTxt}</td>
+    </tr>`;
+  }).join('');
+}
+document.getElementById('transcriptPrintBtn').onclick = ()=> window.print();
+
+/* ---- ترشيح ذكي بناءً على التسجيل الفعلي بس ---- */
+function renderActualNextTermSuggestions(){
+  const host = document.getElementById('actualNextTermHost');
+  if(!host) return;
+  const latestRegId = computeLatestMap();
+  const passedIds = new Set();
+  aregState.regs.forEach(r=>{
+    if(!r.courseId) return;
+    if(latestRegId[r.courseId]!==r.id) return;
+    if(r.grade && parseFloat(r.grade)>0) passedIds.add(r.courseId);
+  });
+  const registeredAnyIds = new Set(aregState.regs.filter(r=>r.courseId).map(r=>r.courseId));
+  const available = courses.filter(c=>{
+    if(registeredAnyIds.has(c.id)) return false;
+    if(c.term===null || c.term===undefined) return false;
+    return c.prereq.every(pid=> passedIds.has(pid));
+  });
+  if(!available.length){
+    host.innerHTML = '<div class="empty-hint" style="grid-column:1/-1">مفيش مواد جديدة متاحة دلوقتي حسب تسجيلك الفعلي — سجّل أول ترم ونتائجك عشان يبان اقتراح.</div>';
+    return;
+  }
+  const sorted = [...available].sort((a,b)=> (criticalIds.has(b.id)?1:0) - (criticalIds.has(a.id)?1:0));
+  host.innerHTML = sorted.map(c=>`
+    <div class="avail-chip" data-jump="${c.id}">
+      <span class="code">${c.code}</span>${c.ar} ${criticalIds.has(c.id)?'<span class="badge crit" style="margin-inline-start:4px">⚡</span>':''}
+      <div style="color:var(--muted); font-size:0.6875rem; margin-top:3px;">${c.hours}h · ${catLabel(c.cat)}</div>
+    </div>`).join('');
+  host.querySelectorAll('.avail-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      showSection('sec-7');
+      explorerSelect.value = chip.dataset.jump;
+      renderExplorer(chip.dataset.jump);
+    });
+  });
+}
+
+/* ---- تخزين محلي منفصل تمامًا عن أي مفتاح تاني في الملف ---- */
+function saveAreg(){
+  try{ localStorage.setItem(AREG_KEY, JSON.stringify(aregState)); }catch(e){}
+}
+function loadAreg(){
+  try{
+    const raw = localStorage.getItem(AREG_KEY);
+    if(!raw) return;
+    const payload = JSON.parse(raw);
+    aregState.terms = payload.terms || [];
+    aregState.regs = payload.regs || [];
+    renderActualTerms();
+    updateActualDashboard();
+  }catch(e){}
+}
+
+/* ---- تصدير / استيراد مستقل ---- */
+document.getElementById('actualExportBtn').onclick = ()=>{
+  document.getElementById('actualJsonBox').value = JSON.stringify(aregState);
+};
+document.getElementById('actualImportBtn').onclick = ()=>{
+  try{
+    const payload = JSON.parse(document.getElementById('actualJsonBox').value);
+    aregState.terms = payload.terms || [];
+    aregState.regs = payload.regs || [];
+    renderActualTerms();
+    updateActualDashboard();
+    saveAreg();
+    alert('تم الاستيراد بنجاح ✅');
+  }catch(e){ alert('في مشكلة في النص المستورد، تأكد إنه منسوخ كامل من التصدير القديم.'); }
+};
+
+renderActualTerms();
+updateActualDashboard();
+loadAreg();
+
+/* ============================= SECTION 9: بحث سريع موحّد (Command Palette) ============================= */
+var CommandPalette = (function(){
+  const overlay = document.getElementById('paletteOverlay');
+  const input = document.getElementById('paletteInput');
+  const resultsHost = document.getElementById('paletteResults');
+  let flatItems = []; // العناصر الظاهرة حاليًا بترتيب مسطّح، عشان التنقل بالسهمين
+  let hlIndex = -1;
+
+  function buildResults(q){
+    const query = (q||'').trim().toLowerCase();
+    flatItems = [];
+    let html = '';
+
+    const matchedTabs = sectionsMeta.filter(s=> !query || s.label.toLowerCase().includes(query));
+    if(matchedTabs.length){
+      html += `<div class="palette-group-label">التابات</div>`;
+      matchedTabs.forEach(s=>{
+        html += `<div class="palette-item" data-idx="${flatItems.length}"><span class="p-ico">${s.icon}</span><span class="p-main">${s.label}</span></div>`;
+        flatItems.push({type:'tab', id:s.id});
+      });
+    }
+
+    const matchedCourses = query ? courses.filter(c=> c.ar.toLowerCase().includes(query) || c.code.toLowerCase().includes(query) || (c.en||'').toLowerCase().includes(query)) : [];
+    if(matchedCourses.length){
+      html += `<div class="palette-group-label">بنك المواد</div>`;
+      matchedCourses.slice(0, 40).forEach(c=>{
+        html += `<div class="palette-item" data-idx="${flatItems.length}"><span class="p-ico">📘</span><span class="p-main">${c.ar}</span><span class="p-code">${c.code}</span></div>`;
+        flatItems.push({type:'course', id:c.id});
+      });
+    }
+
+    if(!flatItems.length){
+      html = '<div class="palette-empty">مفيش نتائج مطابقة</div>';
+    }
+    resultsHost.innerHTML = html;
+    hlIndex = flatItems.length ? 0 : -1;
+    updateHighlight();
+    resultsHost.querySelectorAll('.palette-item').forEach(el=>{
+      el.addEventListener('click', ()=> selectItem(parseInt(el.dataset.idx,10)));
+      el.addEventListener('mouseenter', ()=>{ hlIndex = parseInt(el.dataset.idx,10); updateHighlight(); });
+    });
+  }
+  function updateHighlight(){
+    resultsHost.querySelectorAll('.palette-item').forEach(el=>{
+      el.classList.toggle('hl', parseInt(el.dataset.idx,10)===hlIndex);
+    });
+    const hlEl = resultsHost.querySelector('.palette-item.hl');
+    if(hlEl && typeof hlEl.scrollIntoView === 'function') hlEl.scrollIntoView({block:'nearest'});
+  }
+  function selectItem(idx){
+    const item = flatItems[idx];
+    if(!item) return;
+    if(item.type==='tab'){
+      showSection(item.id);
+    } else if(item.type==='course'){
+      goToCourseRow(item.id);
+    }
+    close();
+  }
+  function goToCourseRow(courseId){
+    const c = courseById(courseId);
+    if(!c) return;
+    showSection('sec-5');
+    document.getElementById('courseFilter').value = 'all';
+    document.getElementById('courseSearch').value = '';
+    renderAccordion('all', '');
+    // نأجّل شوية عشان الـDOM يخلص يتبني والتنقل للتاب يخلص، بعدين نفتح الأكورديون الصح ونعمل scroll
+    setTimeout(()=>{
+      const row = document.querySelector(`tr[data-course-id="${courseId}"]`);
+      if(!row) return;
+      const accItem = row.closest('.acc-item');
+      if(accItem && !accItem.classList.contains('open')){
+        accItem.classList.add('open');
+        const body = accItem.querySelector('.acc-body');
+        body.style.maxHeight = body.scrollHeight+'px';
+      }
+      if(typeof row.scrollIntoView === 'function') row.scrollIntoView({behavior:'smooth', block:'center'});
+      row.classList.remove('row-flash'); void row.offsetWidth; row.classList.add('row-flash');
+    }, 260);
+  }
+  function open(){
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    input.value = '';
+    buildResults('');
+    setTimeout(()=> input.focus(), 50);
+  }
+  function close(){
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function isOpen(){ return overlay.classList.contains('open'); }
+
+  input.addEventListener('input', ()=> buildResults(input.value));
+  input.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowDown'){ e.preventDefault(); if(flatItems.length){ hlIndex = (hlIndex+1) % flatItems.length; updateHighlight(); } }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); if(flatItems.length){ hlIndex = (hlIndex-1+flatItems.length) % flatItems.length; updateHighlight(); } }
+    else if(e.key==='Enter'){ e.preventDefault(); if(hlIndex>=0) selectItem(hlIndex); }
+    else if(e.key==='Escape'){ close(); }
+  });
+  document.getElementById('paletteBtn').onclick = ()=> open();
+  document.addEventListener('keydown', (e)=>{
+    if((e.ctrlKey || e.metaKey) && (e.key==='k' || e.key==='K')){
+      e.preventDefault();
+      isOpen() ? close() : open();
+    } else if(e.key==='Escape' && isOpen()){
+      close();
+    }
+  });
+
+  return { open, close };
+})();
+
+/* ============================= SECTION 10: GPA ============================= */
+const gradeScaleBody = document.querySelector('#gradeScaleTable tbody');
+gradeScaleBody.innerHTML = gradeScale.map(g=>`<tr><td class="code">${g.sym}</td><td class="code">${g.score}</td><td class="code">${g.pts}</td><td>${g.tag}</td></tr>`).join('');
+
+const yearNames = ['السنة الأولى','السنة الثانية','السنة الثالثة','السنة الرابعة'];
+function buildCourseSelectOptions(){
+  let html = `<option value="">✎ اسم يدوي (اكتب بنفسك)</option>`;
+  for(let y=1;y<=4;y++){
+    const terms = [y*2-1, y*2];
+    const rows = terms.filter(t=>courses.some(c=>c.term===t));
+    if(!rows.length) continue;
+    html += `<optgroup label="${yearNames[y-1]}">`;
+    rows.forEach(t=>{
+      html += `<option disabled>── ${termLabel(t)} ──</option>`;
+      courses.filter(c=>c.term===t).forEach(c=>{
+        html += `<option value="${c.id}">${c.ar} — ${c.hours}h</option>`;
+      });
+    });
+    html += `</optgroup>`;
+  }
+  return html;
+}
+const courseOptionsHTML = buildCourseSelectOptions();
+
+const gpaRows = document.getElementById('gpaRows');
+function addGpaRow(name='', hours='', grade='B'){
+  const idx = state.gpaRows++;
+  const tr = document.createElement('tr');
+  tr.dataset.idx = idx;
+  tr.innerHTML = `
+    <td class="gpa-name-cell" data-label="اسم المادة">
+      <select class="rowCourseSel">${courseOptionsHTML}</select>
+      <input type="text" class="rowName" value="${name}" placeholder="اسم المادة">
+    </td>
+    <td data-label="الساعات"><input type="number" class="rowHours" min="1" max="6" value="${hours}"></td>
+    <td data-label="التقدير"><select class="rowGrade">${gradeScale.map(g=>`<option value="${g.pts}" ${g.sym===grade?'selected':''}>${g.sym} — ${g.pts}</option>`).join('')}</select></td>
+    <td class="gpa-del-cell"><button class="btn danger" style="padding:5px 10px">حذف</button></td>`;
+  tr.querySelector('button').onclick = ()=> { tr.remove(); saveLocal(); };
+  const courseSel = tr.querySelector('.rowCourseSel');
+  const nameInput = tr.querySelector('.rowName');
+  const hoursInput = tr.querySelector('.rowHours');
+  const gradeSelect = tr.querySelector('.rowGrade');
+  courseSel.addEventListener('change', ()=>{
+    const val = courseSel.value;
+    if(val===''){
+      nameInput.style.display = '';
+      nameInput.value = '';
+      hoursInput.value = '';
+      hoursInput.readOnly = false;
+      nameInput.focus();
+    } else {
+      const course = courses.find(c=>c.id===val);
+      if(course){
+        nameInput.style.display = 'none';
+        nameInput.value = course.ar;
+        hoursInput.value = course.hours;
+        hoursInput.readOnly = true;
+      }
+    }
+    saveLocal();
+  });
+  [nameInput, hoursInput, gradeSelect].forEach(field=>{
+    field.addEventListener('input', ()=> saveLocal());
+    field.addEventListener('change', ()=> saveLocal());
+  });
+  gpaRows.appendChild(tr);
+}
+document.getElementById('addRow').onclick = ()=> { addGpaRow(); saveLocal(); };
+for(let i=0;i<4;i++) addGpaRow();
+
+document.getElementById('calcGpa').onclick = ()=>{
+  let totalPts=0, totalHours=0;
+  gpaRows.querySelectorAll('tr').forEach(tr=>{
+    const h = parseFloat(tr.querySelector('.rowHours').value)||0;
+    const p = parseFloat(tr.querySelector('.rowGrade').value)||0;
+    totalPts += h*p; totalHours += h;
+  });
+  const gpa = totalHours ? (totalPts/totalHours) : 0;
+  document.getElementById('termGpa').textContent = gpa.toFixed(2);
+  document.getElementById('termHours').textContent = totalHours;
+  document.getElementById('gpaResult').style.display = 'flex';
+  lastTermCalc = { hours: totalHours, points: totalPts };
+  document.getElementById('saveCumRow').style.display = totalHours ? 'flex' : 'none';
+};
+
+/* ============================= SECTION 10b: CUMULATIVE GPA ============================= */
+const cumRows = document.getElementById('cumRows');
+function renderCumulative(){
+  cumRows.innerHTML = state.cumulative.map((r,i)=>`
+    <tr>
+      <td>${r.label}</td>
+      <td class="code">${r.hours}</td>
+      <td class="code">${(r.points/r.hours).toFixed(2)}</td>
+      <td><button class="btn danger" style="padding:5px 10px" data-i="${i}">حذف</button></td>
+    </tr>`).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--muted)">لسه مفيش ترمات محفوظة</td></tr>';
+  cumRows.querySelectorAll('button[data-i]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.cumulative.splice(+btn.dataset.i, 1);
+      renderCumulative();
+      saveLocal();
+    });
+  });
+  const totalHours = state.cumulative.reduce((s,r)=>s+r.hours,0);
+  const totalPts = state.cumulative.reduce((s,r)=>s+r.points,0);
+  const cumResult = document.getElementById('cumResult');
+  if(totalHours){
+    cumResult.style.display = 'flex';
+    document.getElementById('cumGpa').textContent = (totalPts/totalHours).toFixed(2);
+    document.getElementById('cumHours').textContent = totalHours;
+  } else {
+    cumResult.style.display = 'none';
+  }
+}
+document.getElementById('saveCumBtn').onclick = ()=>{
+  if(!lastTermCalc || !lastTermCalc.hours) return;
+  const label = document.getElementById('cumTermLabel').value.trim() || `ترم محفوظ ${state.cumulative.length+1}`;
+  state.cumulative.push({ label, hours: lastTermCalc.hours, points: lastTermCalc.points });
+  document.getElementById('cumTermLabel').value = '';
+  renderCumulative();
+  saveLocal();
+};
+renderCumulative();
+
+document.getElementById('calcReverseBtn').onclick = ()=>{
+  const target = parseFloat(document.getElementById('targetCgpa').value);
+  const remaining = parseFloat(document.getElementById('remainingHours').value);
+  const totalHours = state.cumulative.reduce((s,r)=>s+r.hours,0);
+  const totalPts = state.cumulative.reduce((s,r)=>s+r.points,0);
+  const box = document.getElementById('reverseResult');
+  if(isNaN(target) || target<0 || target>4 || isNaN(remaining) || remaining<=0){
+    box.innerHTML = `<div class="note warn"><span class="ic">⚠️</span><div>ادخل معدل مستهدف بين 0 و4، وعدد ساعات باقية أكبر من صفر.</div></div>`;
+    return;
+  }
+  const finalHours = totalHours + remaining;
+  const neededPts = target*finalHours - totalPts;
+  const neededAvg = neededPts/remaining;
+  if(neededAvg <= 0){
+    box.innerHTML = `<div class="note info"><span class="ic">🎉</span><div>مبروك — معدلك الحالي (${totalHours? (totalPts/totalHours).toFixed(4):'0.0000'}) كفاية أصلًا. حتى لو جبت أقل تقدير ممكن في الـ${remaining} ساعة الباقية، هتفضل مساوي أو أعلى من ${target.toFixed(2)}.</div></div>`;
+  } else if(neededAvg > 4.0001){
+    const maxPossible = (totalPts + remaining*4)/finalHours;
+    box.innerHTML = `<div class="note warn"><span class="ic">⚠️</span><div>مستحيل رياضيًا بالساعات دي — حتى لو جبت A (4.00) في كل الـ${remaining} ساعة الباقية، أقصى معدل تقدر توصله هو <b>${maxPossible.toFixed(4)}</b> مش ${target.toFixed(2)}. جرّب تزوّد عدد الساعات الباقية أو تقلل المعدل المستهدف.</div></div>`;
+  } else {
+    // gradeScale مرتب من الأعلى (A) للأقل (F)، فعشان نلاقي أقل تقدير كافي فعلاً
+    // لازم ندور بالمقلوب (من F لـ A) ونوقف أول ما نلاقي تقدير نقطته تكفي المطلوب
+    const tier = [...gradeScale].reverse().find(g=> parseFloat(g.pts) >= neededAvg - 0.0001) || gradeScale[0];
+    box.innerHTML = `<div class="gpa-result">
+      <div class="box"><b>${neededAvg.toFixed(2)}</b><span>متوسط نقاط مطلوب/ساعة فيما تبقى</span></div>
+      <div class="box"><b>${tier.sym}</b><span>تقريبًا يعادل تقدير</span></div>
+    </div>`;
+  }
+};
+
+/* ============================= EXPORT / IMPORT ============================= */
+function buildPayload(){
+  return {
+    done: state.done,
+    customExtras: state.customExtras,
+    cumulative: state.cumulative,
+    removed: state.removed,
+    grades: state.grades,
+    gpa: Array.from(gpaRows.querySelectorAll('tr')).map(tr=>({
+      name: tr.querySelector('.rowName').value,
+      hours: tr.querySelector('.rowHours').value,
+      grade: tr.querySelector('.rowGrade').value,
+    })),
+  };
+}
+function applyPayload(payload){
+  state.done = payload.done || {};
+  state.customExtras = payload.customExtras || {};
+  state.cumulative = payload.cumulative || [];
+  state.removed = payload.removed || {};
+  state.grades = payload.grades || {};
+  renderTermGrid();
+  renderCumulative();
+  gpaRows.innerHTML=''; state.gpaRows=0;
+  (payload.gpa||[]).forEach(r=> addGpaRow(r.name, r.hours, gradeScale.find(g=>g.pts===r.grade)?.sym));
+}
+document.getElementById('exportBtn').onclick = ()=>{
+  document.getElementById('jsonBox').value = JSON.stringify(buildPayload());
+};
+document.getElementById('importBtn').onclick = ()=>{
+  try{
+    const payload = JSON.parse(document.getElementById('jsonBox').value);
+    applyPayload(payload);
+    saveLocal();
+    alert('تم الاستيراد بنجاح ✅');
+  }catch(e){ alert('في مشكلة في النص المستورد، تأكد إنه منسوخ كامل من التصدير القديم.'); }
+};
+
+/* ============================= LOCAL AUTO-SAVE ============================= */
+const LOCAL_STORAGE_KEY = 'csStatHasibPlanState_v1';
+function saveLocal(){
+  try{ localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(buildPayload())); }catch(e){}
+}
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if(!raw) return;
+    const payload = JSON.parse(raw);
+    applyPayload(payload);
+  }catch(e){}
+}
+const clearLocalBtn = document.getElementById('clearLocalBtn');
+if(clearLocalBtn){
+  clearLocalBtn.onclick = ()=>{
+    if(confirm('متأكد عايز تمسح كل الحفظ المحلي وتبدأ من جديد؟ (التيكات، التقديرات الفعلية، المواد المضافة/المحذوفة، وحاسبة الـGPA هيترجعوا للوضع الافتراضي)')){
+      try{ localStorage.removeItem(LOCAL_STORAGE_KEY); }catch(e){}
+      state.done = {}; state.customExtras = {}; state.cumulative = []; state.removed = {}; state.grades = {};
+      renderTermGrid();
+      renderCumulative();
+      gpaRows.innerHTML=''; state.gpaRows=0;
+      for(let i=0;i<4;i++) addGpaRow();
+      document.getElementById('jsonBox').value = '';
+      alert('تم مسح الحفظ المحلي ✅');
+    }
+  };
+}
+
+/* تحميل تلقائي لآخر حالة محفوظة (لو موجودة) وقت فتح الصفحة */
+loadLocal();
+</script>
+<script src="../../assets/bridge.js"></script>
+</body>
+</html>

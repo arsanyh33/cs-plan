@@ -311,16 +311,33 @@
   const RESPONSIVE_VIEWPORT = 'width=device-width, initial-scale=1, viewport-fit=cover';
   const DESKTOP_VIEWPORT = 'width=1180, viewport-fit=cover';
 
+  /* "موبايل/تابلت" في القايمة دي أداة معاينة (Preview) لمستخدم فاتح الموقع
+     من كمبيوتر/لابتوب حقيقي (بمؤشر فأرة) وعايز يشوف شكل الصفحة على فون أو
+     تابلت — فبتحط الصفحة جوه فريم مصغّر بحدود وظل بيحاكي شكل الجهاز.
+     لو المستخدم أصلاً فاتح الموقع من فون أو تابلت حقيقي (جهاز لمس)، مفيش
+     أي داعي لمحاكاة فون جوه فون، وده اللي كان بيسبب مشكلة محتوى مصغّر
+     وسط الشاشة وفراغ كبير حواليه. فبنكتشف هل الجهاز الحالي جهاز لمس حقيقي
+     ولا لأ، ولو أيوه بنمنع تفعيل الفريم على وضعي Mobile/Tablet ونسيبها
+     متجاوبة طبيعي زي وضع "تلقائي" بالظبط (بدون أي تصغير أو فراغ). */
+  function isRealTouchDevice() {
+    try { return matchMedia('(pointer: coarse)').matches; }
+    catch (e) { return false; }
+  }
+
   function applyDevice(mode) {
     const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
     document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop');
-    if (m !== 'auto') document.body.classList.add('device-' + m);
+
+    const skipFrame = (m === 'mobile' || m === 'tablet') && isRealTouchDevice();
+    if (m !== 'auto' && !skipFrame) document.body.classList.add('device-' + m);
 
     const vp = $('#viewportMeta') || document.querySelector('meta[name="viewport"]');
     if (vp) vp.setAttribute('content', m === 'laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
 
     const sel = $('#deviceSelect');
     if (sel && sel.value !== m) sel.value = m;
+
+    if (skipFrame) toast('إنت بالفعل بتفتح من فون/تابلت — العرض هيفضل متجاوب طبيعي بدون تصغير');
     return m;
   }
 

@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.8.1",
+    "version": "2.8.2",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -44,7 +44,7 @@
       "id": "cs-special",
       "title": "علوم الحاسب — سبيشيال",
       "short": "سبيشيال",
-      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M12 3v6M12 15v6M4.2 7l5.2 3M14.6 14l5.2 3M19.8 7l-5.2 3M9.4 14l-5.2 3'/></svg>",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><circle cx='12' cy='8.5' r='5.3'/><path d='M8.3 13.1l-2.6 6.9 3.9-1.3L12 21l2.4-2.3 3.9 1.3-2.6-6.9'/></svg>",
       "desc": "خطة الشُعبة الخاصة: 132 ساعة بإجبارية أساسية وإضافية للسبيشيال، مع شروط الالتحاق بالشعبة، وحساب مرتبة الشرف، والمواد المقفولة على ترمات محددة.",
       "entry": "modules/cs-special/index.html",
       "color1": "#ffb020",

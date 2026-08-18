@@ -152,7 +152,6 @@
     });
     revealScan();
     growBars(host);
-    if (document.body.classList.contains('device-laptop')) forceLaptopScale(true);
   }
 
 
@@ -294,60 +293,23 @@
   }
 
   /* --------------------- معاينة الأجهزة (Auto/Mobile/…) ------------------ */
-  /* نفس آلية ملفاتك الأصلية بالحرف (applyDeviceMode في cs-stat/cs-special):
-     "لابتوب" بيفرض عرض 1180px فعليًا عبر تغيير viewport meta — فالمتصفح
+  /* نفس آلية ملفاتك الأصلية بالحرف — بالظبط زي applyDeviceMode في
+     cs-stat/cs-special (نفس التقنية، كوبي 1:1):
+     "لابتوب" بيفرض عرض الصفحة فعليًا عبر تغيير viewport meta بس — فالمتصفح
      يعامل الصفحة كأنها بعرض لابتوب حقيقي مهما كان الجهاز، وبيزوّم اوت
-     تلقائيًا عشان كل التفاصيل تتناسب مع الشاشة. "تلقائي" مابيفرضش حاجة
-     أصلًا — يسيب الصفحة متجاوبة طبيعي (مهم لو أصلًا مفتوح من لابتوب حقيقي).
+     تلقائيًا (بشكل أصلي من المتصفح نفسه، مش بحساب CSS يدوي) عشان كل
+     التفاصيل تتناسب مع الشاشة من غير أي مساحة فاضية. "تلقائي" مابيفرضش
+     حاجة أصلًا — يسيب الصفحة متجاوبة طبيعي (مهم لو أصلًا مفتوح من لابتوب
+     حقيقي).
 
-     الوضع الافتراضي عند أول فتح: لو الشاشة فعلاً صغيرة (فون/تابلت) —
-     بيفرض شكل اللابتوب بالتفاصيل كاملة تلقائيًا. لو الفتح من لابتوب/
-     ديسكتوب حقيقي (شاشة كبيرة already)، بيسيبه طبيعي تمامًا. */
+     الوضع الافتراضي عند كل فتح للصفحة (بيتحسب من واقع الشاشة الحقيقية كل
+     مرة، من غير ما يتحفظ في الذاكرة خالص — نفس فكرة cs-stat/cs-special
+     بالظبط): لو الشاشة فعلاً صغيرة (فون/تابلت) — بيفرض شكل اللابتوب
+     بالتفاصيل كاملة تلقائيًا. لو الفتح من لابتوب/ديسكتوب حقيقي (شاشة
+     كبيرة already)، بيسيبه طبيعي تمامًا. */
   const DEVICES = ['auto', 'mobile', 'tablet', 'laptop'];
   const RESPONSIVE_VIEWPORT = 'width=device-width, initial-scale=1, viewport-fit=cover';
   const DESKTOP_VIEWPORT = 'width=1180, viewport-fit=cover';
-
-  /**
-   * ضمان إضافي: تغيير viewport meta بعد تحميل الصفحة مش مضمون 100% في كل
-   * المتصفحات (بعضها بيتجاهل التعديل بعد أول رسم). فبعد ما نجرّب الميتا،
-   * نتحقق: لو عرض الصفحة الفعلي لسه صغير، نفرض التصغير بإحداثيات CSS
-   * (transform: scale) يدويًا — ده بيشتغل 100% في كل المتصفحات لأنه
-   * مش معتمد على أي سلوك اختياري من المتصفح.
-   */
-  /* رقم "جيل" يتغيّر مع كل نداء — أي خطوة متأخرة (جوه requestAnimationFrame)
-     بتتحقق إنها لسه بتمثّل آخر طلب قبل ما تلمس الصفحة. لو حد غيّر الوضع
-     (رجّعناه Auto مثلًا) في نفس اللحظة، الخطوات القديمة المتأخرة دي
-     بتلاقي رقمها قديم وتلغي نفسها تلقائيًا، فمفيش احتمال إنها "تعلّق"
-     الصفحة في شكل مصغّر/مزنوق حتى بعد ما رجعنا الوضع الطبيعي. */
-  let laptopScaleGen = 0;
-  function forceLaptopScale(on) {
-    const body = document.body;
-    laptopScaleGen++;
-    const myGen = laptopScaleGen;
-    if (!on) {
-      body.style.width = '';
-      body.style.transform = '';
-      body.style.transformOrigin = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.overflowX = '';
-      return;
-    }
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (myGen !== laptopScaleGen) return;   /* اتغيّر الوضع في الأثناء — نتجاهل */
-      if (document.documentElement.clientWidth >= 1150) return;   /* الميتا شغالة لوحدها */
-      body.style.width = '1180px';
-      body.style.transform = 'none';
-      body.style.transformOrigin = 'top left';
-      requestAnimationFrame(() => {
-        if (myGen !== laptopScaleGen) return;   /* اتغيّر الوضع في الأثناء — نتجاهل */
-        const h = body.scrollHeight;
-        const scale = Math.min(1, innerWidth / 1180);
-        body.style.transform = `scale(${scale})`;
-        document.documentElement.style.overflowX = 'hidden';
-        document.documentElement.style.height = (h * scale) + 'px';
-      });
-    }));
-  }
 
   function applyDevice(mode) {
     const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
@@ -357,83 +319,26 @@
     const vp = $('#viewportMeta') || document.querySelector('meta[name="viewport"]');
     if (vp) vp.setAttribute('content', m === 'laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
 
-    if (m === 'laptop') forceLaptopScale(true);
-    else forceLaptopScale(false);
-
-    prefs({ device: m });
     const sel = $('#deviceSelect');
     if (sel && sel.value !== m) sel.value = m;
     return m;
   }
 
   function wireDevice() {
-    /* الافتراضي دايمًا "تلقائي" — الصفحة تاخد حجم شاشة الجهاز الحقيقي.
-       فرض منظور اللابتوب على الموبايل كان قرار غلط (زوّم اوت + مساحة
-       فاضية تحت المحتوى) — أفضل الممارسات العالمية بتنصح بعكسه تمامًا:
-       تصميم Mobile-first متجاوب حقيقي بدل تصغير شكل الديسكتوب.
-       "لابتوب" فضل موجود في القائمة كخيار معاينة اختياري بس، مش افتراضي. */
     const sel = $('#deviceSelect');
-    /* ترقيع لمرة واحدة: إصدارات سابقة (2.4.0-2.4.1) كانت بتحفظ "لابتوب"
-       تلقائيًا في localStorage بدون اختيار حقيقي من المستخدم. أي جهاز
-       عنده القيمة القديمة دي بيترجع "تلقائي" أول ما يفتح الإصدار ده —
-       ولو بعد كده اختار لابتوب بنفسه من القايمة، اختياره ده بيفضل زي ما هو. */
-    let p = prefs();
-    if (!p.deviceMigratedV1) {
-      prefs({ device: 'auto', deviceMigratedV1: true });
-      p = prefs();
-    }
-    let mode = p.device || 'auto';
-    /* خاصية "معاينة الأجهزة" (Mobile/Tablet/Laptop) مفيدة بس لو انت فاتح
-       فعليًا من شاشة كبيرة (لابتوب/ديسكتوب) وعايز تشوف شكل الموقع على
-       شاشة أصغر. لو انت أصلاً فاتح من شاشة صغيرة حقيقية (موبايل أو
-       تابلت)، أي وضع معاينة غير "تلقائي" بيعمل "فريم" مصغّر بارتفاع
-       محدود جوه شاشتك الصغيرة أصلًا (زي فريم جوه فريم) — ده بيبوّظ
-       الشكل (مساحة فاضية كبيرة + محتوى مصغّر) بدل ما يفيد. فبنفرض
-       "تلقائي" دايمًا في الحالة دي، مهما كانت القيمة المحفوظة قبل كده.
-       ده آمن 100%: لو فعلاً بتستخدم لابتوب/ديسكتوب حقيقي (شاشة عريضة)،
-       الشرط ده مش هيتفعّل خالص واختيارك هيفضل زي ما هو. */
-    const isRealSmallScreen = innerWidth < 900;
-    if (isRealSmallScreen && mode !== 'auto') {
-      mode = 'auto';
-      prefs({ device: 'auto' });
-    }
-    applyDevice(mode);
 
-    /* على الشاشات الصغيرة الحقيقية، القائمة نفسها مالهاش لازمة (وممكن
-       تسبب نفس المشكلة تاني لو حد جرّب يغيّرها يدوي) — بنخفيها بالكامل. */
-    if (isRealSmallScreen && sel) {
-      const row = sel.closest('.settings-row') || sel;
-      row.style.display = 'none';
-    }
-
-    /* شبكة أمان إضافية: لو الوضع الفعلي "تلقائي"، نتأكد إن مفيش أي تأثير
-       تكبير/تصغير أو كلاس جهاز عالق من أي سبب غير متوقع (تحميل بطيء،
-       تعارض توقيت، إلخ) — نمسحه بالقوة كذا مرة بعد التحميل. ده مش بديل
-       عن تصليح السبب الأساسي فوق، ده طبقة حماية زيادة بس. */
-    function ensureAutoIsClean() {
-      if ((prefs().device || 'auto') !== 'auto') return;
-      document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop');
-      forceLaptopScale(false);
-    }
-    if (mode === 'auto') {
-      setTimeout(ensureAutoIsClean, 400);
-      global.addEventListener('load', ensureAutoIsClean, { once: true });
-    }
+    /* بنحسب الوضع الافتراضي من واقع الشاشة الحقيقية في كل مرة — نفس
+       الشرط بالظبط المستخدم في cs-stat/cs-special. مفيش أي حفظ في
+       localStorage للاختيار ده، فمفيش احتمال إن قيمة قديمة تفضل "عالقة"
+       وتسبب مشكلة في زيارة تانية. */
+    const isSmallScreen = Math.min(innerWidth, screen.width) < 900;
+    const defaultMode = isSmallScreen ? 'laptop' : 'auto';
+    applyDevice(defaultMode);
 
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);
       global.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    let rt = null;
-    global.addEventListener('resize', () => {
-      if (document.body.classList.contains('device-laptop')) {
-        if (rt) clearTimeout(rt);
-        rt = setTimeout(() => {
-          if (document.body.classList.contains('device-laptop')) forceLaptopScale(true);
-        }, 200);
-      }
-    }, { passive: true });
   }
 
   /* ------------------ زر الرجوع لفوق + حلقة تقدّم القراءة ---------------- */

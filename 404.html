@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="light">
+<html lang="ar" dir="rtl" data-theme="dark">
 <head>
 <meta charset="utf-8">
+<script>
+(function(){
+  try{
+    var p = JSON.parse(localStorage.getItem('uniShellPrefs_v1') || '{}');
+    document.documentElement.setAttribute('data-theme', p.theme || 'dark');
+  }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
+})();
+</script>
 <meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>الصفحة مش موجودة — Top Computer Science Students</title>
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060b">
 <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="stylesheet" href="assets/app.css">
 </head>

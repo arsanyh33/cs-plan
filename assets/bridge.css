@@ -16,7 +16,7 @@
   padding:6px clamp(10px, 3vw, 20px);
   padding-bottom:calc(6px + env(safe-area-inset-bottom));
   background:var(--bg, #02030b);
-  border-top:1px solid var(--line-strong, rgba(90,120,255,.4));
+  border-top:1px solid var(--line-strong, rgba(18,240,192,.35));
   font-family:var(--font-display, 'Cairo', sans-serif);
   font-size:.82rem; direction:rtl;
 }
@@ -41,7 +41,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 #uniBridgeBar .ubb-home,
 #uniBridgeBar .ubb-act{
   display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px;
-  border:1px solid var(--line, rgba(90,120,255,.16));
+  border:1px solid var(--line, rgba(18,240,192,.14));
   background:var(--surface, #070b1c); color:var(--text, #eef1fb);
   font-weight:800; text-decoration:none; white-space:nowrap;
   font-family:inherit; font-size:inherit; cursor:pointer;
@@ -52,7 +52,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 #uniBridgeBar .ubb-act:disabled{ opacity:.5; pointer-events:none; }
 #uniBridgeBar .ubb-ic{ font-size:.9rem; line-height:1; }
 #uniBridgeBar .ubb-grow{ flex:1; }
-#uniBridgeBar .ubb-sep{ width:1px; height:20px; background:var(--line, rgba(90,120,255,.16)); }
+#uniBridgeBar .ubb-sep{ width:1px; height:20px; background:var(--line, rgba(18,240,192,.14)); }
 #uniBridgeBar .ubb-status{
   color:var(--muted, #9aa4c9); font-size:.76rem; font-weight:600;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
@@ -75,7 +75,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 #uniToastHost .uni-toast{
   max-width:min(92vw, 460px);
   background:var(--surface2, #0d1330); color:var(--text, #eef1fb);
-  border:1px solid var(--line-strong, rgba(90,120,255,.4)); border-radius:12px;
+  border:1px solid var(--line-strong, rgba(18,240,192,.35)); border-radius:12px;
   padding:11px 16px; font-size:.86rem; line-height:1.7;
   font-family:var(--font-body, 'Almarai', sans-serif);
   box-shadow:0 10px 40px -12px rgba(0,0,0,.85);
@@ -114,7 +114,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 .inapp-gate .ia-actions{ display:grid; gap:11px; margin:24px 0 16px; }
 .inapp-gate .ia-btn{
   display:flex; align-items:center; gap:13px; text-align:start; width:100%;
-  border:1px solid var(--line-strong, rgba(90,120,255,.4)); border-radius:13px;
+  border:1px solid var(--line-strong, rgba(18,240,192,.35)); border-radius:13px;
   padding:14px 16px; background:var(--surface, #070b1c); color:var(--text, #eef1fb);
   text-decoration:none; font-family:inherit; font-size:1rem; cursor:pointer;
   transition:border-color .18s, transform .18s;
@@ -122,7 +122,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 .inapp-gate .ia-btn:hover,
 .inapp-gate .ia-btn:active{ border-color:var(--accent, #00e5ff); transform:translateY(-2px); }
 .inapp-gate .ia-btn.ia-primary{
-  background:linear-gradient(120deg, var(--accent, #00e5ff), var(--accent2, #7c4dff));
+  background:linear-gradient(120deg, var(--accent, #00e5ff), var(--accent2, #0a9c80));
   color:#02030b; border-color:transparent;
 }
 .inapp-gate .ia-btn .ia-ic{ font-size:1.4rem; flex:0 0 auto; line-height:1; }
@@ -133,14 +133,14 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 .inapp-gate .ia-btn small{ display:block; opacity:.75; font-size:.79rem; margin-top:1px; }
 .inapp-gate .ia-url{
   font-family:var(--font-mono, monospace); font-size:.76rem; direction:ltr; text-align:left;
-  background:var(--surface2, #0d1330); border:1px solid var(--line, rgba(90,120,255,.16));
+  background:var(--surface2, #0d1330); border:1px solid var(--line, rgba(18,240,192,.14));
   border-radius:10px; padding:11px 13px; word-break:break-all;
   color:var(--muted, #9aa4c9); cursor:pointer; transition:border-color .2s, color .2s;
 }
 .inapp-gate .ia-url.copied{ border-color:#22d39a; color:#22d39a; }
 .inapp-gate .ia-steps{
   margin-top:20px; background:var(--surface, #070b1c);
-  border:1px solid var(--line, rgba(90,120,255,.16)); border-radius:13px; padding:16px 18px;
+  border:1px solid var(--line, rgba(18,240,192,.14)); border-radius:13px; padding:16px 18px;
 }
 .inapp-gate .ia-steps-title{
   font-family:var(--font-display, 'Cairo', sans-serif); font-weight:800;
@@ -154,7 +154,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 .inapp-gate .ia-steps b{ color:var(--text, #eef1fb); }
 .inapp-gate .ia-kbd{
   display:inline-grid; place-items:center; min-width:24px; height:24px; padding:0 5px;
-  border:1px solid var(--line-strong, rgba(90,120,255,.4)); border-radius:6px;
+  border:1px solid var(--line-strong, rgba(18,240,192,.35)); border-radius:6px;
   background:var(--surface2, #0d1330); font-family:var(--font-mono, monospace);
   font-size:.82rem; vertical-align:middle;
 }
@@ -165,7 +165,7 @@ html.has-bridge-bar body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)
 .inapp-gate .ia-why b{ color:var(--text, #eef1fb); font-family:var(--font-display, 'Cairo', sans-serif); }
 .inapp-gate .ia-skip{
   display:block; width:100%; margin-top:26px; padding:13px; border-radius:11px;
-  border:1px dashed var(--line-strong, rgba(90,120,255,.4));
+  border:1px dashed var(--line-strong, rgba(18,240,192,.35));
   color:var(--muted2, #7a84ac); font-size:.85rem;
   font-family:var(--font-display, 'Cairo', sans-serif); font-weight:700;
   background:transparent; cursor:pointer; transition:color .18s, border-color .18s;

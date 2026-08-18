@@ -24,9 +24,9 @@
   --line-hot:rgba(18,240,192,.42);
 
   /* ---- النيون ---- */
-  --cyan:#12f0c0;      /* تيل رقمي — يفضل هوية الماركة الأساسية (مطابق لترند "Transformative Teal" 2026) */
-  --cyan2:#4ce0ff;     /* وقفة انتقالية زرقاء فاتحة للتدرجات */
-  --violet:#7c5cff;    /* نيلي-بنفسجي حيوي — أقوى وأعمق من البنفسجي العادي، طابع "أدوات مطورين" */
+  --cyan:#12f0c0;      /* تيل رقمي — الهوية الوحيدة للموقع (لون واحد فلات، بدون شريك بنفسجي) */
+  --cyan2:#4ce0ff;     /* وقفة انتقالية زرقاء فاتحة — لسه من نفس العائلة الباردة (تيل/سيان)، مش هوية تانية */
+  --cyan-deep:#0a9c80; /* نسخة غامقة من نفس لون التيل — بتدي عمق للتدرجات بدل ما نستدعي لون تاني تمامًا */
   --magenta:#ff2d78;
   --amber:#ffb020;
   --lime:#25e6a0;
@@ -72,7 +72,7 @@ html[data-theme="light"]{
   --dim2:#89846f;
   --cyan:#00786b;
   --cyan2:#0077a3;
-  --violet:#5b3fd6;
+  --cyan-deep:#00594f;
   --magenta:#c81361;
   --amber:#946200;
   --lime:#0a8f5f;
@@ -126,7 +126,7 @@ body{
 .bg-spot{
   position:absolute; width:56vmax; height:56vmax; border-radius:50%;
   left:var(--sx,50%); top:var(--sy,22%); transform:translate(-50%,-50%);
-  background:radial-gradient(circle, rgba(18,240,192,.10), rgba(124,92,255,.06) 42%, transparent 66%);
+  background:radial-gradient(circle, rgba(18,240,192,.10), rgba(10,156,128,.06) 42%, transparent 66%);
   transition:opacity .5s; opacity:0;
 }
 html.has-spot .bg-spot{ opacity:1; }
@@ -148,7 +148,7 @@ html[data-theme="light"] .bg-scan{ display:none; }
 html.bg-static .bg{
   background:
     radial-gradient(ellipse 70% 50% at 78% 4%,  color-mix(in srgb, var(--cyan) 13%, transparent), transparent 62%),
-    radial-gradient(ellipse 60% 50% at 12% 26%, color-mix(in srgb, var(--violet) 11%, transparent), transparent 62%),
+    radial-gradient(ellipse 60% 50% at 12% 26%, color-mix(in srgb, var(--cyan-deep) 11%, transparent), transparent 62%),
     radial-gradient(ellipse 50% 40% at 62% 88%, color-mix(in srgb, var(--magenta) 7%, transparent), transparent 64%),
     var(--void);
 }
@@ -169,7 +169,7 @@ input,select,textarea{ font-family:inherit; }
 
 /* نص متدرّج نيون */
 .grad{
-  background:linear-gradient(100deg,var(--cyan) 0%,var(--cyan2) 30%,var(--violet) 100%);
+  background:linear-gradient(100deg,var(--cyan) 0%,var(--cyan2) 30%,var(--cyan-deep) 100%);
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
   background-size:220% 100%;
@@ -227,16 +227,18 @@ input,select,textarea{ font-family:inherit; }
 .appbar-tools .fs-segmented{ flex-wrap:nowrap; }
 
 .logo{ display:flex; align-items:center; gap:12px; color:inherit; min-width:0; white-space:nowrap; overflow:hidden; }
+/* --------------------- الشعار: wordmark بدل مربع فيه حروف --------------------
+   علامة هندسية بسيطة (عقدتين متصلتين بخط — ترميز "شبكة/كود") + نص CS
+   بخط Cairo تقيل + خط تحته بلون الهوية. هوية مصممة، مش placeholder. */
 .logo-mark{
   width:42px; height:42px; flex:0 0 42px; border-radius:13px;
   display:grid; place-items:center;
-  font-family:var(--font-display); font-weight:900; color:#000;
-  font-size:.98rem; letter-spacing:.5px; direction:ltr;   /* CS لاتيني */
-  background:linear-gradient(140deg,var(--cyan),var(--violet));
+  background:linear-gradient(140deg,var(--cyan),var(--cyan-deep));
   box-shadow:0 0 0 1px rgba(255,255,255,.14), 0 8px 30px -8px var(--cyan);
   position:relative; overflow:hidden;
   transition:transform .5s var(--ease2);
 }
+.logo-mark svg{ width:24px; height:24px; stroke:#00110c; stroke-width:1.6; fill:none; }
 .logo:hover .logo-mark{ transform:rotate(-8deg) scale(1.08); }
 .logo-mark::after{
   content:''; position:absolute; inset:0;
@@ -253,11 +255,26 @@ input,select,textarea{ font-family:inherit; }
 .icon-btn{
   width:42px; height:42px; border-radius:13px; display:grid; place-items:center;
   border:1px solid var(--line); background:var(--glass); font-size:1.05rem;
-  transition:.25s var(--ease); flex:0 0 auto;
+  color:var(--dim); transition:.25s var(--ease); flex:0 0 auto;
 }
+.icon-btn svg{ width:19px; height:19px; stroke:currentColor; fill:none; }
 .icon-btn:hover{
-  border-color:var(--line-hot); background:var(--glass2);
+  border-color:var(--line-hot); background:var(--glass2); color:var(--cyan);
   transform:translateY(-2px); box-shadow:0 8px 24px -10px var(--cyan);
+}
+
+/* ------------------------- أيقونات SVG رفيعة عامة ------------------------ */
+/* بدل الإيموجي — خطوط رفيعة (stroke-width 1.5) بلون العنصر نفسه، صفر ألوان زخرفية زيادة */
+.ic-svg{ display:inline-block; vertical-align:middle; stroke:currentColor; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.card-t .ic svg{ width:17px; height:17px; }
+.mod-ic svg{ width:26px; height:26px; }
+.pill svg{ width:12px; height:12px; margin-inline-end:2px; vertical-align:-1px; }
+
+/* ------------------------------ أرقام Mono ------------------------------ */
+/* أي رقم/إحصائية في الموقع (ساعات، تقديرات، أكواد) بخط JetBrains Mono بدل الخط العادي */
+.mono-num{
+  font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  letter-spacing:0; direction:ltr; unicode-bidi:isolate;
 }
 /* مؤشر الاتصال بيظهر بس لما النت يقع — مش نضيف نعرضه دايمًا */
 .net-dot{
@@ -309,14 +326,14 @@ input,select,textarea{ font-family:inherit; }
 }
 .btn::after{
   content:''; position:absolute; inset:0; z-index:-1; opacity:0;
-  background:linear-gradient(120deg,var(--cyan),var(--violet));
+  background:linear-gradient(120deg,var(--cyan),var(--cyan-deep));
   transition:opacity .3s;
 }
 .btn:hover{ transform:translateY(-3px); border-color:transparent; color:#000; }
 .btn:hover::after{ opacity:1; }
 .btn:active{ transform:translateY(-1px); }
 .btn.primary{
-  background:linear-gradient(120deg,var(--cyan),var(--violet));
+  background:linear-gradient(120deg,var(--cyan),var(--cyan-deep));
   color:#000; border-color:transparent;
   box-shadow:0 10px 40px -14px var(--cyan), inset 0 1px 0 rgba(255,255,255,.4);
 }
@@ -354,7 +371,13 @@ input,select,textarea{ font-family:inherit; }
   padding:clamp(20px,2.8vw,30px);
   backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
   overflow:hidden; isolation:isolate;
-  transition:border-color .35s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease);
+  /* عمق برمادي/شفافية بس — بدون ألوان زيادة، الحدود والظل هم اللي بيرفعوا الكارت عن الخلفية */
+  box-shadow:0 18px 40px -24px rgba(0,0,0,.55);
+  transition:border-color .22s var(--ease), transform .22s var(--ease), box-shadow .22s var(--ease);
+}
+.card:hover{
+  border-color:var(--line2);
+  box-shadow:0 22px 52px -20px rgba(0,0,0,.65), 0 0 0 1px rgba(18,240,192,.09);
 }
 @supports not (backdrop-filter:blur(2px)){ .card{ background:var(--panel); } }
 /* حد متدرّج علوي */
@@ -422,7 +445,7 @@ input,select,textarea{ font-family:inherit; }
 .mod-top{ display:flex; align-items:flex-start; gap:15px; transform:translateZ(34px); }
 .mod-ic{
   width:58px; height:58px; flex:0 0 58px; border-radius:17px;
-  display:grid; place-items:center; font-size:1.75rem;
+  display:grid; place-items:center; font-size:1.75rem; color:var(--c1);
   background:linear-gradient(150deg,color-mix(in srgb,var(--c1) 26%,#000),color-mix(in srgb,var(--c2) 20%,#000));
   border:1px solid var(--line2);
   box-shadow:0 12px 32px -14px var(--c1), inset 0 1px 0 rgba(255,255,255,.16);
@@ -504,10 +527,10 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
 }
 .stat:hover{ border-color:var(--line-hot); transform:translateY(-4px); background:var(--glass2); }
 .stat b{
-  display:block; font-family:var(--font-display);
-  font-size:clamp(1.7rem,5.2vw,2.5rem); font-weight:900; line-height:1.14; letter-spacing:0;
+  display:block; font-family:var(--font-mono);
+  font-size:clamp(1.7rem,5.2vw,2.5rem); font-weight:700; line-height:1.14; letter-spacing:0;
   font-variant-numeric:tabular-nums;
-  background:linear-gradient(150deg,var(--text),var(--cyan) 55%,var(--violet));
+  background:linear-gradient(150deg,var(--text),var(--cyan) 55%,var(--cyan-deep));
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }
@@ -529,7 +552,7 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
 }
 .bar > i{
   display:block; height:100%; border-radius:99px; width:0;
-  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  background:linear-gradient(90deg,var(--cyan),var(--cyan-deep));
   box-shadow:0 0 16px -2px var(--cyan);
   transition:width 1.1s var(--ease);
   position:relative; overflow:hidden;
@@ -629,17 +652,23 @@ table.t tbody tr:hover{ background:var(--glass); }
 .boot.done{ opacity:0; visibility:hidden; }
 .boot-in{ text-align:center; padding:26px; max-width:360px; }
 .boot-mark{
+  position:relative;
   width:74px; height:74px; margin:0 auto 24px; border-radius:21px;
-  display:grid; place-items:center; color:#000;
+  display:grid; place-items:center; color:#001510;
   font-family:var(--font-display); font-weight:900;
   font-size:1.5rem; letter-spacing:1px; direction:ltr;   /* CS لاتيني */
-  background:linear-gradient(140deg,var(--cyan),var(--violet));
+  background:linear-gradient(140deg,var(--cyan),var(--cyan-deep));
   box-shadow:0 0 60px -10px var(--cyan);
   animation:bootpulse 1.9s var(--ease) infinite;
 }
+/* تفصيلة الهوية: خط سفلي رفيع يدي إحساس "شعار مصمم" مش نص عادي جوه مربع */
+.boot-mark::after{
+  content:''; position:absolute; bottom:14px; width:26px; height:3px; border-radius:99px;
+  background:rgba(0,21,16,.45);
+}
 @keyframes bootpulse{
   0%,100%{ transform:scale(1) rotate(0deg); box-shadow:0 0 60px -10px var(--cyan); }
-  50%{ transform:scale(.9) rotate(-5deg); box-shadow:0 0 90px -6px var(--violet); }
+  50%{ transform:scale(.9) rotate(-5deg); box-shadow:0 0 90px -6px var(--cyan-deep); }
 }
 .boot-tx{ font-family:var(--font-display); font-weight:900; font-size:1.15rem; }
 .boot-sub{ color:var(--dim2); font-size:.83rem; margin-top:9px; min-height:1.4em; }
@@ -660,7 +689,7 @@ table.t tbody tr:hover{ background:var(--glass); }
 ::-webkit-scrollbar{ width:11px; height:11px; }
 ::-webkit-scrollbar-track{ background:var(--void); }
 ::-webkit-scrollbar-thumb{
-  background:linear-gradient(var(--cyan),var(--violet));
+  background:linear-gradient(var(--cyan),var(--cyan-deep));
   border-radius:99px; border:3px solid var(--void);
 }
 
@@ -721,7 +750,7 @@ html.weak-device .mod{ transform:none !important; }
   --surface:var(--glass); --surface2:var(--glass2);
   --muted:var(--dim); --muted2:var(--dim2);
   --line-strong:var(--line2);
-  --accent:var(--cyan); --accent2:var(--violet);
+  --accent:var(--cyan); --accent2:var(--cyan-deep);
   --rose:var(--magenta); --green:var(--lime);
   --shadow:0 24px 60px -28px rgba(0,0,0,.9);
 }
@@ -781,6 +810,38 @@ input[type="radio"]{ accent-color:var(--cyan); }
 .tool-select:hover{ border-color:var(--line-hot); color:var(--cyan); }
 .tool-select option{ background:#0a0a14; color:#f4f6ff; }
 
+/* ------------------------ قائمة الإعدادات الثانوية ------------------------
+   حجم الخط + معاينة الأجهزة + المشاركة كلهم جوه قائمة واحدة بأيقونة ⚙️ SVG،
+   عشان زرار الثيم (الأكتر استخدامًا) يفضل بارز لوحده — قرار قسم 9 في الخطة. */
+.settings-menu{ position:relative; flex:0 0 auto; }
+.settings-panel{
+  position:absolute; inset-inline-end:0; top:calc(100% + 10px);
+  min-width:238px; z-index:80;
+  border-radius:14px; border:1px solid var(--line2);
+  background:color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
+  box-shadow:0 26px 60px -20px rgba(0,0,0,.6);
+  padding:14px; display:flex; flex-direction:column; gap:12px;
+  opacity:0; visibility:hidden; transform:translateY(-6px) scale(.98);
+  transition:opacity .18s var(--ease), transform .18s var(--ease), visibility .18s;
+  transform-origin:top left;
+}
+[dir="rtl"] .settings-panel{ transform-origin:top right; }
+.settings-panel.open{ opacity:1; visibility:visible; transform:none; }
+.settings-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.settings-row .fs-label{ font-size:.76rem; }
+.settings-row .tool-select{ width:100%; max-width:none; }
+.settings-item{
+  display:flex; align-items:center; gap:10px; width:100%;
+  padding:10px 11px; border-radius:10px; border:1px solid var(--line);
+  background:var(--glass); color:var(--text);
+  font-family:var(--font-display); font-weight:800; font-size:.83rem;
+  transition:.2s var(--ease);
+}
+.settings-item svg{ width:17px; height:17px; stroke:currentColor; fill:none; flex:0 0 auto; }
+.settings-item:hover{ border-color:var(--line-hot); color:var(--cyan); background:var(--glass2); }
+.settings-div{ height:1px; background:var(--line); margin:0 -2px; }
+
 /* ---------------- معاينة الأجهزة — نفس مقاسات ملفاتك ---------------- */
 #appFrame{ width:100%; max-width:100%; transition:max-width .4s var(--ease); }
 body.device-mobile #appFrame{
@@ -808,7 +869,7 @@ body.device-mobile .fs-label{ display:none; }
   bottom:calc(20px + env(safe-area-inset-bottom));
   width:50px; height:50px; border-radius:16px;
   display:grid; place-items:center; color:#000;
-  background:linear-gradient(140deg,var(--cyan),var(--violet));
+  background:linear-gradient(140deg,var(--cyan),var(--cyan-deep));
   border:1px solid rgba(255,255,255,.2);
   box-shadow:0 12px 34px -12px var(--cyan);
   opacity:0; visibility:hidden; transform:translateY(18px) scale(.85);
@@ -833,16 +894,12 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 /* الهيرو صغير ونظيف — بدون فقرات شرح */
 .hero .kicker{ margin-bottom:14px; }
 
-/* الشريط العلوي على الموبايل: الأدوات تنزل سطر تاني بترتيب */
-/* الأدوات بتختفي بالترتيب من الأقل أهمية — الشريط يفضل صف واحد دايمًا */
-@media (max-width:1200px){ .fs-label{ display:none; } }
-@media (max-width:1040px){ #deviceSelect,.tool-divider{ display:none; } }
+/* الشريط العلوي على الموبايل: بعد نقل حجم الخط/الأجهزة/المشاركة لقائمة
+   الإعدادات الواحدة، الشريط نفسه بقى بس: لوجو + زرار إعدادات + زرار ثيم —
+   مفيش داعي لإخفاء أي عنصر بالعرض تاني، القائمة نفسها بعرض ثابت داخلي. */
 @media (max-width:900px){
   .appbar-in{ padding:12px 14px; gap:10px; }
   .logo-tx small{ display:none; }
-}
-@media (max-width:560px){
-  #shareBtn{ display:none; }            /* المشاركة موجودة في install.html */
 }
 @media (max-width:520px){
   .logo-tx{ display:none; }             /* شعار CS بس — ممنوع أي تراكب */
@@ -879,7 +936,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 }
 .scrollbar-top > i{
   display:block; height:100%; width:var(--p,0%);
-  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  background:linear-gradient(90deg,var(--cyan),var(--cyan-deep));
   box-shadow:0 0 12px var(--cyan);
   transition:width .1s linear;
 }
@@ -969,7 +1026,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
   font-family:var(--font-display); font-weight:900;
   font-size:clamp(.92rem,2.6vw,1.12rem); line-height:1.5;
   margin-top:4px; direction:ltr;
-  background:linear-gradient(100deg,var(--cyan),var(--violet));
+  background:linear-gradient(100deg,var(--cyan),var(--cyan-deep));
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }
@@ -986,7 +1043,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 /* -------------------------- الفوتر التفاعلي --------------------------- */
 .foot-brand{
   font-family:var(--font-display); font-weight:900; direction:ltr;
-  background:linear-gradient(100deg,var(--cyan),var(--violet));
+  background:linear-gradient(100deg,var(--cyan),var(--cyan-deep));
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }
@@ -997,7 +1054,7 @@ html.has-bridge-bar .to-top{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 .foot{ position:relative; overflow:hidden; }
 .foot::before{
   content:''; position:absolute; inset:0 0 auto 0; height:1px;
-  background:linear-gradient(90deg,transparent,var(--cyan),var(--violet),transparent);
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--cyan-deep),transparent);
   opacity:.5;
 }
 

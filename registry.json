@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.8.0",
+    "version": "2.8.1",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -20,11 +20,11 @@
       "id": "cs-stat",
       "title": "حاسب (رئيسي) + إحصاء (فرعي)",
       "short": "حاسب + إحصاء",
-      "icon": "🎯",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><rect x='3' y='3' width='7' height='7' rx='1.5'/><rect x='14' y='3' width='7' height='7' rx='1.5'/><rect x='3' y='14' width='7' height='7' rx='1.5'/><path d='M17.5 14v3.5M14 17.5h7'/></svg>",
       "desc": "الخطة الكاملة للتخصص المزدوج: 132 ساعة موزّعة على إجبارية الحاسب والإحصاء واختيارياتهم ومتطلبات الكلية، مع خريطة المتطلبات السابقة وحاسبة المعدل والبيان الأكاديمي.",
       "entry": "modules/cs-stat/index.html",
-      "color1": "#00e5ff",
-      "color2": "#7c4dff",
+      "color1": "#12f0c0",
+      "color2": "#12f0c0",
       "storageKeys": [
         "csStatPlanState_v1",
         "csStatRealPlan_v1"
@@ -44,11 +44,11 @@
       "id": "cs-special",
       "title": "علوم الحاسب — سبيشيال",
       "short": "سبيشيال",
-      "icon": "⭐",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M12 3v6M12 15v6M4.2 7l5.2 3M14.6 14l5.2 3M19.8 7l-5.2 3M9.4 14l-5.2 3'/></svg>",
       "desc": "خطة الشُعبة الخاصة: 132 ساعة بإجبارية أساسية وإضافية للسبيشيال، مع شروط الالتحاق بالشعبة، وحساب مرتبة الشرف، والمواد المقفولة على ترمات محددة.",
       "entry": "modules/cs-special/index.html",
-      "color1": "#f0b429",
-      "color2": "#ff4081",
+      "color1": "#ffb020",
+      "color2": "#ffb020",
       "storageKeys": [
         "csSpecialPlan_v1",
         "csActualPlan_v1"

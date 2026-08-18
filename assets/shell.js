@@ -24,13 +24,22 @@
     return p;
   }
 
+  /* أيقونتا الثيم — SVG رفيعتان بدل الإيموجي (شمس/قمر)، بتتبادلا بمحتوى الـ <svg> */
+  const ICON_SUN = '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.85 1.85M17.95 17.95l1.85 1.85M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.85-1.85M17.95 6.05l1.85-1.85"/>';
+  const ICON_MOON = '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>';
+  /* أيقونات SVG جاهزة الاستخدام لعناصر البحث (بدل 📘 🏷️ 🩺) */
+  const ICON_DOC   = '<svg viewBox="0 0 24 24" class="ic-svg"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>';
+  const ICON_TAG    = '<svg viewBox="0 0 24 24" class="ic-svg"><path d="M12.6 3.5h-4L3.5 8.6v4l9 9 5.1-5.1v-4z"/><circle cx="8.2" cy="8.2" r="1.1"/></svg>';
+  const ICON_GAUGE  = '<svg viewBox="0 0 24 24" class="ic-svg"><path d="M4 15a8 8 0 1 1 16 0"/><path d="M12 15l3.5-4.5"/><circle cx="12" cy="15" r="1"/></svg>';
+
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const meta = $('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme === 'light' ? '#faf7f2' : '#05060b');
     const btn = $('#themeBtn');
+    const icon = $('#themeIcon');
+    if (icon) icon.innerHTML = theme === 'light' ? ICON_MOON : ICON_SUN;
     if (btn) {
-      btn.textContent = theme === 'light' ? '🌙' : '☀️';
       btn.setAttribute('aria-label', theme === 'light' ? 'الوضع الليلي' : 'الوضع النهاري');
     }
   }
@@ -110,10 +119,10 @@
 
       const pills = [];
       if (s.hasData) {
-        if (s.doneCount)   pills.push(`<span class="pill ok">✓ ${s.doneCount} مادة مخلّصة</span>`);
-        if (s.doneHours)   pills.push(`<span class="pill info">${s.doneHours} / ${totalH} ساعة</span>`);
-        if (s.gradedCount) pills.push(`<span class="pill">🎓 ${s.gradedCount} تقدير</span>`);
-        if (s.realTerms)   pills.push(`<span class="pill">🗓️ ${s.realTerms} ترم فعلي</span>`);
+        if (s.doneCount)   pills.push(`<span class="pill ok">✓ <span class="mono-num">${s.doneCount}</span> مادة مخلّصة</span>`);
+        if (s.doneHours)   pills.push(`<span class="pill info"><span class="mono-num">${s.doneHours} / ${totalH}</span> ساعة</span>`);
+        if (s.gradedCount) pills.push(`<span class="pill"><svg viewBox="0 0 24 24" class="ic-svg"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M6.5 10v5c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3v-5"/></svg> <span class="mono-num">${s.gradedCount}</span> تقدير</span>`);
+        if (s.realTerms)   pills.push(`<span class="pill"><svg viewBox="0 0 24 24" class="ic-svg"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg> <span class="mono-num">${s.realTerms}</span> ترم فعلي</span>`);
       } else {
         pills.push(`<span class="pill">لسه مابدأتش — افتحها</span>`);
       }
@@ -121,7 +130,7 @@
       a.innerHTML = `
         <span class="mod-glare"></span>
         <div class="mod-top">
-          <div class="mod-ic">${mod.icon || '📘'}</div>
+          <div class="mod-ic">${mod.icon || '<svg viewBox="0 0 24 24" class="ic-svg"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'}</div>
           <div class="mod-h">
             <b>${mod.title}</b>
             <small>${(mod.tags || []).slice(0, 3).join(' • ')}</small>
@@ -410,6 +419,36 @@
     upd();
   }
 
+  /* --------------------- قائمة الإعدادات (حجم خط/جهاز/مشاركة) -------------------- */
+  function wireSettingsMenu() {
+    const btn = $('#settingsBtn'), panel = $('#settingsPanel');
+    if (!btn || !panel) return;
+    const close = () => {
+      panel.classList.remove('open'); panel.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    };
+    const open = () => {
+      panel.hidden = false;
+      requestAnimationFrame(() => panel.classList.add('open'));
+      btn.setAttribute('aria-expanded', 'true');
+    };
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (panel.classList.contains('open')) close(); else open();
+    });
+    document.addEventListener('click', (e) => {
+      if (!panel.classList.contains('open')) return;
+      if (panel.contains(e.target) || btn.contains(e.target)) return;
+      close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && panel.classList.contains('open')) { close(); btn.focus(); }
+    });
+    /* لو اختار جهاز من القائمة، نقفل القائمة عشان يشوف النتيجة على طول */
+    const sel = $('#deviceSelect');
+    if (sel) sel.addEventListener('change', () => close());
+  }
+
   /* ------------------------------- مشاركة ------------------------------- */
   function wireShare() {
     const btn = $('#shareBtn');
@@ -426,7 +465,7 @@
       }
       if (global.UniInApp) {
         global.UniInApp.copyLink(url).then((ok) => {
-          toast(ok ? '🔗 اللينك اتنسخ' : '⚠️ انسخ اللينك من شريط العنوان');
+          toast(ok ? 'اللينك اتنسخ' : 'انسخ اللينك من شريط العنوان');
         });
       }
     });
@@ -577,20 +616,20 @@
     REG.modules.forEach((m) => {
       SEARCH_INDEX.push({
         kind: 'module', title: m.title, sub: m.desc || '',
-        url: m.entry, icon: m.icon || '📘', code: '',
+        url: m.entry, icon: m.icon || ICON_DOC, code: '',
         hay: [m.title, m.short, m.desc, (m.tags || []).join(' ')].join(' ').toLowerCase(),
       });
       (m.tags || []).forEach((t) => {
         SEARCH_INDEX.push({
           kind: 'tag', title: t, sub: `في: ${m.title}`, url: m.entry,
-          icon: '🏷️', code: '', hay: (t + ' ' + m.title).toLowerCase(),
+          icon: ICON_TAG, code: '', hay: (t + ' ' + m.title).toLowerCase(),
         });
       });
     });
     [
       { t: 'نسخة احتياطية وتصدير البيانات', s: 'نزّل كل بياناتك ملف واحد', u: 'diagnostics.html', i: '⤓' },
       { t: 'استيراد نسخة احتياطية', s: 'رجّع بياناتك من ملف', u: 'diagnostics.html', i: '⤒' },
-      { t: 'حالة التخزين والكاش', s: 'المساحة والملفات المحفوظة', u: 'diagnostics.html', i: '🩺' },
+      { t: 'حالة التخزين والكاش', s: 'المساحة والملفات المحفوظة', u: 'diagnostics.html', i: ICON_GAUGE },
     ].forEach((p) => SEARCH_INDEX.push({
       kind: 'page', title: p.t, sub: p.s, url: p.u, icon: p.i, code: '',
       hay: (p.t + ' ' + p.s).toLowerCase(),
@@ -672,7 +711,7 @@
         <div class="kv"><span>المستخدم من مساحة المتصفح</span><b>${mb(st.usage)}${st.quota ? ` من ${mb(st.quota)}` : ''}</b></div>
         <div class="kv"><span>ملفات بياناتك المحفوظة</span><b>${st.keysPresent.length} من ${st.keysPresent.length + st.keysMissing.length}</b></div>
         <div class="kv"><span>آخر نسخة احتياطية</span><b>${lastB ? `${lastB}${daysSince > 14 ? ' <span style="color:var(--amber)">(بقالها كتير!)</span>' : ''}` : '<span style="color:var(--amber)">ماعملتش ولا واحدة</span>'}</b></div>
-        ${risks.length ? `<div class="note warn" style="margin-top:14px"><b>⚠️ خد بالك:</b><ul style="margin:8px 18px 0;line-height:1.9">${risks.map((r) => `<li>${r}</li>`).join('')}</ul></div>` : ''}
+        ${risks.length ? `<div class="note warn" style="margin-top:14px"><b>خد بالك:</b><ul style="margin:8px 18px 0;line-height:1.9">${risks.map((r) => `<li>${r}</li>`).join('')}</ul></div>` : ''}
         <div class="btn-row" style="margin-top:16px">
           <button class="btn primary sm" id="dlBackup">⤓ نزّل نسخة احتياطية</button>
           <a class="btn ghost sm" href="diagnostics.html">🩺 التشخيص الكامل</a>
@@ -682,8 +721,8 @@
       if (b) b.addEventListener('click', () => {
         b.disabled = true;
         global.UniStore.downloadBackup()
-          .then((r) => { toast(`✅ اتنزّلت — ${r.keys} عناصر (${(r.bytes / 1024).toFixed(1)} KB)`); renderStorage(); })
-          .catch(() => toast('⚠️ فشل التنزيل'))
+          .then((r) => { toast(`اتنزّلت — ${r.keys} عناصر (${(r.bytes / 1024).toFixed(1)} KB)`); renderStorage(); })
+          .catch(() => toast('فشل التنزيل'))
           .then(() => { b.disabled = false; });
       });
 
@@ -710,7 +749,7 @@
   /* ---------------------------------------------------------------- boot */
   function boot() {
     tuneDevice();
-    applyTheme(prefs().theme || 'light');
+    applyTheme(prefs().theme || 'dark');
 
     if (global.UniInApp) {
       const info = global.UniInApp.guard();
@@ -731,6 +770,7 @@
     if (fy) fy.textContent = String(new Date().getFullYear());
 
     wireAppbar();
+    wireSettingsMenu();
     wireScrollProgress();
     wireSpotlight();
     wireMagnets();
@@ -775,7 +815,7 @@
     if (global.UniStore) {
       global.UniStore.restoreFromIDB().then((rec) => {
         if (rec && rec.length) {
-          toast(`🛟 رجّعنا بياناتك من النسخة الاحتياطية (${rec.length} عناصر)`, 8000);
+          toast(`رجّعنا بياناتك من النسخة الاحتياطية (${rec.length} عناصر)`, 8000);
           renderModules(); renderOverall(); renderStorage();
         }
       }).catch(() => {});

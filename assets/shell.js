@@ -152,7 +152,6 @@
     });
     revealScan();
     growBars(host);
-    if (document.body.classList.contains('device-laptop')) forceLaptopScale(true);
   }
 
 
@@ -302,42 +301,17 @@
 
      الوضع الافتراضي عند أول فتح: لو الشاشة فعلاً صغيرة (فون/تابلت) —
      بيفرض شكل اللابتوب بالتفاصيل كاملة تلقائيًا. لو الفتح من لابتوب/
-     ديسكتوب حقيقي (شاشة كبيرة already)، بيسيبه طبيعي تمامًا. */
+     ديسكتوب حقيقي (شاشة كبيرة already)، بيسيبه طبيعي تمامًا.
+
+     ملحوظة (إصدار 2.8.3): شلنا تمامًا أي تصغير يدوي بـ transform:scale
+     كان موجود قبل كده — كان هو سبب مشكلة "الصفحة بتتلزّق في الزاوية
+     وتسيب مساحة فاضية ضخمة" في وضع Laptop. دلوقتي بنعتمد بس على تغيير
+     viewport meta ونسيب المتصفح نفسه يزوم أوت طبيعي، ونضيف #deviceStage
+     كـ wrapper بيمركز #appFrame بالـ flexbox في أوضاع Mobile/Tablet —
+     نفس الآلية اللي شغالة 100% في ملفات حاسب/إحصاء وسبيشيال. */
   const DEVICES = ['auto', 'mobile', 'tablet', 'laptop'];
   const RESPONSIVE_VIEWPORT = 'width=device-width, initial-scale=1, viewport-fit=cover';
   const DESKTOP_VIEWPORT = 'width=1180, viewport-fit=cover';
-
-  /**
-   * ضمان إضافي: تغيير viewport meta بعد تحميل الصفحة مش مضمون 100% في كل
-   * المتصفحات (بعضها بيتجاهل التعديل بعد أول رسم). فبعد ما نجرّب الميتا،
-   * نتحقق: لو عرض الصفحة الفعلي لسه صغير، نفرض التصغير بإحداثيات CSS
-   * (transform: scale) يدويًا — ده بيشتغل 100% في كل المتصفحات لأنه
-   * مش معتمد على أي سلوك اختياري من المتصفح.
-   */
-  function forceLaptopScale(on) {
-    const body = document.body;
-    if (!on) {
-      body.style.width = '';
-      body.style.transform = '';
-      body.style.transformOrigin = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.overflowX = '';
-      return;
-    }
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (document.documentElement.clientWidth >= 1150) return;   /* الميتا شغالة لوحدها */
-      body.style.width = '1180px';
-      body.style.transform = 'none';
-      body.style.transformOrigin = 'top left';
-      requestAnimationFrame(() => {
-        const h = body.scrollHeight;
-        const scale = Math.min(1, innerWidth / 1180);
-        body.style.transform = `scale(${scale})`;
-        document.documentElement.style.overflowX = 'hidden';
-        document.documentElement.style.height = (h * scale) + 'px';
-      });
-    }));
-  }
 
   function applyDevice(mode) {
     const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
@@ -346,9 +320,6 @@
 
     const vp = $('#viewportMeta') || document.querySelector('meta[name="viewport"]');
     if (vp) vp.setAttribute('content', m === 'laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
-
-    if (m === 'laptop') forceLaptopScale(true);
-    else forceLaptopScale(false);
 
     prefs({ device: m });
     const sel = $('#deviceSelect');
@@ -387,14 +358,6 @@
       applyDevice(sel.value);
       global.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    let rt = null;
-    global.addEventListener('resize', () => {
-      if (document.body.classList.contains('device-laptop')) {
-        if (rt) clearTimeout(rt);
-        rt = setTimeout(() => forceLaptopScale(true), 200);
-      }
-    }, { passive: true });
   }
 
   /* ------------------ زر الرجوع لفوق + حلقة تقدّم القراءة ---------------- */

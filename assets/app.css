@@ -738,6 +738,7 @@ html.weak-device .mod{ transform:none !important; }
 @media print{
   .bg,.appbar,.boot,#uniBridgeBar,#uniToastHost,.inapp-gate{ display:none !important; }
   body{ background:#fff; color:#000; }
+  #deviceStage,#appFrame{ max-width:100% !important; display:block !important; border:none !important; box-shadow:none !important; overflow:visible !important; max-height:none !important; padding:0 !important; }
 }
 
 /* ==========================================================================
@@ -842,15 +843,23 @@ input[type="radio"]{ accent-color:var(--cyan); }
 .settings-item:hover{ border-color:var(--line-hot); color:var(--cyan); background:var(--glass2); }
 .settings-div{ height:1px; background:var(--line); margin:0 -2px; }
 
-/* ---------------- معاينة الأجهزة — نفس مقاسات ملفاتك ---------------- */
+/* ---------------- معاينة الأجهزة — نفس آلية ملفات حاسب/إحصاء وسبيشيال ---------------- */
+/* #deviceStage هو اللي بيمركز #appFrame بالـ flexbox في وضعي Mobile/Tablet —
+   ده اللي بيمنع مشكلة القص/الميل اللي كانت حاصلة قبل كده (كان الاعتماد على
+   margin:auto بس، ودا كان بيخرج جزء من الكارت بره حدود الشاشة). */
+#deviceStage{ display:block; }
+body.device-mobile #deviceStage,
+body.device-tablet #deviceStage{
+  display:flex; justify-content:center; padding:26px 0; background:var(--void); min-height:100vh;
+}
 #appFrame{ width:100%; max-width:100%; transition:max-width .4s var(--ease); }
 body.device-mobile #appFrame{
-  max-width:390px; margin:18px auto; border:1px solid var(--line2); border-radius:26px;
+  max-width:390px; margin:0; border:1px solid var(--line2); border-radius:26px;
   box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden;
   max-height:844px; overflow-y:auto;
 }
 body.device-tablet #appFrame{
-  max-width:768px; margin:18px auto; border:1px solid var(--line2); border-radius:18px;
+  max-width:768px; margin:0; border:1px solid var(--line2); border-radius:18px;
   box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden;
   max-height:1024px; overflow-y:auto;
 }

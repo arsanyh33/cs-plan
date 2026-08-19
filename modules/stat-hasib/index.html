@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="light" data-module="stat-hasib">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R743EMFN1F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-R743EMFN1F');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1.0">
 <title>خطة إحصاء (رئيسي) × حاسب (فرعي) | إسكندرية</title>
@@ -1533,40 +1541,20 @@ var deviceSelect = document.getElementById('deviceSelect');
 var viewportMeta = document.getElementById('viewportMeta');
 var RESPONSIVE_VIEWPORT = 'width=device-width, initial-scale=1.0';
 var DESKTOP_VIEWPORT = 'width=900';
-var TABLET_VIEWPORT  = 'width=820';
-/* هل إحنا على جهاز لمس حقيقي (فون/تابلت)؟ الفريم المصغّر مالوش أي لازمة هنا. */
-function isRealTouchDevice(){
-  try{ return matchMedia('(pointer: coarse)').matches || (navigator.maxTouchPoints||0) > 0; }
-  catch(e){ return (navigator.maxTouchPoints||0) > 0; }
-}
 function applyDeviceMode(value){
   document.body.classList.remove('device-mobile','device-tablet','device-laptop');
-  var isTouch = isRealTouchDevice();
-  /* الفريم المصغّر (#appFrame بحدود وظل وحد أقصى للارتفاع) هو أداة معاينة
-     لحد فاتح من كمبيوتر بماوس وعايز يشوف شكل الصفحة على فون. لو المستخدم
-     أصلًا على فون/تابلت حقيقي، محاكاة فون جوه فون بتعمل صندوق صغير وسط
-     الشاشة وفراغ حواليه — فبنمنعها تمامًا، والصفحة تفضل بعرض الشاشة كامل. */
-  if(!isTouch && (value==='mobile' || value==='tablet')) document.body.classList.add('device-'+value);
-  if(value==='laptop') document.body.classList.add('device-laptop');
+  if(value==='mobile' || value==='tablet' || value==='laptop') document.body.classList.add('device-'+value);
   // "لابتوب" بيفرض عرض اللابتوب الحقيقي (900px) عبر تغيير viewport meta، فالمتصفح يعامل
   // الصفحة كأنها بعرض لابتوب فعليًا مهما كان الجهاز، وبيزوّم اوت تلقائي عشان كل التفاصيل
   // تتناسب مع الشاشة. "تلقائي" مش بيفرض حاجة أصلًا — سايب الصفحة على وضعها الطبيعي المتجاوب
   // (ده مهم علشان لو الملف مفتوح من لابتوب/ديسكتوب حقيقي بالفعل يفضل زي ما هو من غير تغيير).
-  /* على جهاز لمس: "تابلت" بيتنفّذ بتغيير عرض الـ viewport فالمتصفح يزوّم اوت
-     لوحده ويعرض كل المحتوى (نفس اللي بيعمله زرار "موقع سطح المكتب") — مش بفريم.
-     و"موبايل" على فون = العرض الطبيعي المتجاوب بالظبط (عرض الشاشة كامل). */
-  var vp = RESPONSIVE_VIEWPORT;
-  if(value==='laptop') vp = DESKTOP_VIEWPORT;
-  else if(value==='tablet' && isTouch) vp = TABLET_VIEWPORT;
-  viewportMeta.setAttribute('content', vp);
+  viewportMeta.setAttribute('content', value==='laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
 }
 deviceSelect.addEventListener('change', function(){ applyDeviceMode(this.value); });
-/* الوضع الافتراضي عند فتح الصفحة = "لابتوب" على أي جهاز (فون أو كمبيوتر)،
-   عشان الخطة تظهر بتخطيط اللابتوب الكامل من أول لحظة. على الفون المتصفح
-   بيزوّم اوت تلقائيًا (عبر viewport width=900) فيبان كل المحتوى بدون فراغ
-   وبدون أي فريم. المستخدم يقدر يغيّره بعد كده لـ تلقائي/موبايل/تابلت
-   بحرّيته من القايمة، وأي اختيار بيتنفّذ فورًا. */
-var defaultMode = 'laptop';
+// الوضع الافتراضي عند فتح الملف دايمًا "تلقائي" — الصفحة أصلًا متجاوبة بالكامل،
+// فمفيش أي داعي نفرض حيلة "لابتوب" (فريم مصغّر بحد أقصى ارتفاع) على الشاشات الصغيرة.
+// المستخدم لسه يقدر يختار Mobile/Tablet/Laptop بنفسه يدويًا من القايمة وقتها بيتفعّل عادي.
+var defaultMode = 'auto';
 deviceSelect.value = defaultMode;
 applyDeviceMode(defaultMode);
 

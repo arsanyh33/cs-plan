@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.9.0",
+    "version": "2.9.1",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -83,6 +83,32 @@
         "132 ساعة",
         "GPA",
         "متطلبات سابقة"
+      ],
+      "cache": true
+    },
+    {
+      "id": "transfer-guide",
+      "title": "دليل تحويل كلية العلوم",
+      "short": "قسم المحولين",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M4 12h13'/><path d='M13 6l6 6-6 6'/><path d='M4 5v14'/></svg>",
+      "desc": "دليل شامل لأي طالب عايز يتحول لكلية العلوم — جامعة الإسكندرية: الشروط والأهلية، الأوراق المطلوبة، خطوات التقديم، معادلة المواد، والتايم لاين.",
+      "entry": "modules/transfer-guide/index.html",
+      "color1": "#284cdc",
+      "color2": "#284cdc",
+      "storageKeys": [
+        "csTransferGuideTab_v1",
+        "csTransferGuideTheme_v1",
+        "csTransferGuideFsIndex_v1",
+        "csTransferGuideDevice_v1",
+        "csTransferGuideGpaRows_v1",
+        "csTransferGuideScale5Rows_v1"
+      ],
+      "tags": [
+        "تحويل",
+        "المحولين",
+        "معادلة مواد",
+        "شروط الالتحاق",
+        "أوراق التقديم"
       ],
       "cache": true
     }

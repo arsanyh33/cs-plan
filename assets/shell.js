@@ -144,6 +144,15 @@
         e.preventDefault();
         a.classList.add('is-loading');
         document.documentElement.classList.add('leaving');
+        try {
+          if (typeof gtag === 'function') {
+            gtag('event', 'select_content', {
+              content_type: 'module',
+              item_id: mod.id,
+              item_name: mod.title
+            });
+          }
+        } catch (err) { /* تتبع اختياري — أي خطأ هنا ما يوقفش التنقل */ }
         setTimeout(() => { location.href = a.href; }, 220);
       });
 
@@ -464,6 +473,9 @@
     if (!btn) return;
     const url = location.href.replace(/[?#].*$/, '');
     btn.addEventListener('click', () => {
+      try {
+        if (typeof gtag === 'function') gtag('event', 'share', { method: navigator.share ? 'web_share' : 'copy_link' });
+      } catch (err) { /* تتبع اختياري */ }
       if (navigator.share) {
         navigator.share({
           title: 'خطتي الأكاديمية — كلية العلوم إسكندرية',
@@ -793,9 +805,17 @@
     const si = $('#searchInput');
     if (si) {
       let t = null;
+      let gaT = null;
       si.addEventListener('input', () => {
         if (t) clearTimeout(t);
         t = setTimeout(() => doSearch(si.value), 130);
+        if (gaT) clearTimeout(gaT);
+        gaT = setTimeout(() => {
+          const q = si.value.trim();
+          if (q && typeof gtag === 'function') {
+            try { gtag('event', 'search', { search_term: q }); } catch (err) { /* تتبع اختياري */ }
+          }
+        }, 800);
       });
       si.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') { si.value = ''; doSearch(''); si.blur(); }

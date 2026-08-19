@@ -319,21 +319,32 @@
      وسط الشاشة وفراغ كبير حواليه. فبنكتشف هل الجهاز الحالي جهاز لمس حقيقي
      ولا لأ، ولو أيوه بنمنع تفعيل الفريم على وضعي Mobile/Tablet ونسيبها
      متجاوبة طبيعي زي وضع "تلقائي" بالظبط (بدون أي تصغير أو فراغ). */
+  const TABLET_VIEWPORT = 'width=820, viewport-fit=cover';
+
   function isRealTouchDevice() {
-    try { return matchMedia('(pointer: coarse)').matches; }
-    catch (e) { return false; }
+    try { return matchMedia('(pointer: coarse)').matches || (navigator.maxTouchPoints || 0) > 0; }
+    catch (e) { return (navigator.maxTouchPoints || 0) > 0; }
   }
 
   function applyDevice(mode) {
     const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
     document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop', 'device-auto');
 
-    const skipFrame = (m === 'mobile' || m === 'tablet') && isRealTouchDevice();
-    if (skipFrame || m === 'auto') document.body.classList.add('device-auto');
-    else document.body.classList.add('device-' + m);
+    /* الفريم المصغّر أداة معاينة لحد على شاشة كبيرة بماوس. على جهاز لمس حقيقي
+       مابنستخدمهوش أبدًا — بنغيّر عرض الـ viewport والمتصفح يزوّم اوت لوحده
+       (نفس ميكانيزم "موقع سطح المكتب" في المتصفح). */
+    const isTouch = isRealTouchDevice();
+    const framed = !isTouch && (m === 'mobile' || m === 'tablet');
+    if (framed) document.body.classList.add('device-' + m);
+    else if (m === 'laptop') document.body.classList.add('device-laptop');
+    else document.body.classList.add('device-auto');
+
+    let content = RESPONSIVE_VIEWPORT;
+    if (m === 'laptop') content = DESKTOP_VIEWPORT;
+    else if (m === 'tablet' && isTouch) content = TABLET_VIEWPORT;
 
     const vp = $('#viewportMeta') || document.querySelector('meta[name="viewport"]');
-    if (vp) vp.setAttribute('content', m === 'laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
+    if (vp) vp.setAttribute('content', content);
 
     const sel = $('#deviceSelect');
     if (sel && sel.value !== m) sel.value = m;
@@ -343,7 +354,7 @@
       btn.classList.toggle('dev-highlight', btn.getAttribute('data-mode') === m);
     });
 
-    if (skipFrame) toast('إنت بالفعل بتفتح من فون/تابلت — العرض هيفضل متجاوب طبيعي بدون تصغير');
+    /* مفيش أي رسالة منع — كل وضع بقى بيتنفّذ فعليًا على أي جهاز. */
     return m;
   }
 

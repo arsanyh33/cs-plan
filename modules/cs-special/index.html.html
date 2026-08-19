@@ -1621,11 +1621,10 @@ function applyDeviceMode(value){
   requestAnimationFrame(()=>{ if(typeof moveTabIndicatorTo==='function') moveTabIndicatorTo(document.querySelector('.tab.active'), true); });
 }
 deviceSelect.addEventListener('change', function(){ applyDeviceMode(this.value); });
-// الوضع الافتراضي عند فتح الملف: لو الشاشة فعلاً صغيرة (فون/تابلت) بيفرض شكل اللابتوب
-// بالتفاصيل كاملة تلقائيًا. لو الفتح من لابتوب/ديسكتوب حقيقي (شاشة كبيرة already)، بيسيبه
-// طبيعي تمامًا من غير أي تدخل — مفيش لازمة نفرض حاجة وهو أصلًا فاتح من لابتوب.
-var isSmallScreen = Math.min(window.innerWidth, window.screen.width) < 900;
-var defaultMode = isSmallScreen ? 'laptop' : 'auto';
+// الوضع الافتراضي عند فتح الملف دايمًا "تلقائي" — الصفحة أصلًا متجاوبة بالكامل،
+// فمفيش أي داعي نفرض حيلة "لابتوب" (فريم مصغّر بحد أقصى ارتفاع) على الشاشات الصغيرة.
+// المستخدم لسه يقدر يختار Mobile/Tablet/Laptop بنفسه يدويًا من القايمة وقتها بيتفعّل عادي.
+var defaultMode = 'auto';
 deviceSelect.value = defaultMode;
 applyDeviceMode(defaultMode);
 

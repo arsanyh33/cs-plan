@@ -326,10 +326,11 @@
 
   function applyDevice(mode) {
     const m = DEVICES.indexOf(mode) >= 0 ? mode : 'auto';
-    document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop');
+    document.body.classList.remove('device-mobile', 'device-tablet', 'device-laptop', 'device-auto');
 
     const skipFrame = (m === 'mobile' || m === 'tablet') && isRealTouchDevice();
-    if (m !== 'auto' && !skipFrame) document.body.classList.add('device-' + m);
+    if (skipFrame || m === 'auto') document.body.classList.add('device-auto');
+    else document.body.classList.add('device-' + m);
 
     const vp = $('#viewportMeta') || document.querySelector('meta[name="viewport"]');
     if (vp) vp.setAttribute('content', m === 'laptop' ? DESKTOP_VIEWPORT : RESPONSIVE_VIEWPORT);
@@ -349,10 +350,6 @@
   function wireDevice() {
     const sel = $('#deviceSelect');
 
-    /* بنحسب الوضع الافتراضي من واقع الشاشة الحقيقية في كل مرة — نفس
-       الشرط بالظبط المستخدم في cs-stat/cs-special. مفيش أي حفظ في
-       localStorage للاختيار ده، فمفيش احتمال إن قيمة قديمة تفضل "عالقة"
-       وتسبب مشكلة في زيارة تانية. */
     /* الوضع الافتراضي دايمًا "تلقائي" — الصفحة الرئيسية أصلاً متجاوبة
        بالكامل (نقاط توقف مخصصة 900/640/520/420px في app.css)، فمفيش أي
        داعي لفرض حيلة "لابتوب" (width=1180) على الشاشات الصغيرة؛ الحيلة دي

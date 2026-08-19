@@ -102,7 +102,7 @@ body{
   font-size:1.0625rem;    /* نفس ملفاتك */
   line-height:1.9;        /* نفس ملفاتك */
   letter-spacing:.15px;   /* نفس ملفاتك */
-  min-height:100dvh;
+  min-height:100vh;
   overflow-x:hidden;
   max-width:100%;
   position:relative;
@@ -844,6 +844,13 @@ input[type="radio"]{ accent-color:var(--cyan); }
 
 /* ---------------- معاينة الأجهزة — نفس مقاسات ملفاتك ---------------- */
 #appFrame{ width:100%; max-width:100%; transition:max-width .4s var(--ease); }
+/* "تلقائي" — وضع صريح بمواصفات واضحة (بدل الاعتماد على غياب أي كلاس):
+   بدون فريم، بدون ظل، بدون تحديد ارتفاع أقصى — استجابة طبيعية 100% */
+body.device-auto #appFrame{
+  max-width:1180px; margin:0 auto;
+  border:none; border-radius:0; box-shadow:none;
+  overflow:visible; max-height:none;
+}
 body.device-mobile #appFrame{
   max-width:390px; margin:18px auto; border:1px solid var(--line2); border-radius:26px;
   box-shadow:0 24px 70px -10px rgba(0,0,0,.6); overflow:hidden;

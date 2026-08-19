@@ -1554,10 +1554,12 @@ function applyDeviceMode(value){
   viewportMeta.setAttribute('content', vp);
 }
 deviceSelect.addEventListener('change', function(){ applyDeviceMode(this.value); schedulePositionIndicator(); });
-// الوضع الافتراضي عند فتح الملف دايمًا "تلقائي" — الصفحة أصلًا متجاوبة بالكامل،
-// فمفيش أي داعي نفرض حيلة "لابتوب" (فريم مصغّر بحد أقصى ارتفاع) على الشاشات الصغيرة.
-// المستخدم لسه يقدر يختار Mobile/Tablet/Laptop بنفسه يدويًا من القايمة وقتها بيتفعّل عادي.
-var defaultMode = 'auto';
+/* الوضع الافتراضي عند فتح الصفحة = "لابتوب" على أي جهاز (فون أو كمبيوتر)،
+   عشان الخطة تظهر بتخطيط اللابتوب الكامل من أول لحظة. على الفون المتصفح
+   بيزوّم اوت تلقائيًا (عبر viewport width=900) فيبان كل المحتوى بدون فراغ
+   وبدون أي فريم. المستخدم يقدر يغيّره بعد كده لـ تلقائي/موبايل/تابلت
+   بحرّيته من القايمة، وأي اختيار بيتنفّذ فورًا. */
+var defaultMode = 'laptop';
 deviceSelect.value = defaultMode;
 applyDeviceMode(defaultMode);
 

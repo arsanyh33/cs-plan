@@ -337,6 +337,11 @@
     const sel = $('#deviceSelect');
     if (sel && sel.value !== m) sel.value = m;
 
+    /* مزامنة تظليل البطاقة المختارة جوه مودال الـ FAB مع نفس الوضع الحالي */
+    $$('.dev-btn').forEach((btn) => {
+      btn.classList.toggle('dev-highlight', btn.getAttribute('data-mode') === m);
+    });
+
     if (skipFrame) toast('إنت بالفعل بتفتح من فون/تابلت — العرض هيفضل متجاوب طبيعي بدون تصغير');
     return m;
   }
@@ -356,6 +361,39 @@
       applyDevice(sel.value);
       global.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    /* ------------------- مودال الـ FAB (طريقة وصول تانية) ------------------ */
+    const fab = $('#devFab');
+    const overlay = $('#devModalOverlay');
+    if (fab && overlay) {
+      const openModal = () => {
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        const current = sel ? sel.value : 'auto';
+        $$('.dev-btn').forEach((btn) => {
+          btn.classList.toggle('dev-highlight', btn.getAttribute('data-mode') === current);
+        });
+      };
+      const closeModal = () => {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      };
+
+      fab.addEventListener('click', openModal);
+      $$('.dev-btn', overlay).forEach((btn) => {
+        btn.addEventListener('click', () => {
+          applyDevice(btn.getAttribute('data-mode'));
+          closeModal();
+          global.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+      const closeBtn = $('.dev-close', overlay);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+      });
+    }
   }
 
   /* ------------------ زر الرجوع لفوق + حلقة تقدّم القراءة ---------------- */

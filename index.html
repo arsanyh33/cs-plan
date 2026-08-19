@@ -220,6 +220,34 @@
   </svg>
 </button>
 
+<!-- ============ مودال معاينة الجهاز (طريقة وصول تانية غير الـ dropdown) ============ -->
+<div id="devModalOverlay" role="dialog" aria-modal="true" aria-labelledby="devModalTitle" onclick="if(event.target===this) DevModal.close()">
+  <div id="devModal">
+    <h3 id="devModalTitle">📂 معاينة على جهاز مختلف</h3>
+    <p>اختار الجهاز اللي عايز تشوف شكل الصفحة عليه.</p>
+    <div class="dev-options">
+      <button class="dev-btn" data-mode="auto" onclick="DevModal.pick('auto')">
+        <span class="dev-ico" aria-hidden="true">🖥</span>
+        <div class="dev-txt"><h4>تلقائي</h4></div>
+      </button>
+      <button class="dev-btn" data-mode="mobile" onclick="DevModal.pick('mobile')">
+        <span class="dev-ico" aria-hidden="true">📱</span>
+        <div class="dev-txt"><h4>Mobile</h4></div>
+      </button>
+      <button class="dev-btn" data-mode="tablet" onclick="DevModal.pick('tablet')">
+        <span class="dev-ico" aria-hidden="true">📲</span>
+        <div class="dev-txt"><h4>Tablet</h4></div>
+      </button>
+      <button class="dev-btn" data-mode="laptop" onclick="DevModal.pick('laptop')">
+        <span class="dev-ico" aria-hidden="true">💻</span>
+        <div class="dev-txt"><h4>Laptop</h4></div>
+      </button>
+    </div>
+    <button class="dev-close" onclick="DevModal.close()" type="button">إغلاق ✕</button>
+  </div>
+</div>
+<button id="devFab" title="معاينة على جهاز مختلف" aria-label="معاينة على جهاز مختلف" aria-haspopup="dialog">📂</button>
+
 <script src="assets/store.js"></script>
 <script src="assets/inapp.js"></script>
 <script src="assets/bg.js"></script>

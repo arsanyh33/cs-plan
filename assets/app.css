@@ -736,7 +736,7 @@ html.weak-device .mod{ transform:none !important; }
 }
 
 @media print{
-  .bg,.appbar,.boot,#uniBridgeBar,#uniToastHost,.inapp-gate{ display:none !important; }
+  .bg,.appbar,.boot,#uniBridgeBar,#uniToastHost,.inapp-gate,#devFab,#devModalOverlay{ display:none !important; }
   body{ background:#fff; color:#000; }
 }
 
@@ -861,6 +861,59 @@ body.device-mobile .g2,
 body.device-mobile .g3,
 body.device-mobile .g4{ grid-template-columns:1fr; }
 body.device-mobile .fs-label{ display:none; }
+
+/* -------------- مودال معاينة الجهاز (زرار عائم FAB + بطاقات) -------------- */
+#devFab{
+  position:fixed; z-index:8500;
+  inset-inline-end:20px;
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  width:50px; height:50px; border-radius:16px;
+  display:grid; place-items:center; color:#000; font-size:1.25rem;
+  background:linear-gradient(140deg,var(--cyan),var(--cyan-deep));
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 12px 34px -12px var(--cyan);
+  cursor:pointer; transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+#devFab:hover{ transform:translateY(-4px) scale(1.06); box-shadow:0 18px 44px -12px var(--cyan); }
+#devFab:active{ transform:translateY(-1px) scale(1.01); }
+@media (max-width:640px){
+  #devFab{ width:46px; height:46px; inset-inline-end:14px; bottom:calc(14px + env(safe-area-inset-bottom)); font-size:1.1rem; }
+}
+html.has-bridge-bar #devFab{ bottom:calc(var(--bar-h) + 24px + env(safe-area-inset-bottom)); }
+
+#devModalOverlay{
+  position:fixed; inset:0; z-index:99999;
+  background:rgba(0,0,0,.72); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; visibility:hidden; pointer-events:none; transition:opacity .3s var(--ease), visibility .3s;
+}
+#devModalOverlay.open{ opacity:1; visibility:visible; pointer-events:all; }
+#devModal{
+  background:var(--panel); border:1px solid var(--line2); border-radius:var(--radius);
+  padding:26px 22px 20px; max-width:400px; width:90%; text-align:center;
+  box-shadow:0 24px 70px -10px rgba(0,0,0,.6);
+  transform:translateY(16px); transition:transform .3s var(--ease);
+  font-family:var(--font-body);
+}
+#devModalOverlay.open #devModal{ transform:translateY(0); }
+#devModal h3{ font-family:var(--font-display); font-size:1.05rem; font-weight:800; margin-bottom:6px; color:var(--text); }
+#devModal p{ font-size:.8rem; color:var(--dim); line-height:1.7; margin-bottom:18px; }
+.dev-options{ display:flex; flex-direction:column; gap:9px; margin-bottom:14px; }
+.dev-btn{
+  display:flex; align-items:center; gap:13px; width:100%;
+  background:var(--glass); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:12px 14px; cursor:pointer; text-align:start; color:var(--text);
+  font-family:inherit; transition:.2s var(--ease);
+}
+.dev-btn:hover{ border-color:var(--line-hot); background:var(--glass2); }
+.dev-btn.dev-highlight{ border-color:var(--cyan); background:var(--glass2); }
+.dev-btn .dev-ico{ font-size:1.5rem; flex:none; line-height:1; }
+.dev-btn .dev-txt h4{ font-family:var(--font-display); font-size:.85rem; font-weight:800; color:var(--text); }
+.dev-close{
+  font-size:.76rem; color:var(--dim); cursor:pointer; text-decoration:underline;
+  background:none; border:none; font-family:inherit;
+}
+.dev-close:hover{ color:var(--text); }
 
 /* ---------------------------- زر الرجوع لفوق ---------------------------- */
 .to-top{

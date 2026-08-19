@@ -292,7 +292,7 @@ input,select,textarea{ font-family:inherit; }
 @keyframes pulse{ 50%{ opacity:.35; transform:scale(.8); } }
 
 /* ============================== الهيرو ============================== */
-.hero{ padding:clamp(26px,6vw,54px) 0 10px; position:relative; }
+.hero{ padding-block:clamp(26px,6vw,54px) 10px; position:relative; }  /* padding-block فقط: عشان مايلغيش padding-inline بتاع .wrap */
 .kicker{
   display:inline-flex; align-items:center; gap:9px;
   font-family:var(--font-display); font-size:.75rem; font-weight:800; letter-spacing:.2px;
@@ -348,7 +348,7 @@ input,select,textarea{ font-family:inherit; }
 }
 
 /* ============================== الأقسام ============================= */
-.sec{ padding:18px 0 26px; }
+.sec{ padding-block:18px 26px; }  /* padding-block فقط: عشان مايلغيش padding-inline بتاع .wrap */
 .sec-h{ display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:26px; }
 .sec-h h2{ font-size:1.5rem; }   /* نفس ملفاتك */
 .sec-h .hint{ color:var(--dim2); font-size:.86rem; margin-bottom:5px; }

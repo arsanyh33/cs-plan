@@ -353,9 +353,11 @@
        الشرط بالظبط المستخدم في cs-stat/cs-special. مفيش أي حفظ في
        localStorage للاختيار ده، فمفيش احتمال إن قيمة قديمة تفضل "عالقة"
        وتسبب مشكلة في زيارة تانية. */
-    const isSmallScreen = Math.min(innerWidth, screen.width) < 900;
-    const defaultMode = isSmallScreen ? 'laptop' : 'auto';
-    applyDevice(defaultMode);
+    /* الوضع الافتراضي دايمًا "تلقائي" — الصفحة الرئيسية أصلاً متجاوبة
+       بالكامل (نقاط توقف مخصصة 900/640/520/420px في app.css)، فمفيش أي
+       داعي لفرض حيلة "لابتوب" (width=1180) على الشاشات الصغيرة؛ الحيلة دي
+       هي اللي كانت بتسبب فراغ فاضي ضخم تحت المحتوى على الفون والتابلت. */
+    applyDevice('auto');
 
     if (sel) sel.addEventListener('change', () => {
       applyDevice(sel.value);

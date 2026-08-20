@@ -518,64 +518,6 @@ html.weak-device.celebrate .logo-mark{ animation:none; }
 .pill.bad{ color:var(--magenta); border-color:rgba(255,45,120,.35); background:rgba(255,45,120,.09); }
 .pill.info{ color:var(--cyan); border-color:rgba(18,240,192,.35); background:rgba(18,240,192,.09); }
 
-/* ==================== صفحة عن صاحب الموقع (creator.html) ============ */
-.cp-wrap{ max-width:760px; margin-inline:auto; padding:clamp(18px,4vw,32px) 20px 60px; }
-.cp-back{
-  display:inline-flex; align-items:center; gap:6px; color:var(--dim);
-  text-decoration:none; font-size:.85rem; margin-bottom:22px; transition:color .2s;
-}
-.cp-back:hover{ color:var(--cyan); }
-.cp-hero{
-  position:relative; overflow:hidden; text-align:center;
-  border-radius:26px; border:1px solid var(--line);
-  background:radial-gradient(120% 100% at 50% -10%, rgba(18,240,192,.12), transparent 60%), var(--panel2);
-  padding:clamp(36px,6vw,56px) clamp(20px,5vw,40px);
-}
-.cp-hero::before,.cp-hero::after{
-  content:""; position:absolute; width:260px; height:260px; border-radius:50%;
-  filter:blur(70px); opacity:.35; z-index:0;
-}
-.cp-hero::before{ background:var(--cyan); top:-90px; inset-inline-start:-60px; }
-.cp-hero::after{ background:var(--cyan2); bottom:-100px; inset-inline-end:-60px; }
-.cp-badge{
-  position:relative; z-index:1; display:inline-flex; align-items:center; gap:6px;
-  font-family:var(--font-display); font-size:.72rem; font-weight:800; letter-spacing:.02em;
-  color:var(--lime); border:1px solid rgba(37,230,160,.35); background:rgba(37,230,160,.09);
-  border-radius:99px; padding:6px 14px; margin-bottom:22px;
-}
-.cp-avatar{
-  position:relative; z-index:1; width:132px; height:132px; border-radius:50%;
-  object-fit:cover; border:2.5px solid var(--line-hot);
-  box-shadow:0 0 0 8px rgba(18,240,192,.07); margin-bottom:20px;
-}
-.cp-name{
-  position:relative; z-index:1; font-family:var(--font-display);
-  font-size:clamp(1.5rem,4vw,2rem); font-weight:900; color:var(--text); margin-bottom:8px;
-}
-.cp-sub{ position:relative; z-index:1; color:var(--dim); font-size:.95rem; margin-bottom:20px; }
-.cp-bio{
-  position:relative; z-index:1; color:var(--dim); font-size:.98rem; line-height:1.9;
-  max-width:52ch; margin:0 auto 28px;
-}
-.cp-actions{ position:relative; z-index:1; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-.cp-btn{
-  display:inline-flex; align-items:center; gap:8px; text-decoration:none;
-  font-family:var(--font-display); font-size:.9rem; font-weight:800;
-  padding:12px 22px; border-radius:99px; transition:transform .25s, box-shadow .25s;
-}
-.cp-btn:hover{ transform:translateY(-2px); }
-.cp-btn-wa{ background:#25d366; color:#04220f; box-shadow:0 10px 24px -10px rgba(37,211,102,.6); }
-.cp-btn-gh{
-  color:var(--text); border:1px solid var(--line2); background:var(--glass);
-}
-.cp-section{ margin-top:34px; }
-.cp-section-h{
-  font-family:var(--font-display); font-size:.78rem; font-weight:800;
-  color:var(--dim2); letter-spacing:.04em; margin-bottom:14px; text-align:center;
-}
-.cp-chips{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
-.cp-chips .pill{ font-family:var(--font-mono); font-weight:700; font-size:.78rem; padding:7px 15px; }
-
 /* ======================== الأرقام (كروت إحصائية) =================== */
 .stat{
   position:relative; text-align:center; padding:22px 14px;

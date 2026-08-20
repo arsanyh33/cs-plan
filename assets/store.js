@@ -24,6 +24,8 @@
     { key: 'csStatRealPlan_v1',  module: 'cs-stat',    label: 'خطة حاسب + إحصاء — خطتي الفعلية' },
     { key: 'csSpecialPlan_v1',   module: 'cs-special', label: 'حاسب سبيشيال — التقدم والتقديرات' },
     { key: 'csActualPlan_v1',    module: 'cs-special', label: 'حاسب سبيشيال — خطتي الفعلية' },
+    { key: 'csTrackGuideDeviceMode_v1', module: 'cs-tracks', label: 'تراكات ومسارات — وضع العرض' },
+    { key: 'csTrackGuideFontSize_v1',   module: 'cs-tracks', label: 'تراكات ومسارات — حجم الخط' },
   ];
 
   /* مفاتيح الشل نفسه (إعدادات، مش بيانات أكاديمية) */

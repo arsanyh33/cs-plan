@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.9.2",
+    "version": "2.9.3",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -38,7 +38,8 @@
         "GPA",
         "متطلبات سابقة"
       ],
-      "cache": true
+      "cache": true,
+      "category": "college"
     },
     {
       "id": "cs-special",
@@ -60,7 +61,8 @@
         "شروط الالتحاق",
         "132 ساعة"
       ],
-      "cache": true
+      "cache": true,
+      "category": "college"
     },
     {
       "id": "stat-hasib",
@@ -84,7 +86,8 @@
         "GPA",
         "متطلبات سابقة"
       ],
-      "cache": true
+      "cache": true,
+      "category": "college"
     },
     {
       "id": "transfer-guide",
@@ -110,7 +113,32 @@
         "شروط الالتحاق",
         "أوراق التقديم"
       ],
-      "cache": true
+      "cache": true,
+      "category": "college"
+    },
+    {
+      "id": "cs-tracks",
+      "title": "تراكات ومسارات مهنية في البرمجة",
+      "short": "تراكات ومسارات",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M4 6h16M4 12h10M4 18h16'/><circle cx='19' cy='12' r='2'/></svg>",
+      "desc": "دليل تفاعلي لـ16 تراك مختلف في مجال البرمجة (Frontend, Backend, AI, Cyber Security, وغيرهم) — رودماب، مرتبات، شهادات، وكويز يساعدك تختار مسارك المهني. ملحوظة: ده دليل عام لسوق الشغل ومالوش أي علاقة بمنهج الكلية.",
+      "entry": "modules/cs-tracks/index.html",
+      "color1": "#ff5fa2",
+      "color2": "#7c5cff",
+      "storageKeys": [
+        "csTrackGuideDeviceMode_v1",
+        "csTrackGuideFontSize_v1"
+      ],
+      "tags": [
+        "تراكات",
+        "مسارات مهنية",
+        "برمجة",
+        "مرتبات",
+        "رودماب",
+        "غير جامعي"
+      ],
+      "cache": true,
+      "category": "general"
     }
   ]
 }

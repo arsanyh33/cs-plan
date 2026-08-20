@@ -101,11 +101,16 @@
 
   /* -------------------------------------------------------- module cards */
   function renderModules() {
-    const host = $('#modHost');
+    renderModuleGroup('#modHost', (mod) => (mod.category || 'college') === 'college');
+    renderModuleGroup('#modHostGeneral', (mod) => mod.category === 'general');
+  }
+
+  function renderModuleGroup(hostSelector, filterFn) {
+    const host = $(hostSelector);
     if (!host || !REG) return;
     host.innerHTML = '';
 
-    REG.modules.forEach((mod) => {
+    REG.modules.filter(filterFn).forEach((mod) => {
       const s = moduleSummary(mod);
       const totalH = 132;
       const pct = s.doneHours ? Math.min(100, (s.doneHours / totalH) * 100)

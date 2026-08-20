@@ -1614,24 +1614,24 @@ const courses = [
   {id:'102301', code:'040102301', ar:'الإحصاء اللامعلمي', en:'Non-Parametric Statistics', hours:2, cat:'reqMajor', term:5, prereq:['102201']},
   {id:'102302', code:'040102302', ar:'أساليب المحاكاة والمعاينة', en:'Simulation and Sampling Techniques', hours:3, cat:'reqMajor', term:6, prereq:['102201']},
   {id:'102303', code:'040102303', ar:'نظرية الإحصاء (2)', en:'Theory of Statistics (2)', hours:3, cat:'reqMajor', term:7, prereq:['102203']},
-  {id:'102304', code:'040102304', ar:'تحليل المتغيرات المتعددة الإحصائية', en:'Multivariate Statistical Analysis', hours:3, cat:'reqMajor', term:6, prereq:['101203','102201']},
+  {id:'102304', code:'040102304', ar:'تحليل المتغيرات المتعددة الإحصائية', en:'Multivariate Statistical Analysis', hours:3, cat:'reqMajor', term:7, prereq:['101203','102201']},
   {id:'102305', code:'040102305', ar:'تحليل السلاسل الزمنية', en:'Time Series Analysis', hours:3, cat:'reqMajor', term:6, prereq:['102201']},
   {id:'102306', code:'040102306', ar:'إحصاء حسابي', en:'Statistical Computing', hours:3, cat:'reqMajor', term:5, prereq:['102201']},
   {id:'101308', code:'040101308', ar:'بحوث العمليات (1)', en:'Operations Research (1)', hours:3, cat:'reqMajor', term:4, prereq:['101203']},
-  {id:'102401', code:'040102401', ar:'النماذج الإحصائية الخطية', en:'Linear Statistical Models', hours:2, cat:'reqMajor', term:8, prereq:['102201']},
+  {id:'102401', code:'040102401', ar:'النماذج الإحصائية الخطية', en:'Linear Statistical Models', hours:2, cat:'reqMajor', term:5, prereq:['102201']},
   {id:'102402', code:'040102402', ar:'عمليات عشوائية', en:'Stochastic Processes', hours:2, cat:'reqMajor', term:8, prereq:['102203']},
   {id:'102403', code:'040102403', ar:'بحوث العمليات (2)', en:'Operations Research (2)', hours:3, cat:'reqMajor', term:7, prereq:['101308']},
   {id:'102490', code:'040102490', ar:'المشروع البحثي', en:'Research Project', hours:2, cat:'reqMajor', term:8, prereq:[]},
 
   // ---- MAJOR (إحصاء) elective pool 33h، يُختار منها 20h — جدول 4-1 ----
   // النسخة الافتراضية هنا اختارت 7 مواد = 20 ساعة بالظبط، وسايبة الباقي كبدائل ممكن تستبدل بيها
-  {id:'102404', code:'040102404', ar:'تنقيب البيانات', en:'Data Mining', hours:3, cat:'electMajor', term:7, chosen:true, prereq:['102201']},
+  {id:'102404', code:'040102404', ar:'تنقيب البيانات', en:'Data Mining', hours:3, cat:'electMajor', term:8, chosen:true, prereq:['102201']},
   {id:'102405', code:'040102405', ar:'اختبارات الحياة والصلاحية', en:'Life-Testing and Reliability', hours:3, cat:'electMajor', term:7, chosen:true, prereq:['102203']},
   {id:'102407', code:'040102407', ar:'نظرية الاحتمالات', en:'Theory of Probability', hours:3, cat:'electMajor', term:8, chosen:true, prereq:['102203']},
-  {id:'102406', code:'040102406', ar:'الإحصاءات المرتبة', en:'Order Statistics', hours:2, cat:'electMajor', term:7, chosen:true, prereq:['102301']},
-  {id:'102408', code:'040102408', ar:'طرق بحثية في إدارة الأعمال', en:'Research Methods in Business', hours:3, cat:'electMajor', term:5, chosen:true, prereq:['102201']},
-  {id:'102409', code:'040102409', ar:'إدارة المشروعات', en:'Project Management', hours:3, cat:'electMajor', term:8, chosen:true, prereq:['102201']},
-  {id:'102410', code:'040102410', ar:'موضوعات مختارة في الإحصاء', en:'Selected Topics in Statistics', hours:3, cat:'electMajor', term:7, chosen:true, prereq:[], note:'الشرط الرسمي في اللائحة: يكون الطالب في المستوى الرابع — مش شرط اجتياز مقرر معين.'},
+  {id:'102406', code:'040102406', ar:'الإحصاءات المرتبة', en:'Order Statistics', hours:2, cat:'electMajor', term:8, chosen:true, prereq:['102301']},
+  {id:'102408', code:'040102408', ar:'طرق بحثية في إدارة الأعمال', en:'Research Methods in Business', hours:3, cat:'electMajor', term:6, chosen:true, prereq:['102201']},
+  {id:'102409', code:'040102409', ar:'إدارة المشروعات', en:'Project Management', hours:3, cat:'electMajor', term:7, chosen:true, prereq:['102201']},
+  {id:'102410', code:'040102410', ar:'موضوعات مختارة في الإحصاء', en:'Selected Topics in Statistics', hours:3, cat:'electMajor', term:8, chosen:true, prereq:[], note:'الشرط الرسمي في اللائحة: يكون الطالب في المستوى الرابع — مش شرط اجتياز مقرر معين.'},
   // بدائل متاحة (مش مختارة افتراضيًا) — لسه جزء من مجموعة الـ33 ساعة المسموح تختار منها
   {id:'102307', code:'040102307', ar:'الرقابة الإحصائية للجودة', en:'Statistical Quality Control', hours:2, cat:'electMajor', term:null, prereq:['102201']},
   {id:'102308', code:'040102308', ar:'تحليل البيانات النوعية', en:'Analysis of Categorical Data', hours:3, cat:'electMajor', term:null, prereq:['102201']},
@@ -1692,11 +1692,16 @@ const courses = [
 const extras = {
   1:[{name:'اللغة العربية', hours:2},{name:'اللغة الإنجليزية', hours:2}],
   2:[{name:'تاريخ العلوم', hours:2}],
-  3:[{name:'مقدمة في علم الآثار', hours:2},{name:'اخلاقيات مهنة', hours:3}],
-  4:[{name:'مقدمة في علم النفس', hours:2}],
+  3:[{name:'مقدمة في علم الآثار', hours:2},{name:'مقدمة في علم النفس', hours:2}],
+  4:[{name:'اخلاقيات مهنة', hours:2}],
   6:[{name:'سياحة بيئية', hours:2}],
-  8:[{name:'مهارات عرض', hours:3}],
+  7:[{name:'مهارات حياتية', hours:2}],
+  8:[{name:'مهارات العرض', hours:2}],
 };
+/* ملحوظة: مواد "متطلبات الجامعة الاختيارية" و"الاختيار الحر" هنا أمثلة فعلية موزّعة صح حسب اللائحة:
+   6 ساعات متطلب جامعة اختياري (3 من 4 مواد من uniElectiveBank) + 8 ساعات اختيار حر (4 من 7 مواد من freeElectiveBank).
+   كل الساعات هنا مطابقة تمامًا لساعات نفس المواد في uniElectiveBank/freeElectiveBank أعلاه — محدش يغيّر رقم الساعات لوحده
+   من غير ما يتأكد إنه نفس الرقم المسجل في البنك، عشان ميكسرش إجمالي الـ132 ساعة زي ما حصل قبل كده. */
 
 const gradeScale = [
   {sym:'A',  score:'90 فأكثر',       pts:'4.00', tag:'ممتاز'},

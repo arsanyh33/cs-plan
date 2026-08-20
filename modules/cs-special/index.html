@@ -1161,6 +1161,8 @@ footer a{color:var(--muted2); text-decoration:underline;}
           <option value="elective">اختيارية (يُختار منها 26)</option>
           <option value="college">متطلبات كلية / مستوى أول</option>
           <option value="support">مادة داعمة</option>
+          <option value="uni_elective_bank">متطلبات الجامعة الاختيارية (خارج التخصص)</option>
+          <option value="free_elective_bank">الاختيار الحر العامة (خارج التخصص)</option>
         </select>
       </div>
       <div id="accordionHost"></div>
@@ -1239,6 +1241,14 @@ footer a{color:var(--muted2); text-decoration:underline;}
           <li>ترم 8: <b>المشروع البحثي</b> · <b>موضوعات مختارة في الحاسب</b></li>
         </ul>
         باقي كل مادة تانية في الترمات دي (زي وسائط متعددة، محاكاة ونمذجة النظم، الآلات الذكية، اختبار وجودة البرمجيات، تصميم برامج شيئية، معالجة الصور الرقمية، شبكات الحاسب المتقدمة، ومواد الاختيار الحر والجامعة) هي مرنة تمامًا — عادي تستبدلها بمادة تانية من بنك المواد (05) أو تغيّر ترمها حسب اهتمامك.
+      </div>
+    </div>
+    <div class="note info" style="margin-top:16px">
+      <span class="ic">🔀</span>
+      <div>
+        <b>ملحوظة مهمة على مواد "متطلب الجامعة الاختياري" و"الاختيار الحر":</b> أسامي المواد المكتوبة في الخطة دي (زي المواد الظاهرة في ترم 2، 3، 6، 7، 8) هي مجرد أمثلة توضيحية بس — كل طالب حر تمامًا يختار أي مواد بديلة من قوائم "متطلبات الجامعة الاختيارية" و"الاختيار الحر العامة" الرسمية حسب اهتمامه الشخصي، وحر كمان يبدّل ترتيبها بين الترمات (فردي/زوجي) حسب المواد المتاحة فعليًا من القسم في كل ترم.
+        <br><br>
+        يعني مفيش أي التزام بنفس الأسامي أو نفس الترتيب الموجود هنا — دي بس توليفة واحدة من توليفات كتير ممكنة، وطبيعي جدًا كل طالب يطلعله جدول مختلف تمامًا عن التاني في المواد دي بالذات.
       </div>
     </div>
   </section>
@@ -1775,11 +1785,11 @@ const courses = [
 
 const extras = {
   1:[{name:'اللغة العربية', hours:2},{name:'اللغة الإنجليزية', hours:2}],
-  2:[{name:'مادة جامعة اختيارية / متطلب (1)', hours:2}],
-  3:[{name:'مادة جامعة اختيارية / متطلب (2)', hours:2}],
-  6:[{name:'مادة جامعة اختيارية / متطلب (3)', hours:2}],
-  7:[{name:'مقرر اختيار حر (1)', hours:3},{name:'مقرر اختيار حر (2)', hours:2}],
-  8:[{name:'مقرر اختيار حر (3)', hours:3}],
+  2:[{name:'تاريخ العلوم', hours:2}],
+  3:[{name:'مقدمة في علم الآثار', hours:2}],
+  6:[{name:'مهارات حياتية', hours:2}],
+  7:[{name:'مقدمة في علم النفس', hours:2},{name:'اخلاقيات مهنة', hours:2}],
+  8:[{name:'سياحة بيئية', hours:2},{name:'مهارات عرض', hours:2}],
 };
 
 const gradeScale = [
@@ -1970,6 +1980,7 @@ function catRemovalWarningLine(cat){
     req16:   'مادة "إجبارية إضافية" ضمن الـ16 ساعة المطلوبة تحديدًا لشرط الدرجة الخاصة (السبيشيال).',
     elective:'مادة "اختيارية" ضمن الـ26 ساعة المطلوب اختيارها من بنك المواد — لو شلتها لازم تعوضها بمادة اختيارية تانية عشان يكتمل عدد الساعات المطلوب للتخرج.',
     support: 'مادة "داعمة" مش بتتحسب من الـ132 ساعة المطلوبة للتخرج، بس هي متطلب سابق لمادة تانية.',
+    extras:  'مادة "متطلب جامعة اختياري" أو "اختيار حر عامة" — ضمن الـ18 ساعة المخصصة لمقررات الجامعة الاختيارية والاختيار الحر (خارج ساعات التخصص). لو شلتها لازم تعوضها بمادة تانية من نفس القوائم عشان يكتمل عدد الساعات المطلوب للتخرج.',
   }[cat] || '';
 }
 function buildRemovalWarning(c){
@@ -2003,7 +2014,7 @@ var RemoveModal = (function(){
     onConfirmCb = onConfirm;
 
     document.getElementById('rmCourseName').textContent = `شيل "${c.ar}" من خطتك؟`;
-    document.getElementById('rmCourseMeta').textContent = `${c.code} · ${c.hours} ساعة${c.term ? ' · ترم ' + c.term : ''}`;
+    document.getElementById('rmCourseMeta').textContent = `${c.code ? c.code + ' · ' : ''}${c.hours} ساعة${c.term ? ' · ترم ' + c.term : ''}`;
     document.getElementById('rmCatLine').textContent = catRemovalWarningLine(c.cat);
 
     const direct = dependentsOf(c.id);
@@ -2117,6 +2128,32 @@ const accGroups = [
   {cat:'college', title:'متطلبات الكلية / المستوى الأول'},
   {cat:'support', title:'مواد داعمة (مش جزء من الخطة أصلًا)'},
 ];
+
+/* -------- مواد "متطلبات الجامعة الاختيارية" و"الاختيار الحر العامة" (خارج قسم الحاسب) --------
+   دي قوائم مرجعية بس لعرضها في "بنك المواد الكامل" — مقصودة تكون منفصلة تمامًا عن مصفوفة courses
+   الأساسية (اللي بتغذّي خطة الترمات، خريطة المتطلبات، خطتي الفعلية، والترشيح الذكي) عشان إضافتها
+   هنا متأثرش على أي حسبة أو قسم تاني في الملف. المواد المختارة فعليًا في خطة الترمات (extras) موجودة
+   هنا ضمن نفس القايمة الكاملة، وباقي المواد للعلم بس — مش لازم تاخدها. */
+const uniElectiveBank = [
+  {code:'040040000061', ar:'تاريخ العلوم', en:'History of Science', hours:2, cond:'من ضمن الأربعة — يُختار 3 من أصل 4 (6 ساعات إجمالاً)'},
+  {code:'040040000058', ar:'مقدمة في علم الآثار', en:'Introduction to Archaeology', hours:2, cond:'من ضمن الأربعة — يُختار 3 من أصل 4 (6 ساعات إجمالاً)'},
+  {code:'040040000056', ar:'مقدمة في علم النفس', en:'Introduction to Psychology', hours:2, cond:'من ضمن الأربعة — يُختار 3 من أصل 4 (6 ساعات إجمالاً)'},
+  {code:'040040000052', ar:'الإنسان والبيئة', en:'Man and Environment', hours:2, cond:'من ضمن الأربعة — يُختار 3 من أصل 4 (6 ساعات إجمالاً)'},
+];
+const freeElectiveBank = [
+  {code:'040049900011', ar:'اخلاقيات مهنة', en:'Professional Ethics', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+  {code:'040049900016', ar:'سياحة بيئية', en:'Eco-Tourism', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+  {code:'040049900020', ar:'مهارات حياتية', en:'Life Skills', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+  {code:'040049900001', ar:'مهارات العرض', en:'Presentation Skills', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+  {code:'040049900017', ar:'الجيولوجيا الأثرية', en:'Archaeological Geology', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+  {code:'040049900002', ar:'فارما (1)', en:'Pharma (1)', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+  {code:'040049900003', ar:'فارما (2)', en:'Pharma (2)', hours:2, cond:'ضمن سقف الاختيار الحر العام (8 ساعات كحد أقصى إجمالاً)'},
+];
+const externalCourseGroups = [
+  {key:'uni_elective_bank', title:'متطلبات الجامعة الاختيارية (خارج التخصص) — اختر 3 من 4 (6 ساعات)', list: uniElectiveBank},
+  {key:'free_elective_bank', title:'مقررات الاختيار الحر العامة (خارج التخصص) — بحد أقصى 8 ساعات إجمالاً', list: freeElectiveBank},
+];
+
 const accordionHost = document.getElementById('accordionHost');
 function renderAccordion(filterCat='all', q=''){
   accordionHost.innerHTML = '';
@@ -2137,6 +2174,35 @@ function renderAccordion(filterCat='all', q=''){
           <thead><tr><th>الكود</th><th>المادة</th><th>ساعات</th><th>المتطلب السابق</th></tr></thead>
           <tbody>
             ${list.map(c=>`<tr data-jump-id="${c.id}"><td class="code">${c.code}</td><td>${c.ar}${criticalBadge(c.id,'sm')}<br><small style="color:var(--muted)">${c.en}</small></td><td class="code">${c.hours}</td><td>${prereqNames(c)}</td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div></div>`;
+    const head = item.querySelector('.acc-head');
+    const body = item.querySelector('.acc-body');
+    head.onclick = ()=>{
+      const opening = !item.classList.contains('open');
+      item.classList.toggle('open');
+      body.style.maxHeight = opening ? body.scrollHeight+'px' : 0;
+    };
+    accordionHost.appendChild(item);
+  });
+  externalCourseGroups.forEach(g=>{
+    if(filterCat!=='all' && filterCat!==g.key) return;
+    let list = g.list;
+    if(q) list = list.filter(c=> c.ar.includes(q) || c.en.toLowerCase().includes(q.toLowerCase()) || c.code.includes(q));
+    if(!list.length) return;
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.innerHTML = `
+      <div class="acc-head">
+        <span>${g.title} <span style="color:var(--muted); font-weight:400; font-size:0.75rem">(${list.length} مادة)</span></span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="acc-body"><div class="acc-body-inner">
+        <div class="table-wrap"><table>
+          <thead><tr><th>الكود</th><th>المادة</th><th>ساعات</th><th>الشرط</th></tr></thead>
+          <tbody>
+            ${list.map(c=>`<tr><td class="code">${c.code}</td><td>${c.ar}<br><small style="color:var(--muted)">${c.en}</small></td><td class="code">${c.hours}</td><td style="font-size:0.8125rem; color:var(--muted)">${c.cond}</td></tr>`).join('')}
           </tbody>
         </table></div>
       </div></div>`;
@@ -2182,7 +2248,7 @@ function renderTermGrid(){
     list.forEach(c=>{ hoursById[c.id] = c.hours; catById[c.id] = c.cat; });
     ex.forEach((e,i)=>{ hoursById[`extra-${t}-${i}`] = e.hours; catById[`extra-${t}-${i}`] = 'extras'; });
     cu.forEach(e=>{ hoursById[e.id] = e.hours; catById[e.id] = 'extras'; });
-    let total = list.reduce((s,c)=>s+(state.removed[c.id]?0:c.hours),0) + ex.reduce((s,e)=>s+e.hours,0) + cu.reduce((s,e)=>s+e.hours,0);
+    let total = list.reduce((s,c)=>s+(state.removed[c.id]?0:c.hours),0) + ex.reduce((s,e,i)=>s+(state.removed[`extra-${t}-${i}`]?0:e.hours),0) + cu.reduce((s,e)=>s+e.hours,0);
     const load = loadBadge(total);
     const card = document.createElement('div');
     card.className='term-card';
@@ -2213,12 +2279,14 @@ function renderTermGrid(){
           </li>`;}).join('')}
         ${ex.map((e,i)=>{
           const exCid = `extra-${t}-${i}`;
-          const exChecked = !!state.done[exCid];
+          const isRemoved = !!state.removed[exCid];
+          const exChecked = !isRemoved && !!state.done[exCid];
           return `
-          <li>
-            <input type="checkbox" data-cid="${exCid}" ${exChecked?'checked':''}>
-            <label class="cname">${e.name}<small>${e.hours}h</small></label>
+          <li class="${isRemoved?'removed-course':''}">
+            <input type="checkbox" data-cid="${exCid}" ${isRemoved?'disabled':''} ${exChecked?'checked':''}>
+            <label class="cname">${e.name}${isRemoved?'<span style="color:var(--rose)"> · متشالة من خطتك</span>':''}<small>${e.hours}h</small></label>
             <select class="term-grade-sel" data-grade-cid="${exCid}" title="تقديرك الفعلي في المادة دي" ${exChecked?'':'disabled'}>${gradeOptionsHtml(state.grades[exCid])}</select>
+            <button type="button" class="course-del ${isRemoved?'is-removed':''}" data-cid="${exCid}" data-extra-name="${e.name.replace(/"/g,'&quot;')}" data-extra-hours="${e.hours}" data-extra-term="${t}" title="${isRemoved?'رجّع المادة للخطة':'شيل المادة من خطتك'}">${isRemoved?'↺':'✕'}</button>
           </li>`;}).join('')}
         ${(state.customExtras[t]||[]).map(cu=>{
           const cuChecked = !!state.done[cu.id];
@@ -2303,7 +2371,12 @@ function renderTermGrid(){
   termGrid.querySelectorAll('.course-del').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const cid = btn.dataset.cid;
-      const c = courseById(cid);
+      let c = courseById(cid);
+      if(!c && cid && cid.startsWith('extra-')){
+        // مادة "متطلب جامعة اختياري / اختيار حر" — مش موجودة في مصفوفة courses الأساسية،
+        // فبنبني كائن مؤقت بنفس الشكل عشان نقدر نستخدم نفس مودال الحذف بالظبط.
+        c = { id: cid, ar: btn.dataset.extraName, code: '', hours: parseFloat(btn.dataset.extraHours), term: parseInt(btn.dataset.extraTerm,10), cat: 'extras', prereq: [] };
+      }
       if(!c) return;
       if(state.removed[cid]){
         // استرجاع المادة — من غير تأكيد، مفيهاش خطورة
@@ -2370,7 +2443,7 @@ function updateTermDoneBadges(){
     const list = courses.filter(c=>c.term===t);
     const ex = extras[t] || [];
     const cu = state.customExtras[t] || [];
-    const total = list.reduce((s,c)=>s+(state.removed[c.id]?0:c.hours),0) + ex.reduce((s,e)=>s+e.hours,0) + cu.reduce((s,e)=>s+e.hours,0);
+    const total = list.reduce((s,c)=>s+(state.removed[c.id]?0:c.hours),0) + ex.reduce((s,e,i)=>s+(state.removed[`extra-${t}-${i}`]?0:e.hours),0) + cu.reduce((s,e)=>s+e.hours,0);
     let done = list.reduce((s,c)=> s + ((!state.removed[c.id] && state.done[c.id]) ? c.hours : 0), 0);
     done += ex.reduce((s,e,i)=> s + (state.done[`extra-${t}-${i}`] ? e.hours : 0), 0);
     done += cu.reduce((s,e)=> s + (state.done[e.id] ? e.hours : 0), 0);

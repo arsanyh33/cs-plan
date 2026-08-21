@@ -295,6 +295,34 @@ body.device-mobile main{padding:18px 14px 60px;}
   padding:12px 14px; font-size:0.8438rem; font-weight:700; text-align:center; color:var(--accent); margin-bottom:18px; font-family:var(--font-display);
 }
 
+/* ---------- import-from-term-plan modal (خطتي الفعلية) ---------- */
+#importPlanModalOverlay{
+  position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s ease;
+}
+#importPlanModalOverlay.open{opacity:1; pointer-events:all;}
+#importPlanModal{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:26px 24px 22px;
+  max-width:480px; width:92%; text-align:right; box-shadow:0 24px 70px rgba(0,0,0,.7);
+  transform:translateY(16px); transition:transform .3s ease; max-height:88vh; overflow-y:auto;
+}
+#importPlanModalOverlay.open #importPlanModal{transform:translateY(0);}
+.ipm-list{display:flex; flex-direction:column; gap:7px; max-height:44vh; overflow-y:auto; margin:14px 0;}
+.ipm-item{display:flex; align-items:center; gap:9px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:0.8125rem; cursor:pointer;}
+.ipm-item:hover{border-color:var(--accent);}
+
+/* ---------- عناصر صف مادة (خطتي الفعلية): بحث مستقل لكل صف + فئة/ساعات مخصصة ---------- */
+.acs-wrap{position:relative; display:block;}
+.areg-search-input{width:100%; box-sizing:border-box; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); color:var(--text); font-size:0.8125rem;}
+.areg-cat-select, .areg-hours-input{
+  font-family:var(--font-body); font-size:0.75rem; border-radius:7px; border:1px solid var(--line-strong);
+  background:var(--surface); color:var(--text); padding:5px 6px; width:100%; box-sizing:border-box;
+}
+.areg-hours-input{max-width:64px;}
+.areg-cat-select:disabled, .areg-hours-input:disabled, .areg-hours-input:read-only{opacity:.5; cursor:not-allowed;}
+.areg-cat-select option{background:#ffffff; color:#1a1a1a;}
+.bank-linked-hint{color:var(--muted); font-size:0.6562rem;}
+
 /* ---------- command palette (Ctrl/⌘+K) ---------- */
 #paletteOverlay{
   position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
@@ -1236,7 +1264,7 @@ body.discussion-mode #discussionBtn{color:var(--accent); border-color:var(--acce
     <div class="card plan-cgpa-card" id="actualCgpaCard" style="display:none;">
       <div>
         <b style="font-family:var(--font-display); display:block; margin-bottom:2px;">📊 معدلك التراكمي الفعلي</b>
-        <span style="font-size:0.75rem; color:var(--muted);">محسوب من آخر محاولة بس لكل مادة (لو أعدتها) وبيستبعد أي ترم "معادلة"</span>
+        <span style="font-size:0.75rem; color:var(--muted);">محسوب من آخر محاولة بس لكل مادة (لو أعدتها) — ترم المعادلة بيتحسب زي أي ترم عادي بالظبط</span>
       </div>
       <div style="display:flex; gap:22px;">
         <div class="pcg-box"><b id="actualCgpaValue">0.00</b><span>CGPA</span></div>
@@ -1521,6 +1549,19 @@ body.discussion-mode #discussionBtn{color:var(--accent); border-color:var(--acce
     <div class="rm-actions">
       <button class="btn primary" id="atmConfirmBtn" type="button">✓ تأكيد وإضافة الترم</button>
       <button class="dev-close" id="atmCancelBtn" type="button">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IMPORT FROM TERM-PLAN MODAL (خطتي الفعلية بس) ============ -->
+<div id="importPlanModalOverlay" onclick="if(event.target===this) RegImportModal.close()">
+  <div id="importPlanModal">
+    <h3>📥 استيراد من خطة الترمات</h3>
+    <p style="font-size:0.8125rem; color:var(--muted);">المواد اللي عليها تيك بالفعل في تاب "خطة الترمات" ولسه مش مسجلة في "خطتي الفعلية" — اختار اللي عايز تضيفه للترم ده دفعة واحدة (التقدير هيتحط تلقائيًا لو كان متسجل هناك).</p>
+    <div id="ipmList" class="ipm-list"></div>
+    <div class="rm-actions">
+      <button class="btn primary" id="ipmConfirmBtn" type="button">➕ إضافة المحدد</button>
+      <button class="dev-close" id="ipmCancelBtn" type="button">إلغاء</button>
     </div>
   </div>
 </div>
@@ -2595,6 +2636,85 @@ function aregTermLabel(term){
   return `${SEASON_LABELS[term.season]} ${term.year}${kindTxt}`;
 }
 
+/* -------- بنك بحث موحّد لخطتي الفعلية بس: courses[] + متطلبات الجامعة الاختيارية + الاختيار الحر + extras
+   (كل دول بيانات مرجعية موجودة أصلاً في أقسام تانية، بنستخدمها هنا للقراءة بس من غير أي تعديل فيها) -------- */
+function aregExternalBankList(){
+  const flatExtras = [];
+  Object.keys(extras).forEach(t=>{
+    (extras[t]||[]).forEach((e,i)=>{
+      flatExtras.push({ id:`extra-${t}-${i}`, code:'', ar:e.name, en:'', hours:e.hours, cat:'extras', prereq:[], term:parseInt(t,10) });
+    });
+  });
+  const uni = uniElectiveBank.map(e=>({id:'uni:'+e.code, code:e.code, ar:e.ar, en:e.en||'', hours:e.hours, cat:'extras', prereq:[], note:e.cond}));
+  const free = freeElectiveBank.map(e=>({id:'free:'+e.code, code:e.code, ar:e.ar, en:e.en||'', hours:e.hours, cat:'extras', prereq:[], note:e.cond}));
+  return [...uni, ...free, ...flatExtras];
+}
+function aregAllSearchable(){ return courses.concat(aregExternalBankList()); }
+function aregCourseById(id){ return courseById(id) || aregAllSearchable().find(c=>c.id===id); }
+
+/* -------- حدود العبء الدراسي (مادة 13) لعرضها جوه كارت الترم نفسه — بنفس الأرقام والصياغة
+   المستخدمة أصلاً في تاب "خطة الترمات" (قسم 06)، بس بدالة مستقلة هنا عشان منلمسش كود القسم التاني -------- */
+function aregLoadWarningHtml(total){
+  if(total>17) return `<span class="badge conflict" title="العبء الدراسي العادي حسب اللائحة 12-17 ساعة (مادة 13). ممكن توصل لـ19 ساعة بموافقة المرشد الأكاديمي ورئيس مجلس القسم لو معدلك التراكمي 3.0+ واجتزت 33 ساعة على الأقل. الـ21 ساعة حالة استثنائية منفصلة: بس في آخر فصل دراسي عادي هتتخرج فيه فعلاً، وبموافقة لجنة شئون التعليم والطلاب.">⚠️ فوق الحد (17)</span>`;
+  if(total>0 && total<12) return `<span class="badge critical" title="العبء الدراسي العادي حسب اللائحة 12-17 ساعة (مادة 13) — أقل من كده يحتاج موافقة أو بيكون طبيعي في آخر ترم قبل التخرج">⚠️ تحت الحد (12)</span>`;
+  return '';
+}
+
+/* -------- ترتيب الترمات وحالة المتطلب السابق داخل خطتي الفعلية بس -------- */
+function aregTermIndexOf(termId){ return aregState.terms.findIndex(t=>t.id===termId); }
+function aregEarliestPassedTermIndex(courseId){
+  let bestIdx = -1;
+  aregState.regs.forEach(r=>{
+    if(r.courseId!==courseId) return;
+    const passed = r.grade!=='' && r.grade!==undefined && parseFloat(r.grade) > 0;
+    if(!passed) return;
+    const idx = aregTermIndexOf(r.termId);
+    if(idx!==-1 && (bestIdx===-1 || idx<bestIdx)) bestIdx = idx;
+  });
+  return bestIdx;
+}
+function aregPrereqStatus(prereqIds, currentTermIndex){
+  const missing = [], lateOrder = [];
+  (prereqIds||[]).forEach(pid=>{
+    const idx = aregEarliestPassedTermIndex(pid);
+    if(idx===-1) missing.push(pid);
+    else if(currentTermIndex!==-1 && idx>=currentTermIndex) lateOrder.push(pid);
+  });
+  return {missing, lateOrder};
+}
+function aregCourseWarningsHtml(reg, termIndex){
+  // بيشتغل بس على مواد حقيقية من بنك المواد الأصلي (courses[]) — المواد المخصصة ومواد الجامعة/الاختيار
+  // الحر (uni:/free:/extra- أو مادة مكتوبة يدوي) متجاهلة تلقائيًا لأنه مفيش لها id حقيقي في شجرة المتطلبات.
+  // ملحوظة: الملف ده (على عكس خطة السبيشيال وخطة حاسب/إحصاء) مفيهوش أي إشارة موثقة في بيانات المواد
+  // (زي LOCKED_TERM_COURSES أو ملاحظة "مؤكدة من طالب فعلي") تحدد ترم "مقفول" فعليًا — فمفيش هنا تحذير
+  // "ترم مقفول"، عشان منخترعش رقم مش موجود في مصدر البيانات نفسه.
+  if(!reg.courseId) return '';
+  const bank = courses.find(x=>x.id===reg.courseId);
+  if(!bank) return '';
+  let html = '';
+  if(bank.prereq && bank.prereq.length){
+    const {missing, lateOrder} = aregPrereqStatus(bank.prereq, termIndex);
+    if(missing.length){
+      const names = missing.map(id=>{ const p = courseById(id); return p?p.ar:id; }).join('، ');
+      html += `<div class="areg-dup-warn" style="margin:5px 0 0; max-width:52ch;">❌ لسه محتاج تاخد وتنجح في متطلبها السابق الأول: <b>${names}</b></div>`;
+    }
+    if(lateOrder.length){
+      const names = lateOrder.map(id=>{ const p = courseById(id); return p?p.ar:id; }).join('، ');
+      html += `<div class="note-inline">⚠️ متطلبها السابق (<b>${names}</b>) متسجل في نفس الترم ده أو بعده — راجع ترتيب الترمات.</div>`;
+    }
+  }
+  if(criticalIds.has(bank.id)){
+    if(reg.grade==='0.00'){
+      const deps = dependentsOf(bank.id);
+      const depsNote = deps.length ? ` وهتأخر تسجيل: ${deps.slice(0,4).map(d=>d.ar).join('، ')}${deps.length>4?' وغيرها':''}` : '';
+      html += `<div class="areg-dup-warn" style="margin:5px 0 0; max-width:52ch;">⚡ دي مادة على المسار الحرج ورسبت فيها${depsNote} — لازم تعيدها بأسرع وقت.</div>`;
+    } else {
+      html += `<div class="note-inline">⚡ مادة على المسار الحرج — بتفتح مواد كتير بعدها، خليك حريص عليها.</div>`;
+    }
+  }
+  return html;
+}
+
 /* ---- Add Term Modal ---- */
 var AddTermModal = (function(){
   let kind = null, season = null;
@@ -2657,11 +2777,61 @@ document.getElementById('addTermBtn').onclick = ()=> AddTermModal.open();
 document.getElementById('atmConfirmBtn').onclick = ()=> AddTermModal.confirmAdd();
 document.getElementById('atmCancelBtn').onclick = ()=> AddTermModal.close();
 
+/* -------- استيراد سريع للمواد المتيكة فعلًا في "خطة الترمات" (قراءة فقط من state/courses الخاصين بقسم 06) -------- */
+var RegImportModal = (function(){
+  let targetTermId = null;
+  function el(){ return document.getElementById('importPlanModalOverlay'); }
+  function registeredCourseIds(){ return new Set(aregState.regs.filter(r=>r.courseId).map(r=>r.courseId)); }
+  function candidates(){
+    const registered = registeredCourseIds();
+    return courses.filter(c=> state.done && state.done[c.id] && !registered.has(c.id));
+  }
+  function open(termId){
+    targetTermId = termId;
+    const list = candidates();
+    const host = document.getElementById('ipmList');
+    if(!list.length){
+      host.innerHTML = '<div class="empty-hint">مفيش مواد جديدة تتاخد من "خطة الترمات" — إما لسه مفيش تيكات هناك، أو كل المواد المتيكة متسجلة بالفعل هنا.</div>';
+    } else {
+      host.innerHTML = list.map(c=>`
+        <label class="ipm-item">
+          <input type="checkbox" value="${c.id}">
+          <span class="ac-code">${c.code}</span><span>${c.ar}</span>
+          <span style="margin-inline-start:auto; color:var(--muted); font-size:0.75rem;">${c.hours}h${state.grades && state.grades[c.id] ? ' · تقدير: '+(gradeScale.find(g=>g.pts===state.grades[c.id])?.sym || state.grades[c.id]) : ''}</span>
+        </label>`).join('');
+    }
+    el().classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function close(){ el().classList.remove('open'); document.body.style.overflow=''; }
+  function confirmImport(){
+    const checked = Array.from(document.querySelectorAll('#ipmList input[type="checkbox"]:checked')).map(i=>i.value);
+    checked.forEach(id=>{
+      const bank = courseById(id);
+      if(!bank) return;
+      aregState.regs.push({
+        id:`reg-${Date.now()}-${Math.floor(Math.random()*10000)}`,
+        termId: targetTermId, courseId: bank.id, name: bank.ar, hours: bank.hours, cat: bank.cat,
+        grade: (state.grades && state.grades[bank.id]) || ''
+      });
+    });
+    saveAreg();
+    renderActualTerms();
+    updateActualDashboard();
+    close();
+  }
+  document.getElementById('ipmConfirmBtn').addEventListener('click', confirmImport);
+  document.getElementById('ipmCancelBtn').addEventListener('click', close);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+  return { open, close };
+})();
+
 /* ---- Shared Autocomplete Dropdown (single element, position:fixed, listeners registered once) ---- */
 var CourseAutocomplete = (function(){
   const listEl = document.getElementById('courseAutocompleteList');
   let activeInput = null;
   let activeTermId = null;
+  let activeRegId = null;
   let currentItems = [];
 
   function buildBankGroupedHTML(filterText){
@@ -2678,11 +2848,19 @@ var CourseAutocomplete = (function(){
           items.push({type:'course', course:c});
         });
       });
+      const externalList = aregExternalBankList();
+      if(externalList.length){
+        html += `<div class="ac-group-label">متطلبات الجامعة الاختيارية + الاختيار الحر (خارج التخصص)</div>`;
+        externalList.forEach(c=>{
+          html += `<div class="ac-item" data-idx="${items.length}"><span>${c.ar}</span><span class="ac-code">${c.code||''}</span></div>`;
+          items.push({type:'course', course:c});
+        });
+      }
       if(!items.length) html = '<div class="ac-empty">مفيش مواد في البنك</div>';
     } else {
-      const matches = courses.filter(c=> c.ar.toLowerCase().includes(q) || c.code.toLowerCase().includes(q) || (c.en||'').toLowerCase().includes(q));
+      const matches = aregAllSearchable().filter(c=> c.ar.toLowerCase().includes(q) || (c.code||'').toLowerCase().includes(q) || (c.en||'').toLowerCase().includes(q));
       matches.forEach(c=>{
-        html += `<div class="ac-item" data-idx="${items.length}"><span>${c.ar}</span><span class="ac-code">${c.code}</span></div>`;
+        html += `<div class="ac-item" data-idx="${items.length}"><span>${c.ar}</span><span class="ac-code">${c.code||''}</span></div>`;
         items.push({type:'course', course:c});
       });
       html += `<div class="ac-item ac-item-custom" data-idx="${items.length}">✎ سجّلها كمادة مخصصة باسم "${filterText}"</div>`;
@@ -2699,9 +2877,10 @@ var CourseAutocomplete = (function(){
     listEl.style.width = Math.max(r.width, 220) + 'px';
   }
 
-  function openFor(input, termId){
+  function openFor(input, termId, regId){
     activeInput = input;
     activeTermId = termId;
+    activeRegId = regId;
     buildBankGroupedHTML(input.value);
     position(input);
     listEl.classList.add('open');
@@ -2710,30 +2889,29 @@ var CourseAutocomplete = (function(){
     listEl.classList.remove('open');
     activeInput = null;
     activeTermId = null;
+    activeRegId = null;
   }
   function refresh(){
     if(!activeInput) return;
     buildBankGroupedHTML(activeInput.value);
     position(activeInput);
   }
-  function pickItem(termId, chosen, input){
+  function pickItem(regId, chosen){
     if(chosen.type==='course'){
-      addRegistration(termId, { courseId: chosen.course.id, name: chosen.course.ar, hours: chosen.course.hours, cat: chosen.course.cat });
-      if(input) input.value = '';
+      updateRegistration(regId, { courseId: chosen.course.id, name: chosen.course.ar, hours: chosen.course.hours, cat: chosen.course.cat });
     } else {
-      openCustomFieldsFor(input, termId, chosen.name);
+      updateRegistration(regId, { courseId: null, name: chosen.name });
     }
   }
 
   // listeners registered ONCE on the single shared element (not re-registered per render)
   listEl.addEventListener('click', (e)=>{
     const item = e.target.closest('.ac-item');
-    if(!item || !activeTermId) return;
+    if(!item || !activeRegId) return;
     const idx = parseInt(item.dataset.idx, 10);
     const chosen = currentItems[idx];
-    const input = activeInput;
-    const termId = activeTermId;
-    if(chosen) pickItem(termId, chosen, input);
+    const regId = activeRegId;
+    if(chosen) pickItem(regId, chosen);
     closeList();
   });
   window.addEventListener('resize', ()=>{ if(activeInput) position(activeInput); });
@@ -2747,26 +2925,25 @@ var CourseAutocomplete = (function(){
   return { openFor, closeList, refresh };
 })();
 
-function openCustomFieldsFor(input, termId, name){
-  const row = input.closest('.areg-add-row');
-  if(!row) return;
-  const wrap = row.querySelector('.areg-custom-fields');
-  wrap.classList.add('show');
-  wrap.querySelector('.areg-custom-name').value = name;
-  wrap.dataset.termId = termId;
-}
-
 /* ---- Registration data helpers ---- */
-function addRegistration(termId, {courseId=null, name, hours, cat}){
-  aregState.regs.push({
-    id:`reg-${Date.now()}-${Math.floor(Math.random()*10000)}`,
-    termId, courseId, name, hours, cat, grade:''
-  });
+function addRegistration(termId, {courseId=null, name='', hours=3, cat='electMajor'}={}){
+  const reg = { id:`reg-${Date.now()}-${Math.floor(Math.random()*10000)}`, termId, courseId, name, hours, cat, grade:'' };
+  aregState.regs.push(reg);
+  renderActualTerms();
+  updateActualDashboard();
+  saveAreg();
+  return reg;
+}
+function updateRegistration(regId, fields){
+  const reg = aregState.regs.find(r=>r.id===regId);
+  if(!reg) return;
+  Object.assign(reg, fields);
   renderActualTerms();
   updateActualDashboard();
   saveAreg();
 }
 function deleteRegistration(regId){
+  if(!confirm('متأكد عايز تحذف المادة دي من الترم؟')) return;
   aregState.regs = aregState.regs.filter(r=>r.id!==regId);
   renderActualTerms();
   updateActualDashboard();
@@ -2803,6 +2980,16 @@ function computeLatestMap(){
   return latestRegId;
 }
 
+function aregTermGPA(termId){
+  const latestRegId = computeLatestMap();
+  let pts=0, hrs=0;
+  aregState.regs.filter(r=>r.termId===termId).forEach(r=>{
+    const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
+    if(!isLatest || !r.grade) return;
+    hrs += r.hours; pts += r.hours*parseFloat(r.grade);
+  });
+  return hrs>0 ? pts/hrs : null;
+}
 function renderActualTerms(){
   const host = document.getElementById('actualTermsHost');
   const latestRegId = computeLatestMap();
@@ -2810,13 +2997,19 @@ function renderActualTerms(){
     host.innerHTML = '<div class="empty-hint">لسه مفيش ترمات مسجّلة — دوس "+ سجّل ترم جديد" فوق عشان تبدأ.</div>';
     return;
   }
-  host.innerHTML = aregState.terms.map(t=>{
+  host.innerHTML = aregState.terms.map((t, termIndex)=>{
+    const isEquiv = t.kind==='equiv';
     const regsInTerm = aregState.regs.filter(r=>r.termId===t.id);
-    const totalHours = regsInTerm.reduce((s,r)=>s+r.hours,0);
+    const totalHours = regsInTerm.reduce((s,r)=>s+ (parseFloat(r.hours)||0),0);
     const countByCourse = {};
     regsInTerm.forEach(r=>{ if(r.courseId){ countByCourse[r.courseId] = (countByCourse[r.courseId]||0)+1; } });
     const dupNames = Object.keys(countByCourse).filter(cid=>countByCourse[cid]>1).map(cid=> courseById(cid)?.ar || cid);
+    const gpa = aregTermGPA(t.id);
+    const gpaBadge = gpa!==null ? `<span class="term-gpa-badge">GPA: ${gpa.toFixed(2)}</span>` : '';
+    // بطلب المستخدم: ترم المعادلة معفي تمامًا من تحذير سقف الـ17 ساعة — ممكن يوصل لأي عدد كبير من غير تحذير
+    const loadWarning = isEquiv ? '' : aregLoadWarningHtml(totalHours);
     const rowsHTML = regsInTerm.map(r=>{
+      const isCustom = !r.courseId;
       const attemptsCount = r.courseId ? aregState.regs.filter(x=>x.courseId===r.courseId).length : 1;
       const isRetakeCourse = attemptsCount > 1;
       const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
@@ -2826,33 +3019,44 @@ function renderActualTerms(){
         ${gradeScale.map(g=>`<option value="${g.pts}" ${r.grade===g.pts?'selected':''}>${g.sym}</option>`).join('')}
       </select>`;
       const tag = isRetakeCourse ? (excluded ? '<span class="areg-tag excluded-tag">⛔ مستبعدة</span>' : '<span class="areg-tag latest">🔁 آخر محاولة</span>') : '';
-      return `<li class="areg-row${excluded?' excluded':''}" data-reg-id="${r.id}">
-        <span class="areg-name">${r.name}<small>${r.courseId?(courseById(r.courseId)?.code+' · '):''}${r.hours}h · ${catLabel(r.cat)}</small></span>
-        ${tag}
-        ${gradeSel}
-        <button type="button" class="areg-row-del" data-reg-id="${r.id}" title="حذف التسجيل" aria-label="حذف">✕</button>
-      </li>`;
+      const warningsHtml = aregCourseWarningsHtml(r, termIndex);
+      return `<tr data-reg-id="${r.id}" ${excluded?'class="excluded"':''}>
+        <td data-label="المادة">
+          <div class="acs-wrap">
+            <input type="text" class="areg-search-input ac-input" data-term-id="${t.id}" data-reg-id="${r.id}"
+              value="${(r.name||'').replace(/"/g,'&quot;')}" placeholder="اكتب اسم/كود المادة، أو دوس هنا تصفح البنك كله…" autocomplete="off">
+            ${!isCustom?'<small class="bank-linked-hint">🔗 من بنك المواد — اكتب حرف تاني لو عايز تغيّرها</small>':''}
+            ${tag}
+            ${warningsHtml}
+          </div>
+        </td>
+        <td data-label="الفئة"><select class="areg-cat-select" data-reg-id="${r.id}" ${isCustom?'':'disabled'}>${Object.keys(CATEGORY_LABELS).map(c=>`<option value="${c}" ${r.cat===c?'selected':''}>${CATEGORY_LABELS[c]}</option>`).join('')}</select></td>
+        <td data-label="الساعات"><input type="number" class="areg-hours-input" data-reg-id="${r.id}" value="${r.hours}" min="1" max="10" ${isCustom?'':'readonly'}></td>
+        <td data-label="التقدير">${gradeSel}</td>
+        <td data-label=""><button type="button" class="areg-row-del" data-reg-id="${r.id}" title="حذف التسجيل" aria-label="حذف">✕</button></td>
+      </tr>`;
     }).join('');
     return `<div class="areg-card" data-term-id="${t.id}">
       <div class="areg-head">
         <div>
-          <h4>${aregTermLabel(t)} ${t.kind==='equiv'?'<span class="equiv-badge">معادلة — مستبعدة من GPA</span>':''}</h4>
+          <h4>${aregTermLabel(t)} ${isEquiv?'<span class="equiv-badge">معادلة — بتتحسب زي أي ترم عادي في الـGPA</span>':''}</h4>
           <div class="areg-meta">${totalHours} ساعة مسجّلة</div>
         </div>
         <div class="areg-head-right">
+          ${gpaBadge}${loadWarning}
           <button type="button" class="areg-del" data-term-id="${t.id}">🗑️ حذف الترم</button>
         </div>
       </div>
       ${dupNames.length?`<div class="areg-dup-warn">⚠️ سجّلت "${dupNames.join('، ')}" مرتين في نفس الترم ده — غالبًا غلطة إدخال، راجعها.</div>`:''}
-      <ul class="areg-list">${rowsHTML || '<li class="areg-row" style="color:var(--muted)">لسه مفيش مواد مسجّلة في الترم ده</li>'}</ul>
-      <div class="areg-add-row">
-        <input type="text" class="ac-input" placeholder="اكتب اسم/كود مادة، أو دوس فاضي لتصفح البنك" data-term-id="${t.id}">
-        <div class="areg-custom-fields">
-          <input type="text" class="areg-custom-name" placeholder="اسم المادة" readonly>
-          <select class="areg-custom-cat">${Object.keys(CATEGORY_LABELS).map(c=>`<option value="${c}">${CATEGORY_LABELS[c]}</option>`).join('')}</select>
-          <input type="number" class="areg-custom-hours" placeholder="ساعات" min="1" max="10">
-          <button type="button" class="areg-add-btn">إضافة</button>
-        </div>
+      <div class="table-wrap">
+        <table class="gpa-table">
+          <thead><tr><th style="width:30%">المادة</th><th>الفئة</th><th>الساعات</th><th>التقدير</th><th></th></tr></thead>
+          <tbody>${rowsHTML || '<tr><td colspan="5" style="text-align:center; color:var(--muted)">لسه مفيش مواد مسجّلة في الترم ده</td></tr>'}</tbody>
+        </table>
+      </div>
+      <div class="toolbar" style="padding:10px 16px;">
+        <button type="button" class="btn" data-add-course="${t.id}">+ إضافة مادة للترم ده</button>
+        <button type="button" class="btn" data-import-term="${t.id}">📥 استيراد من خطة الترمات</button>
       </div>
     </div>`;
   }).join('');
@@ -2863,26 +3067,74 @@ function renderActualTerms(){
   host.querySelectorAll('.areg-row-del').forEach(btn=>{
     btn.addEventListener('click', ()=> deleteRegistration(btn.dataset.regId));
   });
+  host.querySelectorAll('[data-add-course]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const reg = addRegistration(btn.dataset.addCourse, { courseId:null, name:'', hours:3, cat:'electMajor' });
+      requestAnimationFrame(()=>{
+        const newInp = host.querySelector(`.ac-input[data-reg-id="${reg.id}"]`);
+        if(newInp){ newInp.focus(); CourseAutocomplete.openFor(newInp, btn.dataset.addCourse, reg.id); }
+      });
+    });
+  });
+  host.querySelectorAll('[data-import-term]').forEach(btn=>{
+    btn.addEventListener('click', ()=> RegImportModal.open(btn.dataset.importTerm));
+  });
   host.querySelectorAll('.grade-select').forEach(sel=>{
     sel.addEventListener('change', ()=>{
       const reg = aregState.regs.find(r=>r.id===sel.dataset.regId);
       if(reg){ reg.grade = sel.value; sel.classList.toggle('has-grade', !!sel.value); }
       updateActualDashboard();
       saveAreg();
+      // نحدث بادچ الـGPA بتاع الترم بس (من غير إعادة رندر كل الترمات عشان مانفقدش تركيز الخانة)
+      const card = sel.closest('.areg-card');
+      if(card && reg){
+        const gpa = aregTermGPA(reg.termId);
+        let badge = card.querySelector('.term-gpa-badge');
+        if(gpa!==null){
+          if(!badge){ badge = document.createElement('span'); badge.className='term-gpa-badge'; card.querySelector('.areg-head-right').prepend(badge); }
+          badge.textContent = `GPA: ${gpa.toFixed(2)}`;
+        } else if(badge){ badge.remove(); }
+      }
+    });
+  });
+  host.querySelectorAll('.areg-cat-select').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const reg = aregState.regs.find(r=>r.id===sel.dataset.regId);
+      if(!reg || reg.courseId) return;
+      reg.cat = sel.value;
+      saveAreg(); renderActualTerms(); updateActualDashboard();
+    });
+  });
+  host.querySelectorAll('.areg-hours-input').forEach(inp=>{
+    inp.addEventListener('change', ()=>{
+      const reg = aregState.regs.find(r=>r.id===inp.dataset.regId);
+      if(!reg || reg.courseId) return;
+      reg.hours = parseFloat(inp.value)||1;
+      saveAreg(); renderActualTerms(); updateActualDashboard();
     });
   });
   host.querySelectorAll('.ac-input').forEach(input=>{
-    input.addEventListener('focus', ()=> CourseAutocomplete.openFor(input, input.dataset.termId));
-    input.addEventListener('input', ()=> CourseAutocomplete.refresh());
-  });
-  host.querySelectorAll('.areg-custom-fields').forEach(wrap=>{
-    wrap.querySelector('.areg-add-btn').addEventListener('click', ()=>{
-      const name = wrap.querySelector('.areg-custom-name').value.trim();
-      const cat = wrap.querySelector('.areg-custom-cat').value;
-      const hours = parseFloat(wrap.querySelector('.areg-custom-hours').value);
-      if(!name || !hours || hours<=0) return;
-      addRegistration(wrap.dataset.termId, { courseId:null, name, hours, cat });
-      wrap.classList.remove('show');
+    input.addEventListener('focus', ()=> CourseAutocomplete.openFor(input, input.dataset.termId, input.dataset.regId));
+    input.addEventListener('input', ()=>{
+      const reg = aregState.regs.find(r=>r.id===input.dataset.regId);
+      if(reg){
+        const wasLinked = !!reg.courseId;
+        reg.courseId = null;
+        reg.name = input.value;
+        saveAreg();
+        if(wasLinked){
+          const row = input.closest('tr');
+          if(row){
+            const catSel = row.querySelector('.areg-cat-select');
+            const hoursInp = row.querySelector('.areg-hours-input');
+            if(catSel) catSel.disabled = false;
+            if(hoursInp) hoursInp.readOnly = false;
+            const linkedHint = row.querySelector('.bank-linked-hint');
+            if(linkedHint) linkedHint.remove();
+          }
+        }
+      }
+      CourseAutocomplete.refresh();
     });
   });
 }
@@ -2917,12 +3169,11 @@ function updateActualDashboard(){
     </div>`;
   }).join('');
 
+  // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي بالظبط — مفيش استثناء من الـCGPA خالص.
   let cgpaPts = 0, cgpaHours = 0;
   aregState.regs.forEach(r=>{
     const isLatest = r.courseId ? latestRegId[r.courseId]===r.id : true;
     if(!isLatest) return;
-    const term = aregState.terms.find(t=>t.id===r.termId);
-    if(term && term.kind==='equiv') return;
     if(!r.grade) return;
     cgpaPts += r.hours * parseFloat(r.grade);
     cgpaHours += r.hours;
@@ -2943,7 +3194,8 @@ function updateActualDashboard(){
 
 /* ---- الحالة الأكاديمية: إنذار (مادة 14) + مرتبة الشرف — نفس أرقام اللائحة العامة المستخدمة في ملف السبيشيال (لائحة كلية عامة، مش خاصة بتخصص) ---- */
 function computeAcademicStatus(){
-  const gradedTerms = aregState.terms.filter(t=>t.kind!=='equiv');
+  // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي بالظبط في كل حسابات الحالة الأكاديمية دي — مفيش استثناء.
+  const gradedTerms = aregState.terms;
   const termIndexMap = {}; gradedTerms.forEach((tt,i)=> termIndexMap[tt.id]=i);
   let warningLevel = 0;
   let anyGradedSoFar = false;

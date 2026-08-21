@@ -314,6 +314,31 @@ body.device-mobile main{padding:18px 14px 60px;}
 .ntm-actions{display:flex; gap:10px; margin-top:20px;}
 .ntm-actions .btn{flex:1;}
 
+/* ---------- استيراد مواد من خطة الترمات لـ"خطتي الفعلية" ---------- */
+#importPlanModalOverlay{
+  position:fixed; inset:0; z-index:99997; background:rgba(0,0,0,.72); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s ease;
+  padding:20px;
+}
+#importPlanModalOverlay.open{opacity:1; pointer-events:all;}
+#importPlanModal{
+  background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:24px 24px 20px;
+  max-width:520px; width:100%; box-shadow:0 24px 70px rgba(0,0,0,.7); max-height:86vh; overflow-y:auto;
+  transform:translateY(16px); transition:transform .25s ease;
+}
+#importPlanModalOverlay.open #importPlanModal{transform:translateY(0);}
+.ipm-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px;}
+.ipm-head h3{font-size:1.0625rem; margin-bottom:4px;}
+.ipm-head p{font-size:0.8rem; color:var(--muted); line-height:1.7;}
+.ipm-list{display:flex; flex-direction:column; gap:7px; max-height:44vh; overflow-y:auto; margin-bottom:14px;}
+.ipm-item{display:flex; align-items:center; gap:9px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:0.8125rem; cursor:pointer;}
+.ipm-item:hover{border-color:var(--accent);}
+.ipm-item input{flex:none;}
+.ipm-item .code{color:var(--accent2); font-size:0.6875rem;}
+.ipm-empty{font-size:0.8125rem; color:var(--muted); text-align:center; padding:20px 10px;}
+.ipm-actions{display:flex; gap:10px; margin-top:6px;}
+.ipm-actions .btn{flex:1;}
+
 /* ---------- البحث السريع الموحّد (Ctrl/⌘+K) ---------- */
 #qsOverlay{
   position:fixed; inset:0; z-index:99998; background:rgba(0,0,0,.6); backdrop-filter:blur(6px);
@@ -1596,11 +1621,29 @@ footer a{color:var(--muted2); text-decoration:underline;}
     </div>
 
     <div class="ntm-preview">📌 اسم الترم هيبقى: <b id="ntmPreviewName">خريف 2026</b></div>
-    <div class="ntm-note" id="ntmTransferNote" style="display:none;"><span class="ic">ℹ️</span><span>ترم المعادلة بتتحسب ساعاته ضمن إجمالي ساعاتك المكتسبة وفئاتها، لكن مبيدخلش في حساب الـGPA/CGPA — زي أي مواد معادلة/منقولة فعليًا في أي جامعة.</span></div>
+    <div class="ntm-note" id="ntmTransferNote" style="display:none;"><span class="ic">ℹ️</span><span>ترم المعادلة بتتحسب ساعاته ودرجاته زي أي ترم عادي بالظبط — ضمن إجمالي ساعاتك المكتسبة وفئاتها، وجوه حساب الـGPA/CGPA كمان. الفرق الوحيد: مفيش سقف عادي (17/19 ساعة) على عدد ساعاته، ممكن يوصل لعدد كبير جدًا (40 ساعة أو أكتر) من غير أي تحذير.</span></div>
 
     <div class="ntm-actions">
       <button class="btn" onclick="NewTermModal.close()">إلغاء</button>
       <button class="btn primary" id="ntmConfirmBtn">➕ إنشاء الترم</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IMPORT FROM TERM-PLAN MODAL (خطتي الفعلية بس) ============ -->
+<div id="importPlanModalOverlay" onclick="if(event.target===this) ImportFromPlanModal.close()">
+  <div id="importPlanModal" role="dialog" aria-modal="true">
+    <div class="ipm-head">
+      <div>
+        <h3>📥 استيراد من خطة الترمات</h3>
+        <p>المواد اللي عليها تيك بالفعل في تاب "خطة الترمات" ولسه مش مسجلة في "خطتي الفعلية" — اختار اللي عايز تضيفه للترم ده دفعة واحدة (التقدير هيتحط تلقائيًا لو كان متسجل هناك).</p>
+      </div>
+      <button type="button" class="ntm-close" onclick="ImportFromPlanModal.close()">✕</button>
+    </div>
+    <div class="ipm-list" id="ipmList"></div>
+    <div class="ipm-actions">
+      <button class="btn" onclick="ImportFromPlanModal.close()">إلغاء</button>
+      <button class="btn primary" id="ipmConfirmBtn">➕ إضافة المحدد</button>
     </div>
   </div>
 </div>
@@ -2737,6 +2780,50 @@ const actualState = { terms: [] };
 const ACTUAL_CATS = ['req46','req16','elective','college','extras'];
 const LOCKED_TERM_COURSES = {'103401':6, '103210':6, '103403':7, '103490':8, '103420':8};
 
+/* -------- بنك بحث موحّد لخطتي الفعلية بس: courses[] + متطلبات الجامعة الاختيارية + الاختيار الحر + مواد extras
+   (كل دول بيانات مرجعية موجودة أصلاً في أقسام تانية، بنستخدمها هنا للقراءة بس من غير أي تعديل فيها) -------- */
+function actualExternalBankList(){
+  const seenNames = new Set();
+  const flatExtras = [];
+  Object.values(extras).forEach(arr=>(arr||[]).forEach(e=>{
+    if(seenNames.has(e.name)) return;
+    seenNames.add(e.name);
+    flatExtras.push({id:'extra:'+e.name, code:'', ar:e.name, en:'', hours:e.hours, cat:'extras', prereq:[]});
+  }));
+  const uni = uniElectiveBank.map(e=>({id:'uni:'+e.code, code:e.code, ar:e.ar, en:e.en||'', hours:e.hours, cat:'extras', prereq:[], note:e.cond}));
+  const free = freeElectiveBank.map(e=>({id:'free:'+e.code, code:e.code, ar:e.ar, en:e.en||'', hours:e.hours, cat:'extras', prereq:[], note:e.cond}));
+  return [...uni, ...free, ...flatExtras];
+}
+function actualAllSearchable(){ return courses.concat(actualExternalBankList()); }
+function actualCourseById(id){ return actualAllSearchable().find(c=>c.id===id); }
+
+/* -------- ترتيب الترمات وحالة المتطلب السابق داخل خطتي الفعلية بس (مستقلة عن قسم خطة الترمات) -------- */
+function actualTermIndexOf(termId){ return actualState.terms.findIndex(t=>t.id===termId); }
+function actualEarliestPassedTermIndex(courseId){
+  let bestIdx = -1;
+  actualState.terms.forEach((t, idx)=>{
+    (t.courses||[]).forEach(c=>{
+      if(c.courseId===courseId){
+        const g = actualGradeInfo(c.grade);
+        if(g && c.grade!=='F' && (bestIdx===-1 || idx<bestIdx)) bestIdx = idx;
+      }
+    });
+  });
+  return bestIdx;
+}
+function actualPrereqStatus(prereqIds, currentTermIndex){
+  const missing = [], lateOrder = [];
+  (prereqIds||[]).forEach(pid=>{
+    const idx = actualEarliestPassedTermIndex(pid);
+    if(idx===-1) missing.push(pid);
+    else if(currentTermIndex!==-1 && idx>=currentTermIndex) lateOrder.push(pid);
+  });
+  return {missing, lateOrder};
+}
+function actualRegisteredHoursInTerm(term){
+  return (term.courses||[]).reduce((s,c)=> s + (parseFloat(c.hours)||0), 0);
+}
+
 function newActualTermId(){ return 'aterm-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
 function newActualCourseId(){ return 'acourse-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
 
@@ -2789,8 +2876,8 @@ function actualDuplicatesWithinTerm(term){
   return Object.keys(counts).filter(id=>counts[id]>1).map(id=>courseById(id)).filter(Boolean);
 }
 function actualTermStats(term){
+  // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي بالظبط في الـGPA/CGPA — مفيش استثناء خالص.
   let hours=0, points=0, gradedHours=0;
-  const countsForGpa = (term.kind||'normal') !== 'transfer';
   const countingKeys = actualLatestOccurrenceKeys();
   (term.courses||[]).forEach(c=>{
     if(!countingKeys.has(term.id+'|'+c.id)) return; // محاولة قديمة معادة — مستبعدة
@@ -2798,22 +2885,22 @@ function actualTermStats(term){
     const g = actualGradeInfo(c.grade);
     if(!g) return;
     gradedHours += h;
-    if(countsForGpa){ hours += h; points += h*parseFloat(g.pts); }
+    hours += h; points += h*parseFloat(g.pts);
   });
   return { hours, points, gpa: hours ? points/hours : null, gradedHours };
 }
 function actualOverallStats(){
+  // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي بالظبط في الـGPA/CGPA — مفيش استثناء خالص.
   let hours=0, points=0, earnedHours=0, registeredHours=0;
   const countingKeys = actualLatestOccurrenceKeys();
   actualState.terms.forEach(term=>{
-    const countsForGpa = (term.kind||'normal') !== 'transfer';
     (term.courses||[]).forEach(c=>{
       if(!countingKeys.has(term.id+'|'+c.id)) return;
       const h = parseFloat(c.hours)||0;
       registeredHours += h;
       const g = actualGradeInfo(c.grade);
       if(!g) return;
-      if(countsForGpa){ hours += h; points += h*parseFloat(g.pts); }
+      hours += h; points += h*parseFloat(g.pts);
       if(c.grade !== 'F') earnedHours += h;
     });
   });
@@ -2834,10 +2921,10 @@ function actualCatTotals(){
 }
 function actualMajorStats(){
   // معدل ساعات "التخصص الرئيسي" (req46) بس — لازمة لشرط دخول السبيشيال التالت
+  // بطلب من المستخدم: ترم المعادلة بيتحسب هنا كمان زي أي ترم عادي، مفيش استثناء.
   let hours=0, points=0;
   const countingKeys = actualLatestOccurrenceKeys();
   actualState.terms.forEach(term=>{
-    if((term.kind||'normal')==='transfer') return;
     (term.courses||[]).forEach(c=>{
       if(c.cat!=='req46') return;
       if(!countingKeys.has(term.id+'|'+c.id)) return;
@@ -2886,7 +2973,6 @@ function actualHonorsCheck(){
   const termsCount = actualState.terms.filter(t=>(t.kind||'normal')!=='transfer').length;
   let allTermsOk = true, worstTerm = null;
   actualState.terms.forEach(term=>{
-    if((term.kind||'normal')==='transfer') return;
     const st = actualTermStats(term);
     if(st.gpa!==null && st.gpa < 3.333 && !worstTerm){ allTermsOk = false; worstTerm = term; }
   });
@@ -2911,7 +2997,53 @@ function renderActualPlan(){
 }
 
 const actualTermsHost = document.getElementById('actualTermsHost');
-function actualCourseRowHtml(termId, c, countingKeys, retakeIds){
+const ROSE_NOTE_STYLE = 'color:var(--rose); border-color:color-mix(in srgb, var(--rose) 45%, transparent); background:color-mix(in srgb, var(--rose) 12%, transparent);';
+function actualOfficialTermNumberFor(termIndex){
+  // تقريب لرقم "الترم الرسمي" (1-8) بيتجاهل ترمات المعادلة في العدّ، عشان يتقارن بأرقام LOCKED_TERM_COURSES
+  // — تقريبي برضو لو في فجوات أو ترمات صيفي، مش رقم مضمون 100%.
+  let n = 0;
+  for(let i=0;i<=termIndex;i++){
+    if((actualState.terms[i].kind||'normal') !== 'transfer') n++;
+  }
+  return n;
+}
+function actualCourseWarningsHtml(c, termIndex, isTransferTerm){
+  // بيشتغل بس على مواد حقيقية من بنك المواد الأصلي (courses[]) — المواد المخصصة والمعادلات/اختيارات الجامعة
+  // (uni:/free:/extra: أو مادة مكتوبة يدوي) متجاهلة تلقائيًا لأنه مفيش لها id حقيقي في شجرة المتطلبات.
+  if(!c.courseId) return '';
+  const bank = courses.find(x=>x.id===c.courseId);
+  if(!bank) return '';
+  let html = '';
+  if(bank.prereq && bank.prereq.length){
+    const {missing, lateOrder} = actualPrereqStatus(bank.prereq, termIndex);
+    if(missing.length){
+      const names = missing.map(id=>{ const p = courseById(id); return p?p.ar:id; }).join('، ');
+      html += `<div class="note-inline" style="${ROSE_NOTE_STYLE}">❌ لسه محتاج تاخد وتنجح في متطلبها السابق الأول: <b>${names}</b></div>`;
+    }
+    if(lateOrder.length){
+      const names = lateOrder.map(id=>{ const p = courseById(id); return p?p.ar:id; }).join('، ');
+      html += `<div class="note-inline">⚠️ متطلبها السابق (<b>${names}</b>) متسجل في نفس الترم ده أو بعده — راجع ترتيب الترمات.</div>`;
+    }
+  }
+  if(criticalIds.has(bank.id)){
+    if(c.grade==='F'){
+      const deps = dependentsOf(bank.id);
+      const depsNote = deps.length ? ` وهتأخر تسجيل: ${deps.slice(0,4).map(d=>d.ar).join('، ')}${deps.length>4?' وغيرها':''}` : '';
+      html += `<div class="note-inline" style="${ROSE_NOTE_STYLE}">🔥 دي مادة حرجة ورسبت فيها${depsNote} — لازم تعيدها بأسرع وقت.</div>`;
+    } else {
+      html += `<div class="note-inline">🔥 مادة حرجة — بتفتح مواد كتير بعدها، خليك حريص عليها.</div>`;
+    }
+  }
+  const lockedTerm = LOCKED_TERM_COURSES[bank.id];
+  if(lockedTerm && !isTransferTerm){
+    const officialNum = actualOfficialTermNumberFor(termIndex);
+    if(officialNum !== lockedTerm){
+      html += `<div class="note-inline">⏳ المادة دي عادة بتتاخد في الترم ${lockedTerm} حسب واقع القسم (وده الترم رقم ${officialNum} تقريبًا في تسلسل ترماتك العادية) — لو الاختلاف مش مقصود راجعه.</div>`;
+    }
+  }
+  return html;
+}
+function actualCourseRowHtml(termId, c, countingKeys, retakeIds, termIndex, isTransferTerm){
   const isCustom = !c.courseId;
   const isCounting = countingKeys.has(termId+'|'+c.id);
   const isRetakeCourse = c.courseId && retakeIds.has(c.courseId);
@@ -2921,6 +3053,7 @@ function actualCourseRowHtml(termId, c, countingKeys, retakeIds){
       ? '<small style="color:var(--accent2); font-size:0.6562rem; display:block;">🔁 مادة معادة — دي آخر محاولة (اللي بتتحسب في الـGPA والساعات)</small>'
       : '<small style="color:var(--rose); font-size:0.6562rem; display:block;">⛔ محاولة أقدم — مستبعدة من الحساب (فيه محاولة أحدث لنفس المادة)</small>';
   }
+  const warningsHtml = actualCourseWarningsHtml(c, termIndex, isTransferTerm);
   return `
   <tr data-course-row="${c.id}" data-term-id="${termId}" ${!isCounting?'class="actual-row-excluded"':''}>
     <td data-label="المادة">
@@ -2929,6 +3062,7 @@ function actualCourseRowHtml(termId, c, countingKeys, retakeIds){
           value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="اكتب اسم/كود المادة، أو دوس هنا تصفح البنك كله…" autocomplete="off">
         ${!isCustom?'<small style="color:var(--muted); font-size:0.6562rem;">🔗 من بنك المواد — اكتب حرف تاني لو عايز تغيّرها</small>':''}
         ${retakeNote}
+        ${warningsHtml}
       </div>
     </td>
     <td data-label="الفئة"><select class="actual-course-cat-select" data-term-id="${termId}" data-course-row="${c.id}" ${isCustom?'':'disabled'}>${actualCatOptionsHtml(c.cat)}</select></td>
@@ -2945,17 +3079,23 @@ function renderActualTerms(){
   }
   const countingKeys = actualLatestOccurrenceKeys();
   const retakeIds = actualRetakeCourseIds();
-  actualTermsHost.innerHTML = actualState.terms.map(term=>{
+  actualTermsHost.innerHTML = actualState.terms.map((term, termIndex)=>{
     const stats = actualTermStats(term);
     const isTransfer = term.kind==='transfer';
     const dupWithinTerm = actualDuplicatesWithinTerm(term);
+    const totalHours = actualRegisteredHoursInTerm(term);
+    const hoursBadge = isTransfer
+      ? (totalHours>0 ? `<span class="term-gpa-badge code" title="ترم معادلة — مفيش سقف عادي عليه، دفعة ساعات معادلة/منقولة دفعة واحدة">${totalHours} ساعة معادلة</span>` : '')
+      : (loadBadge(totalHours) || '');
     return `
     <div class="card actual-term-card" data-term-id="${term.id}" style="margin-top:16px;">
       <div class="term-card-head" style="border:none; padding:0 0 14px;">
         <input type="text" class="actual-term-name-input" data-term-id="${term.id}" value="${(term.name||'').replace(/"/g,'&quot;')}" placeholder="اسم/موسم الترم">
         <div class="term-card-head-right">
-          ${isTransfer ? '<span class="term-gpa-badge code" title="ترم معادلة — ساعاته بتتحسب في الإجمالي بس مش في الـGPA" style="color:var(--amber); border-color:color-mix(in srgb, var(--amber) 45%, transparent); background:color-mix(in srgb, var(--amber) 14%, transparent);">🔄 معادلة</span>' : `<span class="term-gpa-badge code" title="GPA الترم ده — من المواد اللي ليها تقدير بس">GPA: ${stats.gpa!==null?stats.gpa.toFixed(2):'—'}</span>`}
-          <span class="hrs code">${stats.gradedHours || 0} ساعة${isTransfer?' معتمدة':' محسوبة'}</span>
+          ${isTransfer ? '<span class="term-gpa-badge code" title="ترم معادلة — بيتحسب زي أي ترم عادي بالظبط في الإجمالي والـGPA" style="color:var(--amber); border-color:color-mix(in srgb, var(--amber) 45%, transparent); background:color-mix(in srgb, var(--amber) 14%, transparent);">🔄 معادلة</span>' : ''}
+          <span class="term-gpa-badge code" title="GPA الترم ده — من المواد اللي ليها تقدير بس">GPA: ${stats.gpa!==null?stats.gpa.toFixed(2):'—'}</span>
+          <span class="hrs code">${stats.gradedHours || 0} ساعة محسوبة</span>
+          ${hoursBadge}
           <button type="button" class="btn danger actual-del-term-btn" data-term-id="${term.id}" style="padding:5px 10px; font-size:0.75rem;">🗑️ حذف الترم</button>
         </div>
       </div>
@@ -2963,11 +3103,12 @@ function renderActualTerms(){
       <div class="table-wrap">
         <table class="gpa-table">
           <thead><tr><th style="width:30%">المادة</th><th>الفئة</th><th>الساعات</th><th>التقدير</th><th></th></tr></thead>
-          <tbody>${(term.courses||[]).map(c=>actualCourseRowHtml(term.id, c, countingKeys, retakeIds)).join('') || '<tr><td colspan="5" style="text-align:center; color:var(--muted)">لسه مفيش مواد مضافة للترم ده</td></tr>'}</tbody>
+          <tbody>${(term.courses||[]).map(c=>actualCourseRowHtml(term.id, c, countingKeys, retakeIds, termIndex, isTransfer)).join('') || '<tr><td colspan="5" style="text-align:center; color:var(--muted)">لسه مفيش مواد مضافة للترم ده</td></tr>'}</tbody>
         </table>
       </div>
       <div class="toolbar">
         <button type="button" class="btn actual-add-course-btn" data-term-id="${term.id}">+ إضافة مادة للترم ده</button>
+        <button type="button" class="btn actual-import-plan-btn" data-term-id="${term.id}">📥 استيراد من خطة الترمات</button>
       </div>
     </div>`;
   }).join('');
@@ -2978,18 +3119,24 @@ const acsPortal = document.getElementById('acsPortal');
 let acsCloseTimer = null;
 let acsActiveRef = null; // {termId, courseRowId}
 function acsGroupedBankHtml(){
-  return accGroups.map(g=>{
+  const mainGroups = accGroups.map(g=>{
     const list = courses.filter(c=>c.cat===g.cat);
     if(!list.length) return '';
     return `<div class="acs-group-label">${g.title}</div>` +
-      list.map(m=>`<button type="button" class="acs-item" data-course-id="${m.id}"><span class="code">${m.code}</span>${m.ar}<small>${m.hours}h · ${catLabel(m.cat)}</small></button>`).join('');
+      list.map(m=>`<button type="button" class="acs-item" data-course-id="${m.id}"><span class="code">${m.code||''}</span>${m.ar}<small>${m.hours}h · ${catLabel(m.cat)}</small></button>`).join('');
   }).join('');
+  const externalList = actualExternalBankList();
+  const externalGroup = externalList.length ? (
+    `<div class="acs-group-label">متطلبات الجامعة الاختيارية + الاختيار الحر (خارج تخصص الحاسب)</div>` +
+    externalList.map(m=>`<button type="button" class="acs-item" data-course-id="${m.id}"><span class="code">${m.code||''}</span>${m.ar}<small>${m.hours}h · جامعة/اختيار حر</small></button>`).join('')
+  ) : '';
+  return mainGroups + externalGroup;
 }
 function acsSearchHtml(query){
   const q = query.trim();
-  const matches = courses.filter(c=> c.ar.includes(q) || c.code.includes(q)).slice(0, 10);
+  const matches = actualAllSearchable().filter(c=> c.ar.includes(q) || (c.code||'').includes(q)).slice(0, 10);
   if(!matches.length) return '<div class="acs-empty">مفيش مادة مطابقة في بنك المواد — هتتسجل كمادة مخصصة بالاسم اللي كاتبه</div>';
-  return matches.map(m=>`<button type="button" class="acs-item" data-course-id="${m.id}"><span class="code">${m.code}</span>${m.ar}<small>${m.hours}h · ${catLabel(m.cat)}</small></button>`).join('');
+  return matches.map(m=>`<button type="button" class="acs-item" data-course-id="${m.id}"><span class="code">${m.code||''}</span>${m.ar}<small>${m.hours}h · ${m.cat==='extras'?'جامعة/اختيار حر':catLabel(m.cat)}</small></button>`).join('');
 }
 function acsPositionPortal(inp){
   const r = inp.getBoundingClientRect();
@@ -3017,7 +3164,7 @@ function acsSelect(courseId){
   if(!acsActiveRef) return;
   const term = actualState.terms.find(t=>t.id===acsActiveRef.termId);
   const row = term && (term.courses||[]).find(c=>c.id===acsActiveRef.courseRowId);
-  const bankCourse = courseById(courseId);
+  const bankCourse = actualCourseById(courseId);
   if(!row || !bankCourse) return;
   row.courseId = bankCourse.id; row.name = bankCourse.ar; row.hours = bankCourse.hours; row.cat = bankCourse.cat;
   saveActualLocal();
@@ -3059,13 +3206,23 @@ function wireActualTermEvents(){
       const term = actualState.terms.find(t=>t.id===btn.dataset.termId);
       if(!term) return;
       if(!term.courses) term.courses = [];
-      term.courses.push({ id:newActualCourseId(), courseId:null, name:'', hours:3, cat:'elective', grade:'' });
+      const newRow = { id:newActualCourseId(), courseId:null, name:'', hours:3, cat:'elective', grade:'' };
+      term.courses.push(newRow);
       saveActualLocal();
       renderActualPlan();
+      // تبسيط الإضافة: نفتحلك البحث على طول جوه المادة الجديدة بدل ما تدور عليها بنفسك
+      requestAnimationFrame(()=>{
+        const newInp = actualTermsHost.querySelector(`.actual-course-search[data-course-row="${newRow.id}"]`);
+        if(newInp){ newInp.focus(); acsOpenFor(newInp); }
+      });
     });
+  });
+  actualTermsHost.querySelectorAll('.actual-import-plan-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> ImportFromPlanModal.open(btn.dataset.termId));
   });
   actualTermsHost.querySelectorAll('.actual-del-course-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      if(!confirm('متأكد عايز تحذف المادة دي من الترم؟')) return;
       const term = actualState.terms.find(t=>t.id===btn.dataset.termId);
       if(!term) return;
       term.courses = (term.courses||[]).filter(c=>c.id!==btn.dataset.courseRow);
@@ -3266,7 +3423,7 @@ function renderActualTranscript(){
       const isRetake = course.courseId && retakeIds.has(course.courseId);
       const g = actualGradeInfo(course.grade);
       const pts = (g && isCounting) ? (parseFloat(g.pts)*(parseFloat(course.hours)||0)).toFixed(2) : '—';
-      const bankCourse = course.courseId ? courseById(course.courseId) : null;
+      const bankCourse = course.courseId ? actualCourseById(course.courseId) : null;
       const retakeTag = isRetake ? (isCounting ? ' <span class="code" style="color:var(--accent2)">🔁 آخر محاولة</span>' : ' <span class="code" style="color:var(--rose)">⛔ مستبعدة</span>') : '';
       return `<tr ${!isCounting?'style="opacity:.55"':''}>
         <td>${term.name||'—'}</td>
@@ -3334,6 +3491,52 @@ var NewTermModal = (function(){
   document.getElementById('ntmConfirmBtn').addEventListener('click', confirm);
   return {open, close};
 })();
+
+/* -------- استيراد سريع للمواد المتيكة فعلًا في "خطة الترمات" (قراءة فقط من state/courses الخاصين بقسم 06) -------- */
+var ImportFromPlanModal = (function(){
+  let targetTermId = null;
+  function overlayEl(){ return document.getElementById('importPlanModalOverlay'); }
+  function alreadyInActual(courseId){
+    return actualState.terms.some(t=>(t.courses||[]).some(c=>c.courseId===courseId));
+  }
+  function candidates(){
+    return courses.filter(c=> state.done && state.done[c.id] && !alreadyInActual(c.id));
+  }
+  function open(termId){
+    targetTermId = termId;
+    const list = candidates();
+    const host = document.getElementById('ipmList');
+    if(!list.length){
+      host.innerHTML = '<div class="ipm-empty">مفيش مواد جديدة تتاخد من "خطة الترمات" — إما لسه مفيش تيكات هناك، أو كل المواد المتيكة متسجلة بالفعل هنا.</div>';
+    } else {
+      host.innerHTML = list.map(c=>`
+        <label class="ipm-item">
+          <input type="checkbox" value="${c.id}">
+          <span class="code">${c.code}</span><span>${c.ar}</span>
+          <span style="margin-inline-start:auto; color:var(--muted); font-size:0.75rem;">${c.hours}h${state.grades && state.grades[c.id] ? ' · تقدير: '+state.grades[c.id] : ''}</span>
+        </label>`).join('');
+    }
+    overlayEl().classList.add('open');
+  }
+  function close(){ overlayEl().classList.remove('open'); }
+  function confirmImport(){
+    const term = actualState.terms.find(t=>t.id===targetTermId);
+    if(!term) return close();
+    if(!term.courses) term.courses = [];
+    const checked = Array.from(document.querySelectorAll('#ipmList input[type="checkbox"]:checked')).map(i=>i.value);
+    checked.forEach(id=>{
+      const bank = courseById(id);
+      if(!bank) return;
+      term.courses.push({ id:newActualCourseId(), courseId:bank.id, name:bank.ar, hours:bank.hours, cat:bank.cat, grade:(state.grades && state.grades[bank.id]) || '' });
+    });
+    saveActualLocal();
+    renderActualPlan();
+    close();
+  }
+  document.getElementById('ipmConfirmBtn').addEventListener('click', confirmImport);
+  return {open, close};
+})();
+
 document.getElementById('addActualTermBtn').addEventListener('click', ()=> NewTermModal.open());
 document.getElementById('actualExportBtn').addEventListener('click', ()=>{
   document.getElementById('actualJsonBox').value = JSON.stringify(getActualPayload());

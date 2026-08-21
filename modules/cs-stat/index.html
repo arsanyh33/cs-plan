@@ -488,7 +488,15 @@ tbody tr:hover{background:var(--surface2);}
 .real-course-del{background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.875rem; padding:2px 4px;}
 .real-course-del:hover{color:var(--rose);}
 .real-add-row{padding:10px 16px; display:flex; gap:8px; align-items:flex-start; position:relative;}
-.real-search-input{flex:1; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); color:var(--text); font-size:0.8125rem;}
+.real-search-input{flex:1; width:100%; box-sizing:border-box; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); color:var(--text); font-size:0.8125rem;}
+.acs-wrap{position:relative; display:block;}
+.real-custom-cat, .real-custom-hours{
+  font-family:var(--font-body); font-size:0.75rem; border-radius:7px; border:1px solid var(--line-strong);
+  background:var(--surface); color:var(--text); padding:5px 6px; width:100%; box-sizing:border-box;
+}
+.real-custom-hours{max-width:64px;}
+.real-custom-cat:disabled, .real-custom-hours:disabled, .real-custom-hours:read-only{opacity:.5; cursor:not-allowed;}
+.real-custom-cat option{background:#ffffff; color:#1a1a1a;}
 .palette-input{padding:8px 10px; border-radius:8px; border:1px solid var(--line-strong); background:var(--surface); color:var(--text); outline:none;}
 .palette-input:focus{border-color:var(--accent);}
 .real-add-hint{font-size:0.6875rem; color:var(--muted); padding:0 16px 10px;}
@@ -1247,6 +1255,19 @@ body.presentation-mode #appFrame{max-height:none !important; overflow:visible !i
       <div class="modal-actions">
         <button type="button" class="btn" id="realModalCancel">إلغاء</button>
         <button type="button" class="btn" id="realModalConfirm" style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04101c; border-color:transparent;">إضافة الترم</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: استيراد مواد من "خطة الترمات" لِـ"خطتي الفعلية" -->
+  <div class="modal-overlay" id="realImportModalOverlay" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="realImportModalTitle">
+      <h3 id="realImportModalTitle">📥 استيراد من خطة الترمات</h3>
+      <p style="font-size:0.8125rem; color:var(--muted); margin-bottom:12px;">المواد اللي عليها تيك بالفعل في تاب "خطة الترمات" ولسه مش مسجلة في "خطتي الفعلية" — اختار اللي عايز تضيفه للترم ده دفعة واحدة (التقدير هيتحط تلقائيًا لو كان متسجل هناك).</p>
+      <div id="realImportList" style="display:flex; flex-direction:column; gap:7px; max-height:44vh; overflow-y:auto; margin-bottom:14px;"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="realImportModalCancel">إلغاء</button>
+        <button type="button" class="btn" id="realImportModalConfirm" style="background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04101c; border-color:transparent;">➕ إضافة المحدد</button>
       </div>
     </div>
   </div>
@@ -2382,6 +2403,100 @@ const realState = { terms: [] };
 let realUidCounter = 1;
 function newRealUid(prefix){ return `${prefix}-${Date.now()}-${realUidCounter++}`; }
 
+/* -------- بنك بحث موحّد لخطتي الفعلية بس: courses[] + متطلبات الجامعة الاختيارية + الاختيار الحر + extras
+   (كلها بيانات مرجعية موجودة أصلاً في أقسام تانية، بنستخدمها هنا للقراءة بس من غير أي تعديل فيها) -------- */
+function realExternalBankList(){
+  const seenNames = new Set();
+  const flatExtras = [];
+  Object.values(extras).forEach(arr=>(arr||[]).forEach(e=>{
+    if(seenNames.has(e.name)) return;
+    seenNames.add(e.name);
+    flatExtras.push({id:'extra:'+e.name, code:'', ar:e.name, en:'', hours:e.hours, cat:'extras', prereq:[]});
+  }));
+  const uni = uniElectiveBank.map(e=>({id:'uni:'+e.code, code:e.code, ar:e.ar, en:e.en||'', hours:e.hours, cat:'extras', prereq:[], note:e.cond}));
+  const free = freeElectiveBank.map(e=>({id:'free:'+e.code, code:e.code, ar:e.ar, en:e.en||'', hours:e.hours, cat:'extras', prereq:[], note:e.cond}));
+  return [...uni, ...free, ...flatExtras];
+}
+function realAllSearchable(){ return courses.concat(realExternalBankList()); }
+function realCourseById(id){ return realAllSearchable().find(c=>c.id===id); }
+function realPtsToSym(pts){ const g = gradeScale.find(x=>x.pts===pts); return g ? g.sym : pts; }
+
+/* -------- مواد "مؤكدة من طالب فعلي" بترم محدد في note الخاص بيها — بديل مشتق من بيانات الملف نفسه
+   لمفهوم "ترم مقفول" (الملف ده مفيهوش LOCKED_TERM_COURES ثابتة زي خطة السبيشيال، فبنبنيها هنا ديناميكيًا
+   من نفس معيار الثقة اللي الملف بيستخدمه أصلاً في تعليقاته) -------- */
+const CONFIRMED_TERM_COURSES = {};
+courses.forEach(c=>{
+  if(c.term && c.note && c.note.includes('مؤكدة من طالب فعلي') && !c.note.includes('مش من ضمن')){
+    CONFIRMED_TERM_COURSES[c.id] = c.term;
+  }
+});
+
+/* -------- ترتيب الترمات وحالة المتطلب السابق داخل خطتي الفعلية بس -------- */
+function realOfficialTermNumberFor(termIndex){
+  // تقريب لرقم "الترم الرسمي" بيتجاهل ترمات المعادلة في العدّ، عشان يتقارن بأرقام CONFIRMED_TERM_COURSES
+  let n = 0;
+  for(let i=0;i<=termIndex;i++){ if((realState.terms[i].kind||'normal')!=='transfer') n++; }
+  return n;
+}
+function realEarliestPassedTermIndex(bankId){
+  let bestIdx = -1;
+  realState.terms.forEach((t, idx)=>{
+    t.courses.forEach(c=>{
+      if(c.bankId!==bankId) return;
+      // نفس تعريف "النجاح" اللي الملف بيستخدمه في realPassedIds/realHoursSummary — بطلب المستخدم بقى موحّد
+      // لكل الترمات (عادي أو معادلة): لازم درجة حقيقية أكبر من صفر، مفيش استثناء تلقائي لترم المعادلة.
+      const passed = c.grade!=='' && c.grade!==undefined && parseFloat(c.grade) > 0;
+      if(passed && (bestIdx===-1 || idx<bestIdx)) bestIdx = idx;
+    });
+  });
+  return bestIdx;
+}
+function realPrereqStatus(prereqIds, currentTermIndex){
+  const missing = [], lateOrder = [];
+  (prereqIds||[]).forEach(pid=>{
+    const idx = realEarliestPassedTermIndex(pid);
+    if(idx===-1) missing.push(pid);
+    else if(currentTermIndex!==-1 && idx>=currentTermIndex) lateOrder.push(pid);
+  });
+  return {missing, lateOrder};
+}
+function realCourseWarningsHtml(c, termIndex, isTransferTerm){
+  // بيشتغل بس على مواد حقيقية من بنك المواد الأصلي (courses[]) — المواد المخصصة والمعادلات/اختيارات
+  // الجامعة (uni:/free:/extra: أو مادة مكتوبة يدوي) متجاهلة تلقائيًا لأنه مفيش لها id حقيقي في شجرة المتطلبات.
+  if(!c.bankId) return '';
+  const bank = courseById(c.bankId);
+  if(!bank) return '';
+  let html = '';
+  if(bank.prereq && bank.prereq.length){
+    const {missing, lateOrder} = realPrereqStatus(bank.prereq, termIndex);
+    if(missing.length){
+      const names = missing.map(id=>{ const p = courseById(id); return p?p.ar:id; }).join('، ');
+      html += `<div class="dup-warning" style="margin:5px 0 0; max-width:52ch;">❌ لسه محتاج تاخد وتنجح في متطلبها السابق الأول: <b>${names}</b></div>`;
+    }
+    if(lateOrder.length){
+      const names = lateOrder.map(id=>{ const p = courseById(id); return p?p.ar:id; }).join('، ');
+      html += `<div class="note-inline">⚠️ متطلبها السابق (<b>${names}</b>) متسجل في نفس الترم ده أو بعده — راجع ترتيب الترمات.</div>`;
+    }
+  }
+  if(criticalIds.has(bank.id)){
+    if(c.grade==='0.00'){
+      const deps = dependentsOf(bank.id);
+      const depsNote = deps.length ? ` وهتأخر تسجيل: ${deps.slice(0,4).map(d=>d.ar).join('، ')}${deps.length>4?' وغيرها':''}` : '';
+      html += `<div class="dup-warning" style="margin:5px 0 0; max-width:52ch;">⚡ دي مادة على المسار الحرج ورسبت فيها${depsNote} — لازم تعيدها بأسرع وقت.</div>`;
+    } else {
+      html += `<div class="note-inline">⚡ مادة على المسار الحرج — بتفتح مواد كتير بعدها، خليك حريص عليها.</div>`;
+    }
+  }
+  const confirmedTerm = CONFIRMED_TERM_COURSES[bank.id];
+  if(confirmedTerm && !isTransferTerm){
+    const officialNum = realOfficialTermNumberFor(termIndex);
+    if(officialNum !== confirmedTerm){
+      html += `<div class="note-inline">⏳ المادة دي مؤكدة من طلاب فعليين بالقسم إنها بتتاخد في الترم ${confirmedTerm} (وده الترم رقم ${officialNum} تقريبًا في تسلسل ترماتك العادية) — لو الاختلاف مش مقصود راجعه.</div>`;
+    }
+  }
+  return html;
+}
+
 /* ---- نافذة إضافة ترم جديد ---- */
 const realModalOverlay = document.getElementById('realTermModalOverlay');
 const realModalPreview = document.getElementById('realModalPreview');
@@ -2459,10 +2574,15 @@ function renderCsdContent(query){
       html += `<div class="csd-group">${labelsWithFallback[cat] || cat}</div>`;
       byCat[cat].forEach(c=> html += `<div class="csd-item" data-cid="${c.id}"><span>${c.ar}</span><small>${c.code} · ${c.hours}h</small></div>`);
     });
+    const externalList = realExternalBankList();
+    if(externalList.length){
+      html += `<div class="csd-group">متطلبات الجامعة الاختيارية + الاختيار الحر (خارج التخصص)</div>`;
+      externalList.forEach(c=> html += `<div class="csd-item" data-cid="${c.id}"><span>${c.ar}</span><small>${c.code||''} · ${c.hours}h</small></div>`);
+    }
   } else {
-    const matches = courses.filter(c=> c.ar.toLowerCase().includes(q) || (c.en||'').toLowerCase().includes(q) || c.code.toLowerCase().includes(q));
+    const matches = realAllSearchable().filter(c=> c.ar.toLowerCase().includes(q) || (c.en||'').toLowerCase().includes(q) || (c.code||'').toLowerCase().includes(q));
     if(matches.length){
-      matches.slice(0,60).forEach(c=> html += `<div class="csd-item" data-cid="${c.id}"><span>${c.ar}</span><small>${c.code} · ${c.hours}h</small></div>`);
+      matches.slice(0,60).forEach(c=> html += `<div class="csd-item" data-cid="${c.id}"><span>${c.ar}</span><small>${c.code||''} · ${c.hours}h</small></div>`);
     } else {
       html += `<div class="csd-empty">مفيش مادة بالاسم/الكود ده في البنك.</div>`;
     }
@@ -2478,7 +2598,32 @@ function openCourseSearch(inputEl){
 }
 function closeCourseSearch(){ csdEl.style.display = 'none'; csdActiveInput = null; }
 document.addEventListener('focusin', e=>{ if(e.target.classList && e.target.classList.contains('real-search-input')) openCourseSearch(e.target); });
-document.addEventListener('input', e=>{ if(e.target.classList && e.target.classList.contains('real-search-input')) openCourseSearch(e.target); });
+document.addEventListener('input', e=>{
+  if(!(e.target.classList && e.target.classList.contains('real-search-input'))) return;
+  const inp = e.target;
+  // كل خانة بحث دلوقتي مربوطة بصف مادة موجود فعليًا (uid) — أي كتابة فيها بتفك ربطها ببنك المواد
+  // (زي بالظبط سلوك خطة السبيشيال) وتفتحلك البحث تاني على أساس النص الجديد.
+  const term = realState.terms.find(t=>t.id===inp.dataset.term);
+  const row = term && term.courses.find(c=>c.uid===inp.dataset.uid);
+  if(row){
+    const wasLinked = !!row.bankId;
+    row.bankId = null;
+    row.name = inp.value;
+    saveRealLocal();
+    if(wasLinked){
+      const row = inp.closest('tr');
+      if(row){
+        const catSel = row.querySelector('.real-custom-cat');
+        const hoursInp = row.querySelector('.real-custom-hours');
+        if(catSel) catSel.disabled = false;
+        if(hoursInp) hoursInp.readOnly = false;
+        const linkedHint = row.querySelector('.bank-linked-hint');
+        if(linkedHint) linkedHint.remove();
+      }
+    }
+  }
+  openCourseSearch(inp);
+});
 document.addEventListener('click', e=>{
   if(!e.target.closest('.real-search-input') && !e.target.closest('#courseSearchDropdown')) closeCourseSearch();
 });
@@ -2488,14 +2633,14 @@ csdEl.addEventListener('click', e=>{
   const item = e.target.closest('.csd-item'); if(!item || !csdActiveInput) return;
   const termId = csdActiveInput.dataset.term;
   const term = realState.terms.find(t=>t.id===termId); if(!term) return;
+  const row = term.courses.find(c=>c.uid===csdActiveInput.dataset.uid); if(!row) return;
   if(item.dataset.custom){
     const name = csdActiveInput.value.trim(); if(!name) return;
-    term.courses.push({ uid:newRealUid('crs'), bankId:null, name, code:'', hours:3, cat:'extras', grade:'' });
+    row.bankId = null; row.name = name;
   } else {
-    const c = courseById(item.dataset.cid); if(!c) return;
-    term.courses.push({ uid:newRealUid('crs'), bankId:c.id, name:c.ar, code:c.code, hours:c.hours, cat:c.cat, grade:'' });
+    const c = realCourseById(item.dataset.cid); if(!c) return;
+    row.bankId = c.id; row.name = c.ar; row.code = c.code||''; row.hours = c.hours; row.cat = c.cat;
   }
-  csdActiveInput.value = '';
   closeCourseSearch();
   saveRealLocal();
   renderRealTerms();
@@ -2512,13 +2657,14 @@ function realCatOptions(entry){
 function renderRealTerms(){
   const host = document.getElementById('realTermsHost');
   document.getElementById('realEmptyHint').style.display = realState.terms.length ? 'none' : 'block';
-  host.innerHTML = realState.terms.map(term=>{
+  host.innerHTML = realState.terms.map((term, termIndex)=>{
+    const isTransfer = term.kind==='transfer';
     const totalHours = term.courses.reduce((s,c)=>s+ (parseFloat(c.hours)||0), 0);
+    // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي بالظبط في الـGPA/CGPA — الفرق الوحيد المتبقي
+    // إنه معفي من سقف الـ17 ساعة العادي (ممكن يوصل لـ40 ساعة أو أكتر من غير أي تحذير).
     let gpaBadge = '';
-    if(term.kind==='normal'){
-      const { hours, gpa } = realTermGPA(term);
-      if(hours>0 && gpa!==null) gpaBadge = `<span class="term-gpa-badge">GPA: ${gpa.toFixed(2)}</span>`;
-    }
+    const { hours: termHours, gpa: termGpa } = realTermGPA(term);
+    if(termHours>0 && termGpa!==null) gpaBadge = `<span class="term-gpa-badge">GPA: ${termGpa.toFixed(2)}</span>`;
     let loadWarning = '';
     if(term.kind==='normal' && totalHours>LOAD_LIMIT_NORMAL){
       loadWarning = loadWarningHtml(totalHours);
@@ -2528,29 +2674,42 @@ function renderRealTerms(){
     return `
     <div class="real-term-card ${term.kind==='transfer'?'is-transfer':''}" data-term-id="${term.id}">
       <div class="real-term-head">
-        <h4>${realTermLabel(term)} ${term.kind==='transfer'?'<span class="transfer-badge">🔁 معادلة — مستبعدة من GPA</span>':''}</h4>
+        <h4>${realTermLabel(term)} ${term.kind==='transfer'?'<span class="transfer-badge">🔁 معادلة — بتتحسب زي أي ترم عادي في الـGPA</span>':''}</h4>
         <div class="real-term-head-right">
           <span class="hrs code">${totalHours} ساعة</span>${gpaBadge}${loadWarning}
           <button type="button" class="real-term-del" data-del-term="${term.id}" title="حذف الترم ده">🗑️</button>
         </div>
       </div>
       ${dupWarningHtml}
-      <ul class="real-course-list">
-        ${term.courses.length ? term.courses.map(c=>`
-          <li data-crs-uid="${c.uid}">
-            <div class="cname">${c.name}${c.code?`<small>${c.code} · ${c.hours}h · ${CATEGORY_LABELS[c.cat]||c.cat}</small>`:''}</div>
-            ${!c.bankId ? `
-              <input type="number" class="real-custom-hours" data-uid="${c.uid}" value="${c.hours}" min="1" max="10" style="width:56px; padding:5px 6px; border-radius:6px; border:1px solid var(--line-strong); background:var(--surface); color:var(--text); font-size:0.75rem;">
-              <select class="real-custom-cat" data-uid="${c.uid}" style="padding:5px 6px; border-radius:6px; border:1px solid var(--line-strong); background:var(--surface); color:var(--text); font-size:0.7188rem;">${realCatOptions(c)}</select>
-            ` : ''}
-            ${term.kind==='normal' ? `<select class="term-grade-select real-grade-select" data-uid="${c.uid}">${realTermGradeOptions(c)}</select>` : '<span class="badge" style="color:var(--muted)">معادلة ✓</span>'}
-            <button type="button" class="real-course-del" data-del-crs="${c.uid}" title="حذف المادة">✕</button>
-          </li>`).join('') : '<li style="color:var(--muted); font-size:0.8125rem;">مفيش مواد مسجّلة في الترم ده لسه.</li>'}
-      </ul>
-      <div class="real-add-row">
-        <input type="text" class="real-search-input" data-term="${term.id}" placeholder="دوس هنا وابحث باسم المادة أو الكود...">
+      <div class="table-wrap">
+        <table class="gpa-table">
+          <thead><tr><th style="width:30%">المادة</th><th>الفئة</th><th>الساعات</th><th>التقدير</th><th></th></tr></thead>
+          <tbody>
+            ${term.courses.length ? term.courses.map(c=>{
+              const isCustom = !c.bankId;
+              return `
+              <tr data-crs-uid="${c.uid}">
+                <td data-label="المادة">
+                  <div class="acs-wrap">
+                    <input type="text" class="real-search-input" data-term="${term.id}" data-uid="${c.uid}"
+                      value="${(c.name||'').replace(/"/g,'&quot;')}" placeholder="اكتب اسم/كود المادة، أو دوس هنا تصفح البنك كله…" autocomplete="off">
+                    ${!isCustom?'<small class="bank-linked-hint" style="color:var(--muted); font-size:0.6562rem;">🔗 من بنك المواد — اكتب حرف تاني لو عايز تغيّرها</small>':''}
+                    ${realCourseWarningsHtml(c, termIndex, isTransfer)}
+                  </div>
+                </td>
+                <td data-label="الفئة"><select class="real-custom-cat" data-uid="${c.uid}" ${isCustom?'':'disabled'}>${realCatOptions(c)}</select></td>
+                <td data-label="الساعات"><input type="number" class="real-custom-hours" data-uid="${c.uid}" value="${c.hours}" min="1" max="10" ${isCustom?'':'readonly'}></td>
+                <td data-label="التقدير"><select class="term-grade-select real-grade-select" data-uid="${c.uid}">${realTermGradeOptions(c)}</select></td>
+                <td data-label=""><button type="button" class="real-course-del" data-del-crs="${c.uid}" title="حذف المادة">✕</button></td>
+              </tr>`;
+            }).join('') : '<tr><td colspan="5" style="text-align:center; color:var(--muted)">لسه مفيش مواد مضافة للترم ده</td></tr>'}
+          </tbody>
+        </table>
       </div>
-      <div class="real-add-hint">دوس على الخانة فاضية عشان تتصفح كل بنك المواد، أو اكتب حرف عشان تفلتر.</div>
+      <div class="toolbar">
+        <button type="button" class="btn" data-add-course="${term.id}">+ إضافة مادة للترم ده</button>
+        <button type="button" class="btn" data-import-term="${term.id}">📥 استيراد من خطة الترمات</button>
+      </div>
     </div>`;
   }).join('');
 
@@ -2560,7 +2719,24 @@ function renderRealTerms(){
     realState.terms = realState.terms.filter(t=>t.id!==id);
     saveRealLocal(); renderRealTerms();
   }));
+  host.querySelectorAll('[data-import-term]').forEach(btn=> btn.addEventListener('click', ()=>{
+    RealImportModal.open(btn.dataset.importTerm);
+  }));
+  host.querySelectorAll('[data-add-course]').forEach(btn=> btn.addEventListener('click', ()=>{
+    const term = realState.terms.find(t=>t.id===btn.dataset.addCourse);
+    if(!term) return;
+    const newRow = { uid:newRealUid('crs'), bankId:null, name:'', code:'', hours:3, cat:'elective', grade:'' };
+    term.courses.push(newRow);
+    saveRealLocal();
+    renderRealTerms();
+    // تبسيط الإضافة: نفتحلك البحث على طول جوه المادة الجديدة بدل ما تدور عليها بنفسك
+    requestAnimationFrame(()=>{
+      const newInp = host.querySelector(`.real-search-input[data-uid="${newRow.uid}"]`);
+      if(newInp){ newInp.focus(); openCourseSearch(newInp); }
+    });
+  }));
   host.querySelectorAll('[data-del-crs]').forEach(btn=> btn.addEventListener('click', ()=>{
+    if(!confirm('متأكد عايز تحذف المادة دي من الترم؟')) return;
     const uid = btn.dataset.delCrs;
     realState.terms.forEach(t=>{ t.courses = t.courses.filter(c=>c.uid!==uid); });
     saveRealLocal(); renderRealTerms();
@@ -2572,7 +2748,7 @@ function renderRealTerms(){
     // نحدث بادچ الـGPA بتاع الترم بس (من غير إعادة رندر كل الترمات عشان مانفقدش تركيز الخانة)
     const card = sel.closest('.real-term-card');
     const term = realState.terms.find(t=>t.id===card.dataset.termId);
-    if(term && term.kind==='normal'){
+    if(term){
       const { hours, gpa } = realTermGPA(term);
       let badge = card.querySelector('.term-gpa-badge');
       if(hours>0 && gpa!==null){
@@ -2608,7 +2784,8 @@ function realAttemptCounts(){
   return counts;
 }
 function realEverFailed(){
-  return realState.terms.some(t=> t.kind==='normal' && t.courses.some(c=> c.grade==='0.00'));
+  // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي — رسوب فيه بيتحسب زي أي رسوب تاني.
+  return realState.terms.some(t=> t.courses.some(c=> c.grade==='0.00'));
 }
 function realDuplicateInSameTerm(term){
   const seen = new Set(); const dups = new Set();
@@ -2617,7 +2794,7 @@ function realDuplicateInSameTerm(term){
 }
 
 function realTermGPA(term){
-  if(term.kind!=='normal') return { hours:0, gpa:null };
+  // بطلب من المستخدم: ترم المعادلة بقى بيتحسب زي أي ترم عادي بالظبط — مفيش استثناء من الـGPA خالص.
   const latestMap = realLatestAttemptMap();
   let qp=0, hrs=0;
   term.courses.forEach(c=>{
@@ -2646,7 +2823,7 @@ function realHoursSummary(){
       const h = parseFloat(c.hours)||0;
       registeredByCat[c.cat] = (registeredByCat[c.cat]||0) + h; registeredTotal += h;
       if(!realIsLatest(c, latestMap)) return; // محاولة قديمة مستبعدة من ساعات "المكتسبة" (بتتحسب في المسجّلة بس فوق)
-      const passed = term.kind==='transfer' ? true : (c.grade!=='' && c.grade!==undefined && parseFloat(c.grade) > 0);
+      const passed = c.grade!=='' && c.grade!==undefined && parseFloat(c.grade) > 0;
       if(passed){ earnedByCat[c.cat] = (earnedByCat[c.cat]||0) + h; earnedTotal += h; }
     });
   });
@@ -2676,7 +2853,7 @@ function realPassedIds(){
   realState.terms.forEach(term=> term.courses.forEach(c=>{
     if(!c.bankId) return;
     if(!realIsLatest(c, latestMap)) return;
-    const passed = term.kind==='transfer' ? true : (c.grade!=='' && c.grade!==undefined && parseFloat(c.grade) > 0);
+    const passed = c.grade!=='' && c.grade!==undefined && parseFloat(c.grade) > 0;
     if(passed) set.add(c.bankId);
   }));
   return set;
@@ -2722,8 +2899,8 @@ function renderTranscriptTab(){
   body.innerHTML = rows.map(({term,c,isLatest,hadRetake,gradeObj})=>{
     let tag = '';
     if(hadRetake) tag = isLatest ? '<span class="attempt-tag latest">🔁 آخر محاولة</span>' : '<span class="attempt-tag excluded">⛔ مستبعدة</span>';
-    const gradeText = term.kind==='transfer' ? 'معادلة' : (gradeObj ? gradeObj.sym : (c.grade ? c.grade : '—'));
-    const ptsText = term.kind==='transfer' ? '—' : (c.grade || '—');
+    const gradeText = gradeObj ? gradeObj.sym : (c.grade ? c.grade : '—');
+    const ptsText = c.grade || '—';
     return `<tr class="${!isLatest?'excluded-attempt':''}">
       <td data-label="الترم">${realTermLabel(term)}</td>
       <td data-label="المادة">${c.name}${c.code?` <span class="code" style="color:var(--muted); font-size:0.7rem;">${c.code}</span>`:''}</td>
@@ -2747,10 +2924,10 @@ function realCompletedNormalTermsCount(){
   return realState.terms.filter(t=> t.kind==='normal' && t.courses.length>0 && t.courses.every(c=> c.grade!=='' && c.grade!==undefined)).length;
 }
 function realReq46Stats(){
+  // بطلب من المستخدم: ترم المعادلة بيتحسب هنا كمان زي أي ترم عادي، مفيش استثناء.
   const latestMap = realLatestAttemptMap();
   let hrs=0, qp=0;
   realState.terms.forEach(term=>{
-    if(term.kind!=='normal') return;
     term.courses.forEach(c=>{
       if(c.cat!=='req46') return;
       if(!realIsLatest(c, latestMap)) return;
@@ -2819,6 +2996,51 @@ function loadRealLocal(){
     realState.terms = parsed.terms || [];
   }catch(e){ /* تجاهل */ }
 }
+
+/* -------- استيراد سريع للمواد المتيكة فعلًا في "خطة الترمات" (قراءة فقط من state/courses الخاصين بقسم 06) -------- */
+var RealImportModal = (function(){
+  let targetTermId = null;
+  function overlayEl(){ return document.getElementById('realImportModalOverlay'); }
+  function candidates(){
+    const registered = registeredBankIds();
+    return courses.filter(c=> state.done && state.done[c.id] && !registered.has(c.id));
+  }
+  function open(termId){
+    targetTermId = termId;
+    const list = candidates();
+    const host = document.getElementById('realImportList');
+    if(!list.length){
+      host.innerHTML = '<div style="font-size:0.8125rem; color:var(--muted); text-align:center; padding:20px 10px;">مفيش مواد جديدة تتاخد من "خطة الترمات" — إما لسه مفيش تيكات هناك، أو كل المواد المتيكة متسجلة بالفعل هنا.</div>';
+    } else {
+      host.innerHTML = list.map(c=>`
+        <label style="display:flex; align-items:center; gap:9px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:0.8125rem; cursor:pointer;">
+          <input type="checkbox" value="${c.id}">
+          <span class="code" style="color:var(--accent2); font-size:0.6875rem;">${c.code}</span><span>${c.ar}</span>
+          <span style="margin-inline-start:auto; color:var(--muted); font-size:0.75rem;">${c.hours}h${state.grades && state.grades[c.id] ? ' · تقدير: '+realPtsToSym(state.grades[c.id]) : ''}</span>
+        </label>`).join('');
+    }
+    overlayEl().hidden = false;
+  }
+  function close(){ overlayEl().hidden = true; }
+  function confirmImport(){
+    const term = realState.terms.find(t=>t.id===targetTermId);
+    if(!term) return close();
+    const checked = Array.from(document.querySelectorAll('#realImportList input[type="checkbox"]:checked')).map(i=>i.value);
+    checked.forEach(id=>{
+      const bank = courseById(id);
+      if(!bank) return;
+      term.courses.push({ uid:newRealUid('crs'), bankId:bank.id, name:bank.ar, code:bank.code, hours:bank.hours, cat:bank.cat, grade:(state.grades && state.grades[bank.id]) || '' });
+    });
+    saveRealLocal();
+    renderRealTerms();
+    close();
+  }
+  document.getElementById('realImportModalCancel').addEventListener('click', close);
+  document.getElementById('realImportModalConfirm').addEventListener('click', confirmImport);
+  overlayEl().addEventListener('click', e=>{ if(e.target===overlayEl()) close(); });
+  return {open, close};
+})();
+
 loadRealLocal();
 renderRealTerms();
 

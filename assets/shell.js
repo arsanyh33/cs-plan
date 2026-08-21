@@ -122,6 +122,22 @@
       a.style.setProperty('--c1', mod.color1 || 'var(--accent)');
       a.style.setProperty('--c2', mod.color2 || 'var(--accent2)');
 
+      /* شارة "جديد" — تلقائيًا لو addedAt موجود وعمره أقل من 30 يوم */
+      let isNew = false;
+      if (mod.addedAt) {
+        const addedTime = new Date(mod.addedAt).getTime();
+        if (!isNaN(addedTime)) {
+          const daysSince = (Date.now() - addedTime) / 86400000;
+          isNew = daysSince >= 0 && daysSince <= 30;
+        }
+      }
+      if (isNew) {
+        const badge = document.createElement('span');
+        badge.className = 'mod-new-badge';
+        badge.textContent = '✨ جديد';
+        a.appendChild(badge);
+      }
+
       const pills = [];
       if (s.hasData) {
         if (s.doneCount)   pills.push(`<span class="pill ok">✓ <span class="mono-num">${s.doneCount}</span> مادة مخلّصة</span>`);

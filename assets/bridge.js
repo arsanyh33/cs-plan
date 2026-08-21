@@ -22,12 +22,20 @@
   /* ------------------------------------------------- 1) تحصين الحفظ */
 
   let saveTimer = null;
+  let toastTimer = null;
   function scheduleMirror() {
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       saveTimer = null;
       if (global.UniStore) global.UniStore.mirrorToIDB().then(broadcast).catch(() => {});
     }, 900);
+
+    /* إشعار بسيط بالحفظ — متجمّع (debounced) عشان ما يزعجش لو المستخدم بيكتب بسرعة */
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastTimer = null;
+      toast('✓ اتحفظ', 1800);
+    }, 700);
   }
 
   /**

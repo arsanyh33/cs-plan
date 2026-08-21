@@ -442,6 +442,23 @@ input,select,textarea{ font-family:inherit; }
 }
 .mod:hover .mod-glare{ opacity:1; }
 
+/* شارة "جديد" — بتظهر تلقائي على أي موديول اتضاف خلال آخر 30 يوم */
+.mod-new-badge{
+  position:absolute; top:14px; inset-inline-end:14px; z-index:2;
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 10px; border-radius:999px;
+  font-family:var(--font-display); font-size:.72rem; font-weight:900;
+  color:#05060b;
+  background:linear-gradient(120deg,#ffe066,#ff9f43);
+  box-shadow:0 6px 18px -6px rgba(255,159,67,.65);
+  animation:modNewPulse 2.4s ease-in-out infinite;
+}
+@keyframes modNewPulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+html.reduce-fx .mod-new-badge{ animation:none; }
+
 .mod-top{ display:flex; align-items:flex-start; gap:15px; transform:translateZ(34px); }
 .mod-ic{
   width:58px; height:58px; flex:0 0 58px; border-radius:17px;

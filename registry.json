@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.9.3",
+    "version": "2.9.4",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -139,6 +139,26 @@
       ],
       "cache": true,
       "category": "general"
+    },
+    {
+      "id": "bachelor-regulations",
+      "title": "لائحة البكالوريوس — علوم الإسكندرية",
+      "short": "لائحة البكالوريوس",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M7 3h8l4 4v14H7z'/><path d='M15 3v4h4'/><path d='M9 12h6M9 16h6'/></svg>",
+      "desc": "اللائحة الرسمية لكلية العلوم — جامعة الإسكندرية (إصدار 2018، معدّلة) — عرض مباشر داخل الصفحة وإمكانية التحميل بصيغة PDF.",
+      "entry": "modules/bachelor-regulations/index.html",
+      "color1": "#e05252",
+      "color2": "#e05252",
+      "storageKeys": [],
+      "tags": [
+        "لائحة",
+        "بكالوريوس",
+        "PDF",
+        "قواعد",
+        "رسمي"
+      ],
+      "cache": true,
+      "category": "college"
     }
   ]
 }

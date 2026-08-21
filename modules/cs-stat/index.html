@@ -709,11 +709,13 @@ body.presentation-mode #appFrame{max-height:none !important; overflow:visible !i
   <div class="topbar-mountains" aria-hidden="true"></div>
   <div class="topbar-inner">
     <div class="brand">
-      <div class="mark" aria-hidden="true">CS</div>
-      <div>
-        <h1>خطة حاسب (رئيسي) + إحصاء (فرعي)</h1>
-        <span>كلية العلوم، جامعة الإسكندرية · قسم الرياضيات وعلوم الحاسب</span>
-      </div>
+      <a href="../../index.html" title="الرجوع للرئيسية" aria-label="الرجوع للرئيسية" style="display:contents;text-decoration:none;color:inherit">
+        <div class="mark" aria-hidden="true">CS</div>
+        <div>
+          <h1>خطة حاسب (رئيسي) + إحصاء (فرعي)</h1>
+          <span>كلية العلوم، جامعة الإسكندرية · قسم الرياضيات وعلوم الحاسب</span>
+        </div>
+      </a>
     </div>
     <div class="fs-grp">
       <span class="fs-label" id="fsLabel">حجم الخط</span>
@@ -737,6 +739,8 @@ body.presentation-mode #appFrame{max-height:none !important; overflow:visible !i
         <svg class="ts-icon moon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>
       </span>
     </button>
+    <a class="theme-btn" href="../../index.html" title="الرجوع للرئيسية" aria-label="الرجوع للرئيسية" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px">🏠 الرئيسية</a>
+    <span class="tool-divider" aria-hidden="true"></span>
     <button class="theme-btn" id="paletteBtn" title="بحث سريع (Ctrl/⌘+K)" aria-label="فتح صندوق البحث السريع">🔎</button>
     <button class="theme-btn" id="presentBtn" title="وضع عرض للمناقشة (يشيل كل التفاعل، يعرض كل الأقسام ورا بعض)" aria-label="تفعيل وضع العرض للمناقشة">🖥️</button>
     <button class="theme-btn" id="printBtn" title="طباعة/تصدير الخطة كـ PDF" aria-label="طباعة أو تصدير الخطة كملف PDF">🖨️</button>

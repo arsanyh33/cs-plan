@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.9.8",
+    "version": "2.10.0",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -157,6 +157,26 @@
         "PDF",
         "قواعد",
         "رسمي"
+      ],
+      "cache": true,
+      "category": "college"
+    },
+    {
+      "id": "course-roadmap",
+      "addedAt": "2026-08-22",
+      "title": "خريطة المتطلبات التفاعلية",
+      "short": "خريطة المتطلبات",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><circle cx='5' cy='6' r='2'/><circle cx='19' cy='6' r='2'/><circle cx='12' cy='13' r='2'/><circle cx='5' cy='20' r='2'/><circle cx='19' cy='20' r='2'/><path d='M6.4 7.4L10.6 11.6M17.6 7.4L13.4 11.6M10.6 14.4L6.4 18.6M13.4 14.4L17.6 18.6'/></svg>",
+      "desc": "خريطة بصرية تفاعلية لكل مواد الأقسام التلاتة (حاسب+إحصاء، سبيشيال، إحصاء+حاسب) وترابط متطلباتها السابقة — دوس على أي مادة يوريك مسارها كامل. عرض بس، مبنية على نفس بيانات الخطط ومالهاش أي تأثير عليها.",
+      "entry": "modules/course-roadmap/index.html",
+      "color1": "#4ce0ff",
+      "color2": "#4ce0ff",
+      "storageKeys": [],
+      "tags": [
+        "خريطة",
+        "متطلبات سابقة",
+        "روابط المواد",
+        "عرض بصري"
       ],
       "cache": true,
       "category": "college"

@@ -788,6 +788,125 @@
     setTimeout(() => { t.classList.remove('in'); setTimeout(() => t.remove(), 400); }, ms || 4200);
   }
 
+  /* ------------------------------------------------------- "جديد الموقع" */
+  const LAST_SEEN_VER_KEY = 'uniLastSeenVersion_v1';
+
+  /* عشان تضيف إصدار جديد هنا في المستقبل: ضيف مفتاح برقم الـ version
+     الجديد (لازم يطابق registry.json → app.version بالظبط)، وقيمته
+     مصفوفة سطور — كل سطر ممكن يستخدم <b> لتمييز جزء منه. */
+  const CHANGELOG = {
+    '2.10.0': [
+      '<b>خريطة المتطلبات التفاعلية</b> — موديول جديد بيوريك بصريًا إزاي مواد خطتك مرتبطة ببعض، ومتطلب إيه قبل إيه، لأي قسم من الثلاثة.',
+      '<b>جولة تعريفية بسيطة</b> — لو دي أول مرة تزور الموقع، هنعرّفك بسرعة على أهم حاجتين فيه.',
+    ],
+  };
+
+  function wireWhatsNew() {
+    if (!REG || !REG.app || !REG.app.version) return;
+    const cur = REG.app.version;
+    let lastSeen = null;
+    try { lastSeen = localStorage.getItem(LAST_SEEN_VER_KEY); } catch (e) { void e; }
+
+    /* أول زيارة على الإطلاق: نسجّل النسخة الحالية بصمت من غير ما نزعج
+       الزائر بنافذة "جديد" — الجولة التعريفية كفاية له أول مرة. */
+    if (lastSeen === null) {
+      try { localStorage.setItem(LAST_SEEN_VER_KEY, cur); } catch (e) { void e; }
+      return;
+    }
+    if (lastSeen === cur) return;
+
+    const entries = CHANGELOG[cur];
+    if (!entries || !entries.length) {
+      try { localStorage.setItem(LAST_SEEN_VER_KEY, cur); } catch (e) { void e; }
+      return;
+    }
+
+    const overlay = $('#whatsNewOverlay');
+    const list = $('#whatsNewList');
+    if (!overlay || !list) return;
+    list.innerHTML = entries.map((t) => `<li>${t}</li>`).join('');
+
+    const markSeen = () => { try { localStorage.setItem(LAST_SEEN_VER_KEY, cur); } catch (e) { void e; } };
+    const close = () => { overlay.classList.remove('open'); document.body.style.overflow = ''; markSeen(); };
+    const closeBtn = $('#whatsNewClose');
+    if (closeBtn) closeBtn.addEventListener('click', close, { once: true });
+
+    setTimeout(() => {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }, 500);
+
+    global.WhatsNew = { close };
+  }
+
+  /* --------------------------------------------------------- جولة تعريفية */
+  const ONBOARD_SEEN_KEY = 'uniOnboardingSeen_v1';
+  const ONBOARD_STEPS = [
+    { sel: '#searchInput', text: 'ابدأ من هنا لو دوّرت على أي حاجة — دوس على مادة، ترم، أو حتى ملحوظة، والبحث هيوصلك لها فورًا.' },
+    { sel: '#plans', text: 'خطط قسمك الثلاثة موجودة هنا — افتح خطتك وابدأ سجّل المواد اللي خلصتها.' },
+    { sel: '#settingsBtn', text: 'من هنا تقدر تكبّر الخط، تعاين الموقع بشكل جهاز تاني، أو تنزّل نسخة احتياطية من بياناتك.' },
+  ];
+
+  function wireOnboarding() {
+    let seen = false;
+    try { seen = localStorage.getItem(ONBOARD_SEEN_KEY) === '1'; } catch (e) { void e; }
+    if (seen) return;
+
+    const overlay = $('#onboardOverlay');
+    const spot = $('#obSpot');
+    const tip = $('#obTip');
+    const textEl = $('#obText');
+    const nextBtn = $('#obNext');
+    const skipBtn = $('#obSkip');
+    if (!overlay || !spot || !tip || !textEl || !nextBtn || !skipBtn) return;
+
+    let i = 0;
+
+    function place() {
+      const step = ONBOARD_STEPS[i];
+      const el = step ? $(step.sel) : null;
+      if (!el) { next(); return; }
+      const r = el.getBoundingClientRect();
+      const pad = 8;
+      spot.style.top = (r.top - pad) + 'px';
+      spot.style.left = (r.left - pad) + 'px';
+      spot.style.width = (r.width + pad * 2) + 'px';
+      spot.style.height = (r.height + pad * 2) + 'px';
+
+      textEl.textContent = step.text;
+      nextBtn.textContent = (i === ONBOARD_STEPS.length - 1) ? 'تمام 👍' : 'التالي';
+
+      const spaceBelow = global.innerHeight - r.bottom;
+      const tipTop = spaceBelow > 160 ? r.bottom + 16 : Math.max(16, r.top - 150);
+      let tipLeft = r.left;
+      tipLeft = Math.max(16, Math.min(tipLeft, global.innerWidth - 296));
+      tip.style.top = tipTop + 'px';
+      tip.style.left = tipLeft + 'px';
+    }
+
+    function next() {
+      i++;
+      if (i >= ONBOARD_STEPS.length) { finish(); return; }
+      place();
+    }
+
+    function finish() {
+      overlay.setAttribute('hidden', '');
+      overlay.setAttribute('aria-hidden', 'true');
+      try { localStorage.setItem(ONBOARD_SEEN_KEY, '1'); } catch (e) { void e; }
+    }
+
+    nextBtn.addEventListener('click', next);
+    skipBtn.addEventListener('click', finish);
+    global.addEventListener('resize', () => { if (!overlay.hasAttribute('hidden')) place(); });
+
+    setTimeout(() => {
+      overlay.removeAttribute('hidden');
+      overlay.removeAttribute('aria-hidden');
+      place();
+    }, 900);
+  }
+
   /* ---------------------------------------------------------------- boot */
   function boot() {
     tuneDevice();
@@ -853,11 +972,14 @@
         renderOverall();
         revealScan();
         setBoot('جاهز', 100, true);
+        wireWhatsNew();
+        wireOnboarding();
       })
       .catch(() => {
         const host = $('#modHost');
         if (host) host.innerHTML = '<div class="note bad">تعذّر تحميل قائمة الخطط. جرّب تحديث الصفحة.</div>';
         setBoot('جاهز', 100, true);
+        wireOnboarding();
       });
 
     renderStorage();

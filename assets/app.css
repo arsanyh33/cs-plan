@@ -939,6 +939,61 @@ html.has-bridge-bar #devFab{ bottom:calc(var(--bar-h) + 24px + env(safe-area-ins
 }
 .dev-close:hover{ color:var(--text); }
 
+/* ---------------------------- نافذة "جديد الموقع" ---------------------------- */
+#whatsNewOverlay{
+  position:fixed; inset:0; z-index:99999;
+  background:rgba(0,0,0,.72); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; visibility:hidden; pointer-events:none; transition:opacity .3s var(--ease), visibility .3s;
+}
+#whatsNewOverlay.open{ opacity:1; visibility:visible; pointer-events:all; }
+#whatsNewModal{
+  background:var(--panel); border:1px solid var(--line2); border-radius:var(--radius);
+  padding:26px 24px 22px; max-width:420px; width:90%; text-align:start;
+  box-shadow:0 24px 70px -10px rgba(0,0,0,.6);
+  transform:translateY(16px); transition:transform .3s var(--ease);
+  font-family:var(--font-body);
+}
+#whatsNewOverlay.open #whatsNewModal{ transform:translateY(0); }
+.wn-badge{
+  display:inline-block; padding:4px 11px; border-radius:999px; margin-bottom:10px;
+  background:rgba(18,240,192,.14); color:var(--cyan); font-family:var(--font-display);
+  font-size:.72rem; font-weight:800;
+}
+#whatsNewModal h3{ font-family:var(--font-display); font-size:1.1rem; font-weight:800; margin-bottom:14px; color:var(--text); }
+.wn-list{ list-style:none; display:flex; flex-direction:column; gap:10px; }
+.wn-list li{
+  display:flex; gap:10px; align-items:flex-start; font-size:.84rem; line-height:1.7; color:var(--dim);
+}
+.wn-list li::before{ content:'✦'; color:var(--cyan); flex:none; margin-top:1px; }
+.wn-list b{ color:var(--text); }
+
+/* ---------------------------- الجولة التعريفية ---------------------------- */
+#onboardOverlay{
+  position:fixed; inset:0; z-index:99998;
+  background:rgba(0,0,0,.62); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+}
+#onboardOverlay[hidden]{ display:none; }
+.ob-spot{
+  position:fixed; border-radius:14px;
+  box-shadow:0 0 0 4px var(--cyan), 0 0 0 9999px rgba(0,0,0,.62);
+  transition:all .35s var(--ease);
+  pointer-events:none;
+}
+.ob-tip{
+  position:fixed; max-width:280px; z-index:99999;
+  background:var(--panel); border:1px solid var(--line2); border-radius:var(--radius-sm);
+  padding:16px 16px 14px; box-shadow:0 20px 50px -12px rgba(0,0,0,.55);
+  transition:all .35s var(--ease); font-family:var(--font-body);
+}
+.ob-tip p{ font-size:.85rem; line-height:1.8; color:var(--text); margin-bottom:12px; }
+.ob-actions{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.ob-skip{
+  background:none; border:none; color:var(--dim); font-family:inherit; font-size:.78rem;
+  cursor:pointer; text-decoration:underline;
+}
+.ob-skip:hover{ color:var(--text); }
+
 /* ---------------------------- زر الرجوع لفوق ---------------------------- */
 .to-top{
   position:fixed; z-index:8500;

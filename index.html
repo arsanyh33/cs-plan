@@ -272,28 +272,6 @@
 </div>
 <button id="devFab" title="معاينة على جهاز مختلف" aria-label="معاينة على جهاز مختلف" aria-haspopup="dialog">📂</button>
 
-<!-- ============ نافذة "جديد الموقع" — بتظهر تلقائيًا لما رقم version يتغيّر ============ -->
-<div id="whatsNewOverlay" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle" onclick="if(event.target===this) WhatsNew.close()">
-  <div id="whatsNewModal">
-    <div class="wn-badge">✨ جديد في الموقع</div>
-    <h3 id="whatsNewTitle">تحديثات الإصدار الأخير</h3>
-    <ul class="wn-list" id="whatsNewList"></ul>
-    <button class="btn primary sm" id="whatsNewClose" type="button" style="width:100%;margin-top:16px">تمام، فهمت 👍</button>
-  </div>
-</div>
-
-<!-- ============ جولة تعريفية بسيطة لأول زيارة ============ -->
-<div id="onboardOverlay" hidden aria-hidden="true">
-  <div class="ob-spot" id="obSpot"></div>
-  <div class="ob-tip" id="obTip" role="dialog" aria-modal="true" aria-labelledby="obText">
-    <p id="obText"></p>
-    <div class="ob-actions">
-      <button class="ob-skip" id="obSkip" type="button">تخطي</button>
-      <button class="btn primary sm" id="obNext" type="button">التالي</button>
-    </div>
-  </div>
-</div>
-
 <script src="assets/store.js?v=2.10.0"></script>
 <script src="assets/inapp.js?v=2.10.0"></script>
 <script src="assets/bg.js?v=2.10.0"></script>

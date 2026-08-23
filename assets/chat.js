@@ -2,13 +2,12 @@
    TCSS Chatbot — صفحة مستقلة (chat.html)
    بيرد على أسئلة الطلبة عن الخطط الدراسية بناءً على بيانات الموقع
    الفعلية (assets/kb.json)، عن طريق Cloudflare Worker وسيط بيحمي
-   مفتاح الـ API. نفس منطق الويدجت القديم، لكن كصفحة كاملة.
+   مفتاح الـ API. الرد بييجي Streaming (كلمة كلمة) من الـ Worker،
+   ومعروض بتنسيق Markdown-lite (Bold، نقط، عناوين بسيطة).
    ============================================================ */
 (function () {
   "use strict";
 
-  // ⚠️ غيّر السطر ده بعد ما تعمل الـ Cloudflare Worker وتاخد رابطه —
-  // شرح الخطوة دي موجود في دليل-تنصيب-الشات-بوت.md.
   var WORKER_URL = "https://tcss-chatbot.arsanyh33.workers.dev/";
 
   var MAX_STORED_HISTORY = 20;
@@ -23,6 +22,50 @@
   var inputEl = document.getElementById("chatInput");
   var sendBtn = document.getElementById("chatSendBtn");
   var clearBtn = document.getElementById("chatClearBtn");
+
+  /* ---------- Markdown-lite renderer (آمن — بيعمل escape الأول) ---------- */
+  function escapeHtml(s) {
+    return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+  function inlineMd(s) {
+    return s
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/__(.+?)__/g, "<strong>$1</strong>")
+      .replace(/`([^`]+?)`/g, "<code>$1</code>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>");
+  }
+  function mdLiteToHtml(raw) {
+    var text = escapeHtml(raw || "");
+    var blocks = text.split(/\n{2,}/);
+    var html = blocks.map(function (block) {
+      var lines = block.split("\n").filter(function (l) { return l.length; });
+      if (!lines.length) return "";
+
+      var bulletRe = /^\s*[-*•]\s+/;
+      var numberRe = /^\s*\d+[.)]\s+/;
+      var headingMatch = lines.length === 1 && lines[0].match(/^(#{1,4})\s+(.*)$/);
+
+      if (lines.every(function (l) { return bulletRe.test(l); })) {
+        return "<ul>" + lines.map(function (l) {
+          return "<li>" + inlineMd(l.replace(bulletRe, "")) + "</li>";
+        }).join("") + "</ul>";
+      }
+      if (lines.every(function (l) { return numberRe.test(l); })) {
+        return "<ol>" + lines.map(function (l) {
+          return "<li>" + inlineMd(l.replace(numberRe, "")) + "</li>";
+        }).join("") + "</ol>";
+      }
+      if (headingMatch) {
+        var level = Math.min(headingMatch[1].length + 2, 5);
+        return "<h" + level + ">" + inlineMd(headingMatch[2]) + "</h" + level + ">";
+      }
+      return "<p>" + lines.map(inlineMd).join("<br>") + "</p>";
+    }).join("");
+    return html;
+  }
 
   function el(tag, attrs, children) {
     var e = document.createElement(tag);
@@ -42,10 +85,20 @@
     messagesEl.appendChild(el("div", { class: "chat-msg user" }, [document.createTextNode(text)]));
     scrollToEnd();
   }
-  function addBotMessage(text, isError) {
+  function createBotBubble(isError) {
     var cls = "chat-msg bot" + (isError ? " error" : "");
-    messagesEl.appendChild(el("div", { class: cls }, [document.createTextNode(text)]));
+    var bubble = el("div", { class: cls });
+    messagesEl.appendChild(bubble);
     scrollToEnd();
+    return bubble;
+  }
+  function setBotBubbleText(bubble, text, streaming) {
+    bubble.innerHTML = mdLiteToHtml(text) + (streaming ? '<span class="chat-cursor">▌</span>' : "");
+    scrollToEnd();
+  }
+  function addBotMessage(text, isError) {
+    var bubble = createBotBubble(isError);
+    setBotBubbleText(bubble, text, false);
   }
   function addTyping() {
     var t = el("div", { class: "chat-msg bot typing", id: "chatTyping" }, [
@@ -108,11 +161,6 @@
     var text = inputEl.value.trim();
     if (!text || isSending) return;
 
-    if (WORKER_URL.indexOf("YOUR-WORKER-NAME") !== -1) {
-      addBotMessage("⚠️ الشات بوت لسه مش متظبط بالكامل (رابط الـ Worker مش متحط في assets/chat.js). كلم صاحب الموقع.", true);
-      return;
-    }
-
     hideSuggestions();
     isSending = true;
     sendBtn.disabled = true;
@@ -122,6 +170,10 @@
     inputEl.value = "";
     autoGrow();
     addTyping();
+
+    var accumulated = "";
+    var bubble = null;
+    var gotAnyChunk = false;
 
     try {
       var res = await fetch(WORKER_URL, {
@@ -133,17 +185,61 @@
         })
       });
 
+      if (!res.ok || !res.body) throw new Error("bad status " + res.status);
+
+      // قراءة الرد كـ Stream (Server-Sent Events) بدل ما ننتظر الرد كامل
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = "";
+
+      while (true) {
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buffer += decoder.decode(chunk.value, { stream: true });
+
+        var lines = buffer.split("\n");
+        buffer = lines.pop(); // آخر سطر ممكن يكون ناقص، نسيبه للـ chunk الجاي
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (line.slice(0, 5) !== "data:") continue;
+          var jsonStr = line.slice(5).trim();
+          if (!jsonStr) continue;
+
+          var obj;
+          try { obj = JSON.parse(jsonStr); } catch (e) { continue; }
+
+          if (obj.delta) {
+            if (!gotAnyChunk) {
+              removeTyping();
+              bubble = createBotBubble(false);
+              gotAnyChunk = true;
+            }
+            accumulated += obj.delta;
+            setBotBubbleText(bubble, accumulated, true);
+          }
+        }
+      }
+
       removeTyping();
 
-      if (!res.ok) throw new Error("bad status " + res.status);
-      var data = await res.json();
-      var reply = (data && data.reply) ? data.reply : "معلش، مقدرتش أفهم رد الخادم. جرّب تسأل تاني.";
-      addBotMessage(reply);
-      history.push({ role: "assistant", text: reply });
-      saveHistory();
+      if (!gotAnyChunk || !accumulated.trim()) {
+        addBotMessage("معلش، مقدرتش أفهم رد الخادم. جرّب تسأل تاني.", true);
+      } else {
+        setBotBubbleText(bubble, accumulated, false); // شيل مؤشر الكتابة النهائي
+        history.push({ role: "assistant", text: accumulated });
+        saveHistory();
+      }
     } catch (err) {
       removeTyping();
-      addBotMessage("معلش، حصلت مشكلة في الاتصال 🙏 اتأكد إن النت شغال وجرّب تاني كمان شوية.", true);
+      if (bubble && accumulated) {
+        // اتقطع الاتصال في نص الرد — سيب اللي وصل وبس شيل مؤشر الكتابة
+        setBotBubbleText(bubble, accumulated, false);
+        history.push({ role: "assistant", text: accumulated });
+        saveHistory();
+      } else {
+        addBotMessage("معلش، حصلت مشكلة في الاتصال 🙏 اتأكد إن النت شغال وجرّب تاني كمان شوية.", true);
+      }
     } finally {
       isSending = false;
       sendBtn.disabled = false;

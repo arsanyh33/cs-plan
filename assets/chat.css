@@ -69,10 +69,38 @@
   padding:12px 15px;
   border-radius:var(--radius-sm);
   font-size:.96rem; line-height:1.85;
-  white-space:pre-wrap; word-break:break-word;
+  word-break:break-word;
   animation:chatIn .28s var(--ease);
 }
 @keyframes chatIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+.chat-msg.user{ white-space:pre-wrap; }
+
+/* ---------- تنسيق محتوى الرد (Markdown-lite) ---------- */
+.chat-msg.bot p{ margin:0 0 10px; }
+.chat-msg.bot p:last-child{ margin-bottom:0; }
+.chat-msg.bot ul, .chat-msg.bot ol{
+  margin:0 0 10px; padding-inline-start:22px;
+  display:flex; flex-direction:column; gap:5px;
+}
+.chat-msg.bot ul:last-child, .chat-msg.bot ol:last-child{ margin-bottom:0; }
+.chat-msg.bot li{ margin:0; }
+.chat-msg.bot strong{ color:var(--text); font-weight:800; }
+.chat-msg.bot code{
+  background:var(--glass); border:1px solid var(--line);
+  padding:1px 6px; border-radius:6px;
+  font-size:.88em; font-family:monospace; direction:ltr; display:inline-block;
+}
+.chat-msg.bot h3, .chat-msg.bot h4, .chat-msg.bot h5{
+  font-family:var(--font-display); font-weight:800; margin:0 0 8px; line-height:1.4;
+}
+
+/* مؤشر الكتابة النابض أثناء الـ Streaming */
+.chat-cursor{
+  display:inline-block; margin-inline-start:2px;
+  color:var(--cyan); animation:chatCursorBlink 1s step-start infinite;
+}
+@keyframes chatCursorBlink{ 50%{ opacity:0; } }
 
 .chat-msg.bot{
   align-self:flex-start;

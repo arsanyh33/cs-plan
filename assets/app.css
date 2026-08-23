@@ -208,6 +208,19 @@ input,select,textarea{ font-family:inherit; }
 .quick-plans:hover{ border-color:var(--cyan); color:var(--cyan); }
 .appbar.stuck .quick-plans{ display:inline-flex; }
 @media (max-width:640px){ .quick-plans span:first-child{ display:none; } }
+
+/* زرار "اسأل الشات بوت" — نفس شكل quick-plans لكن ظاهر دايمًا (مش بس وقت السكرول)
+   ولونه بالهوية الأساسية عشان يبان كـ CTA مميز، زي أزرار "Ask AI" في مواقع 2026. */
+.ask-ai-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:9px 14px; border-radius:11px;
+  border:1px solid var(--line-hot); background:color-mix(in srgb, var(--cyan) 10%, var(--glass));
+  color:var(--cyan); font-family:var(--font-display); font-weight:800; font-size:.83rem;
+  text-decoration:none; white-space:nowrap;
+  transition:.2s var(--ease);
+}
+.ask-ai-btn:hover{ background:color-mix(in srgb, var(--cyan) 18%, var(--glass)); box-shadow:0 6px 20px -10px var(--cyan); }
+@media (max-width:640px){ .ask-ai-btn span:last-child{ display:none; } }
 .appbar-in{
   width:100%; max-width:1180px; margin:0 auto; padding:14px 22px;   /* نفس ملفاتك */
   display:grid; grid-template-columns:minmax(0,1fr) auto;   /* اللوجو | الأدوات */

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R743EMFN1F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-R743EMFN1F');
+</script>
+<meta charset="utf-8">
+<script>
+(function(){
+  try{
+    var p = JSON.parse(localStorage.getItem('uniShellPrefs_v1') || '{}');
+    document.documentElement.setAttribute('data-theme', p.theme || 'dark');
+  }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>اسأل الشات بوت — Top Computer Science Students</title>
+<meta name="description" content="شات بوت ذكاء اصطناعي بيجاوب على أسئلتك عن خطط قسم الرياضيات وعلوم الحاسب، كلية العلوم، جامعة الإسكندرية.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05060b">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/app.css?v=2.11.0">
+<link rel="stylesheet" href="assets/chat.css?v=2.11.0">
+</head>
+<body class="chat-body">
+
+<header class="appbar" id="appbar">
+  <div class="appbar-in">
+    <a class="logo" href="index.html">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.6 8.2L10.6 15.4M16.4 8.2L13.4 15.4M8 7H16"/></svg>
+      </span>
+      <span class="logo-tx">
+        <b>Top Computer Science Students</b>
+        <small>جامعة الإسكندرية · كلية العلوم</small>
+      </span>
+    </a>
+    <div class="appbar-grow"></div>
+    <a class="quick-plans" href="index.html" title="رجوع للرئيسية">
+      <span>الرئيسية</span><span aria-hidden="true">↩</span>
+    </a>
+  </div>
+</header>
+
+<main class="chat-page">
+  <div class="chat-shell">
+
+    <div class="chat-shell-head">
+      <div class="chat-shell-title">
+        <span class="chat-shell-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </span>
+        <div>
+          <h1>مساعد TCSS</h1>
+          <p>بيجاوب على أسئلتك من بيانات خطط القسم فعليًا — مش تخمين</p>
+        </div>
+      </div>
+      <button class="chat-clear-btn" id="chatClearBtn" type="button" title="ابدأ محادثة جديدة">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span>محادثة جديدة</span>
+      </button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+
+    <div class="chat-suggestions" id="chatSuggestions">
+      <button type="button">كام ساعة مادة الذكاء الاصطناعي؟</button>
+      <button type="button">شروط دخول السبيشيال إيه؟</button>
+      <button type="button">إزاي أحسب المعدل التراكمي؟</button>
+      <button type="button">إيه المتطلب السابق لمادة قواعد البيانات؟</button>
+    </div>
+
+    <form class="chat-input-row" id="chatForm">
+      <textarea id="chatInput" placeholder="اكتب سؤالك هنا…" rows="1"></textarea>
+      <button type="submit" id="chatSendBtn" aria-label="إرسال">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+      </button>
+    </form>
+    <div class="chat-hint">رد آلي من ذكاء اصطناعي وممكن يغلط أحيانًا — للمعلومات الرسمية راجع صفحة اللائحة</div>
+  </div>
+</main>
+
+<script src="assets/chat.js?v=2.11.0"></script>
+</body>
+</html>

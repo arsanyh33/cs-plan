@@ -9,6 +9,13 @@
   display:flex; flex-direction:column;
 }
 
+/* ---------- زرار "My Home" في هيدر صفحة الشات المستقلة ----------
+   في index.html كلاس .quick-plans مصمم يظهر بس وقت السكرول (appbar.stuck)
+   — ده سلوك صح هناك. لكن جوه chat.html هو الطريقة الوحيدة الرجوع للرئيسية،
+   فلازم يفضل ظاهر وثابت جنب الشعار طول الوقت، بغض النظر عن حالة السكرول.
+   السكوب هنا بـ .chat-body عشان الملف مشترك مع index.html ومنغيرش سلوكه هناك. */
+.chat-body .quick-plans{ display:inline-flex; }
+
 .chat-page{
   flex:1;
   display:flex; justify-content:center;

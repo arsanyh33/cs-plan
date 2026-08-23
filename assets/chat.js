@@ -34,18 +34,23 @@
   var formEl = document.getElementById("chatForm");
   var inputEl = document.getElementById("chatInput");
   var sendBtn = document.getElementById("chatSendBtn");
-  var clearBtn = document.getElementById("chatClearBtn");
+  var newChatBtn = document.getElementById("chatNewChatBtn");
 
   var fontDecBtn = document.getElementById("chatFontDecBtn");
   var fontIncBtn = document.getElementById("chatFontIncBtn");
   var shareBtn = document.getElementById("chatShareBtn");
-  var archiveBtn = document.getElementById("chatArchiveBtn");
-  var archiveCloseBtn = document.getElementById("chatArchiveCloseBtn");
-  var archiveEl = document.getElementById("chatArchive");
-  var archiveListEl = document.getElementById("chatArchiveList");
+  var sidebarToggleBtn = document.getElementById("chatSidebarToggle");
+  var sidebarBackdropEl = document.getElementById("chatSidebarBackdrop");
+  var sidebarListEl = document.getElementById("chatSidebarList");
 
   // الحاوية الرئيسية (chat-shell في الصفحة الكاملة، chat-drawer في اللوحة الجانبية)
+  // — بتُستخدم بس لحاجات بصرية بسيطة زي الـ Toast
   var containerEl = document.querySelector(".chat-shell, .chat-drawer");
+
+  // الحاوية اللي بيتحط عليها كلاس "sidebar-open" — في الصفحة الكاملة دي
+  // #chatLayout (اللي فيها الشريط الجانبي + الشات جنب بعض)، وفي اللوحة
+  // الجانبية دي .chat-drawer نفسها (لأن الشريط بيظهر فوقها كـ Overlay).
+  var sidebarHostEl = document.getElementById("chatLayout") || document.querySelector(".chat-drawer");
 
   if (!messagesEl || !formEl || !inputEl || !sendBtn) return; // أمان لو الصفحة اتغيرت مستقبلاً
 
@@ -282,6 +287,7 @@
 
     if (list.length > MAX_CONVERSATIONS) list = list.slice(0, MAX_CONVERSATIONS);
     saveConversations(list);
+    renderSidebarList();
   }
 
   function formatConvDate(iso) {
@@ -294,27 +300,28 @@
     } catch (e) { return ""; }
   }
 
-  function renderArchiveList() {
-    if (!archiveListEl) return;
+  function renderSidebarList() {
+    if (!sidebarListEl) return;
     var list = loadConversations();
-    archiveListEl.innerHTML = "";
+    sidebarListEl.innerHTML = "";
 
     if (!list.length) {
-      archiveListEl.appendChild(el("div", { class: "chat-archive-empty" }, [
+      sidebarListEl.appendChild(el("div", { class: "chat-sidebar-empty" }, [
         document.createTextNode("لسه مفيش محادثات محفوظة — أي محادثة تبدأها هتتحفظ هنا تلقائيًا.")
       ]));
       return;
     }
 
     list.forEach(function (conv) {
-      var mainBtn = el("button", { type: "button", class: "chat-archive-item-main" }, [
-        el("span", { class: "chat-archive-item-title" }, [document.createTextNode(conv.title)]),
-        el("span", { class: "chat-archive-item-date" }, [document.createTextNode(formatConvDate(conv.updatedAt))])
+      var itemCls = "chat-sidebar-item" + (conv.id === activeId ? " active" : "");
+      var mainBtn = el("button", { type: "button", class: "chat-sidebar-item-main" }, [
+        el("span", { class: "chat-sidebar-item-title" }, [document.createTextNode(conv.title)]),
+        el("span", { class: "chat-sidebar-item-date" }, [document.createTextNode(formatConvDate(conv.updatedAt))])
       ]);
       mainBtn.addEventListener("click", function () { openConversation(conv.id); });
 
       var delBtn = el("button", {
-        type: "button", class: "chat-archive-item-del", title: "حذف المحادثة", "aria-label": "حذف المحادثة"
+        type: "button", class: "chat-sidebar-item-del", title: "حذف المحادثة", "aria-label": "حذف المحادثة"
       }, [svgIcon('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>')]);
       delBtn.addEventListener("click", function (e) {
         e.stopPropagation();
@@ -322,7 +329,7 @@
         deleteConversation(conv.id);
       });
 
-      archiveListEl.appendChild(el("div", { class: "chat-archive-item" }, [mainBtn, delBtn]));
+      sidebarListEl.appendChild(el("div", { class: itemCls }, [mainBtn, delBtn]));
     });
   }
 
@@ -337,31 +344,31 @@
       if (m.role === "user") addUserMessage(m.text);
       else addFinalBotMessage(m.text);
     });
-    closeArchive();
+    renderSidebarList();
     scrollToEnd();
   }
 
   function deleteConversation(id) {
     saveConversations(loadConversations().filter(function (c) { return c.id !== id; }));
     if (activeId === id) startNewConversation();
-    renderArchiveList();
+    renderSidebarList();
     showChatToast("اتمسحت المحادثة");
   }
 
-  function openArchive() {
-    renderArchiveList();
-    if (containerEl) containerEl.classList.add("archive-open");
+  /* ---------- فتح/قفل الشريط الجانبي (Push على الديسكتوب في الصفحة
+     الكاملة، Overlay فوق المحتوى في اللوحة الجانبية وعلى الموبايل) ---------- */
+  function openSidebar() {
+    if (sidebarHostEl) sidebarHostEl.classList.add("sidebar-open");
   }
-  function closeArchive() {
-    if (containerEl) containerEl.classList.remove("archive-open");
+  function closeSidebar() {
+    if (sidebarHostEl) sidebarHostEl.classList.remove("sidebar-open");
   }
-  if (archiveBtn) {
-    archiveBtn.addEventListener("click", function () {
-      if (containerEl && containerEl.classList.contains("archive-open")) closeArchive();
-      else openArchive();
-    });
+  function toggleSidebar() {
+    if (sidebarHostEl && sidebarHostEl.classList.contains("sidebar-open")) closeSidebar();
+    else openSidebar();
   }
-  if (archiveCloseBtn) archiveCloseBtn.addEventListener("click", closeArchive);
+  if (sidebarToggleBtn) sidebarToggleBtn.addEventListener("click", toggleSidebar);
+  if (sidebarBackdropEl) sidebarBackdropEl.addEventListener("click", closeSidebar);
 
   function startNewConversation() {
     activeId = null;
@@ -369,6 +376,7 @@
     messagesEl.innerHTML = "";
     suggestionsEl.classList.remove("hidden");
     greet();
+    renderSidebarList();
     inputEl.focus();
   }
 
@@ -444,9 +452,11 @@
     });
   });
 
-  clearBtn.addEventListener("click", function () {
-    startNewConversation();
-  });
+  if (newChatBtn) {
+    newChatBtn.addEventListener("click", function () {
+      startNewConversation();
+    });
+  }
 
   formEl.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -545,9 +555,26 @@
     }
   }
 
+  function initSidebarDefaultState() {
+    if (!sidebarHostEl) return;
+    // في الصفحة الكاملة، الشريط بيبقى مفتوح افتراضيًا على الشاشات
+    // الواسعة (Push layout)، ومقفول على الموبايل (Overlay). في اللوحة
+    // الجانبية (chat-drawer) بيفضل مقفول افتراضيًا في الحالتين — لأنه
+    // أصلاً Overlay فوق مساحة ضيقة.
+    if (sidebarHostEl.id === "chatLayout") {
+      try {
+        if (window.matchMedia && window.matchMedia("(min-width:861px)").matches) {
+          sidebarHostEl.classList.add("sidebar-open");
+        }
+      } catch (e) {}
+    }
+  }
+
   function init() {
     // كل فتح جديد للشات بيبدأ بمحادثة فاضية (زي شات جي بي تي) — المحادثات
-    // القديمة كلها متاحة من زرار "المحادثات" ومحفوظة بالكامل في الأرشيف.
+    // القديمة كلها متاحة من الشريط الجانبي ومحفوظة بالكامل في الأرشيف.
+    renderSidebarList();
+    initSidebarDefaultState();
     greet();
     inputEl.focus();
   }

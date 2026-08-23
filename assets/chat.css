@@ -16,11 +16,125 @@
   min-height:0;
 }
 
+/* ---------- الحاوية اللي بتضم الشريط الجانبي + الشات جنب بعض
+   (الصفحة الكاملة chat.html بس — اللوحة الجانبية في index.html مالهاش
+   الحاوية دي، الشريط بيظهر فوقها كـ Overlay مباشرة) ---------- */
+.chat-layout{
+  width:100%; max-width:1040px;
+  display:flex; align-items:stretch; min-height:0;
+  position:relative;
+  height:calc(100dvh - var(--bar-h) - 38px);
+}
+
 .chat-shell{
-  width:100%; max-width:760px;
+  flex:1; min-width:0; max-width:760px; margin-inline:auto;
   display:flex; flex-direction:column;
   min-height:0; position:relative;
-  height:calc(100dvh - var(--bar-h) - 38px);
+  height:100%;
+}
+
+/* ==========================================================================
+   الشريط الجانبي الدائم (زي ChatGPT) — محادثة جديدة + قائمة "الأخيرة".
+   الافتراضي (Mobile-first): Overlay ثابت بيسحب من حافة الشاشة فوق أي حاجة.
+   على الديسكتوب في الصفحة الكاملة بس (#chatLayout) بيتحول لـ Push layout
+   بيبان جنب الشات نفسه، بدل ما يغطيه.
+   ========================================================================== */
+.chat-sidebar-backdrop{
+  position:fixed; inset:0; z-index:8975;
+  background:rgba(2,3,8,.6);
+  backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .28s var(--ease), visibility .28s;
+}
+.sidebar-open > .chat-sidebar-backdrop,
+.sidebar-open .chat-sidebar-backdrop{ opacity:1; visibility:visible; pointer-events:all; }
+
+.chat-sidebar{
+  position:fixed; top:0; bottom:0; inset-inline-start:0; z-index:8980;
+  width:min(280px, 84vw);
+  background:var(--panel);
+  border-inline-end:1px solid var(--line2);
+  box-shadow:26px 0 60px -20px rgba(0,0,0,.6);
+  display:flex; flex-direction:column; min-height:0;
+  padding:16px 12px calc(16px + env(safe-area-inset-bottom));
+  transform:translateX(-100%);
+  transition:transform .32s var(--ease);
+}
+[dir="rtl"] .chat-sidebar{ transform:translateX(100%); }
+.sidebar-open .chat-sidebar{ transform:translateX(0); }
+
+.chat-sidebar-newbtn{
+  display:flex; align-items:center; gap:8px; width:100%;
+  padding:10px 12px; border-radius:11px; margin-bottom:16px; flex:none;
+  border:1px solid var(--line); background:var(--glass);
+  color:var(--text); font-family:var(--font-display); font-weight:800; font-size:.86rem;
+  cursor:pointer; transition:.2s var(--ease);
+}
+.chat-sidebar-newbtn:hover{ border-color:var(--line-hot); background:var(--glass2); color:var(--cyan); }
+.chat-sidebar-newbtn svg{ width:16px; height:16px; flex:none; }
+
+.chat-sidebar-section-label{
+  font-size:.7rem; font-weight:800; color:var(--dim2);
+  text-transform:uppercase; letter-spacing:.04em;
+  padding:0 6px 8px; flex:none;
+}
+
+.chat-sidebar-list{
+  flex:1; min-height:0; overflow-y:auto;
+  display:flex; flex-direction:column; gap:2px;
+  scrollbar-width:thin;
+}
+.chat-sidebar-list::-webkit-scrollbar{ width:6px; }
+.chat-sidebar-list::-webkit-scrollbar-thumb{ background:var(--line2); border-radius:99px; }
+
+.chat-sidebar-empty{
+  color:var(--dim2); font-size:.78rem; text-align:center; line-height:1.85;
+  padding:22px 10px;
+}
+
+.chat-sidebar-item{ position:relative; display:flex; align-items:center; }
+.chat-sidebar-item-main{
+  flex:1; min-width:0; text-align:start;
+  padding:9px 30px 9px 10px; border-radius:9px;
+  border:1px solid transparent; background:transparent; color:var(--dim);
+  display:flex; flex-direction:column; gap:1px;
+  cursor:pointer; transition:.15s var(--ease);
+}
+[dir="rtl"] .chat-sidebar-item-main{ padding:9px 10px 9px 30px; }
+.chat-sidebar-item-main:hover{ background:var(--glass); color:var(--text); }
+.chat-sidebar-item.active .chat-sidebar-item-main{
+  background:var(--glass2); color:var(--cyan); border-color:var(--line-hot);
+}
+.chat-sidebar-item-title{
+  font-size:.83rem; font-weight:700;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.chat-sidebar-item-date{ font-size:.72rem; color:var(--dim2); }
+.chat-sidebar-item.active .chat-sidebar-item-date{ color:inherit; opacity:.7; }
+
+.chat-sidebar-item-del{
+  position:absolute; inset-inline-end:4px; top:50%; transform:translateY(-50%);
+  width:24px; height:24px; border-radius:7px; display:grid; place-items:center;
+  border:none; background:transparent; color:var(--dim2);
+  opacity:.55; cursor:pointer; transition:.15s var(--ease);
+}
+.chat-sidebar-item-del svg{ width:13px; height:13px; }
+.chat-sidebar-item-del:hover{
+  opacity:1; background:color-mix(in srgb, var(--magenta) 18%, transparent); color:var(--magenta);
+}
+
+@media (min-width:861px){
+  .chat-layout{ gap:16px; }
+  #chatLayout .chat-sidebar-backdrop{ display:none; }
+  #chatLayout .chat-sidebar{
+    position:static; transform:none; z-index:auto;
+    width:0; flex:none; min-height:0;
+    padding:0; margin:0; border:0; box-shadow:none; opacity:0; overflow:hidden;
+    transition:width .3s var(--ease), padding .3s var(--ease), opacity .22s var(--ease);
+  }
+  #chatLayout.sidebar-open .chat-sidebar{
+    width:264px; padding:16px 12px; opacity:1;
+  }
 }
 
 /* ---------- تنبيه صغير مؤقت (Toast) — "اتنسخ ✓" ونحوها ---------- */
@@ -83,17 +197,6 @@
   color:var(--magenta); border-color:color-mix(in srgb, var(--magenta) 40%, var(--line));
 }
 .chat-font-group{ display:flex; align-items:center; gap:3px; }
-
-.chat-clear-btn{
-  flex:none; display:flex; align-items:center; gap:6px;
-  padding:8px 12px; border-radius:999px;
-  border:1px solid var(--line); background:var(--glass);
-  color:var(--dim); font-family:var(--font-display); font-weight:800; font-size:.78rem;
-  cursor:pointer; transition:.2s var(--ease);
-}
-.chat-clear-btn:hover{ border-color:var(--line-hot); color:var(--cyan); }
-.chat-clear-btn span{ display:none; }
-@media(min-width:560px){ .chat-clear-btn span{ display:inline; } }
 
 /* ---------- messages area ---------- */
 .chat-messages{
@@ -231,81 +334,4 @@
 
 .chat-hint{
   text-align:center; color:var(--dim2); font-size:.75rem; margin-top:10px;
-}
-
-/* ==========================================================================
-   أرشيف المحادثات القديمة — بيبدّل مكان الرسائل/الاقتراحات/حقل الكتابة
-   لما يتفتح (زرار "المحادثات" في الهيدر)، بدل ما يفتح صفحة تالتة.
-   ========================================================================== */
-.chat-archive{ display:none; flex-direction:column; flex:1; min-height:0; }
-.chat-shell.archive-open .chat-messages,
-.chat-shell.archive-open .chat-suggestions,
-.chat-shell.archive-open .chat-input-row,
-.chat-shell.archive-open .chat-hint,
-.chat-drawer.archive-open .chat-messages,
-.chat-drawer.archive-open .chat-suggestions,
-.chat-drawer.archive-open .chat-input-row,
-.chat-drawer.archive-open .chat-hint{
-  display:none;
-}
-.chat-shell.archive-open .chat-archive,
-.chat-drawer.archive-open .chat-archive{
-  display:flex;
-}
-
-.chat-archive-head{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding-bottom:12px; margin-bottom:8px;
-}
-.chat-archive-head h3{
-  font-family:var(--font-display); font-weight:800; font-size:1rem;
-}
-.chat-archive-close{
-  flex:none; width:30px; height:30px; border-radius:9px;
-  display:grid; place-items:center;
-  border:1px solid var(--line); background:var(--glass); color:var(--dim);
-  cursor:pointer; transition:.2s var(--ease);
-}
-.chat-archive-close:hover{ border-color:var(--line-hot); color:var(--cyan); }
-.chat-archive-close svg{ width:14px; height:14px; }
-
-.chat-archive-list{
-  flex:1; min-height:0; overflow-y:auto;
-  display:flex; flex-direction:column; gap:8px;
-  scrollbar-width:thin;
-}
-.chat-archive-list::-webkit-scrollbar{ width:6px; }
-.chat-archive-list::-webkit-scrollbar-thumb{ background:var(--line2); border-radius:99px; }
-
-.chat-archive-empty{
-  text-align:center; color:var(--dim); font-size:.88rem; line-height:1.8;
-  padding:36px 12px;
-}
-
-.chat-archive-item{
-  display:flex; align-items:stretch; gap:6px;
-}
-.chat-archive-item-main{
-  flex:1; min-width:0; text-align:start;
-  display:flex; flex-direction:column; gap:3px;
-  padding:11px 14px; border-radius:var(--radius-sm);
-  border:1px solid var(--line); background:var(--panel2);
-  cursor:pointer; transition:.2s var(--ease);
-}
-.chat-archive-item-main:hover{ border-color:var(--line-hot); background:var(--glass2); }
-.chat-archive-item-title{
-  font-size:.92rem; font-weight:700; color:var(--text);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.chat-archive-item-date{ font-size:.76rem; color:var(--dim2); }
-.chat-archive-item-del{
-  flex:none; width:40px; border-radius:var(--radius-sm);
-  display:grid; place-items:center;
-  border:1px solid var(--line); background:var(--panel2); color:var(--dim2);
-  cursor:pointer; transition:.2s var(--ease);
-}
-.chat-archive-item-del svg{ width:15px; height:15px; }
-.chat-archive-item-del:hover{
-  border-color:color-mix(in srgb, var(--magenta) 45%, var(--line));
-  color:var(--magenta);
 }

@@ -43,8 +43,8 @@
 <meta name="twitter:description" content="دليل مقررات قسم الرياضيات وعلوم الحاسب.">
 <meta name="twitter:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <link rel="stylesheet" href="assets/app.css?v=2.11.0">
-<link rel="stylesheet" href="assets/chat.css?v=2.13.0">
-<link rel="stylesheet" href="assets/chat-widget.css?v=2.13.0">
+<link rel="stylesheet" href="assets/chat.css?v=2.14.0">
+<link rel="stylesheet" href="assets/chat-widget.css?v=2.14.0">
 
 <!-- ═══════════════════════════════════════════════════════════════════
      📊 عداد زيارات خفيف (اختياري) — Plausible / Cloudflare Web Analytics
@@ -282,7 +282,21 @@
 <div id="chatDrawerOverlay" class="chat-drawer-overlay"></div>
 
 <aside id="chatDrawer" class="chat-drawer" role="dialog" aria-modal="true" aria-labelledby="chatDrawerTitle" aria-hidden="true">
+
+  <div class="chat-sidebar-backdrop" id="chatSidebarBackdrop"></div>
+  <aside class="chat-sidebar" id="chatSidebar">
+    <button class="chat-sidebar-newbtn" id="chatNewChatBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span>محادثة جديدة</span>
+    </button>
+    <div class="chat-sidebar-section-label">المحادثات الأخيرة</div>
+    <div class="chat-sidebar-list" id="chatSidebarList"></div>
+  </aside>
+
   <div class="chat-drawer-head">
+    <button class="chat-drawer-action" id="chatSidebarToggle" type="button" title="إظهار/إخفاء المحادثات" aria-label="إظهار/إخفاء المحادثات">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9.5 4.5v15"/></svg>
+    </button>
     <div class="chat-shell-title">
       <span class="chat-shell-badge" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -300,12 +314,6 @@
       <button class="chat-drawer-action" id="chatShareBtn" type="button" title="مشاركة المحادثة" aria-label="مشاركة المحادثة">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6 15.4 6.4M8.6 13.4l6.8 4.2"/></svg>
       </button>
-      <button class="chat-drawer-action" id="chatArchiveBtn" type="button" title="المحادثات السابقة" aria-label="المحادثات السابقة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </button>
-      <button class="chat-drawer-action" id="chatClearBtn" type="button" title="ابدأ محادثة جديدة" aria-label="ابدأ محادثة جديدة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-      </button>
       <a class="chat-drawer-action" id="chatExpandBtn" href="chat.html" target="_blank" rel="noopener" title="فتح في صفحة كاملة" aria-label="فتح الشات في صفحة كاملة">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
       </a>
@@ -316,16 +324,6 @@
   </div>
 
   <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
-
-  <div class="chat-archive" id="chatArchive">
-    <div class="chat-archive-head">
-      <h3>المحادثات السابقة</h3>
-      <button class="chat-archive-close" id="chatArchiveCloseBtn" type="button" title="رجوع للمحادثة" aria-label="رجوع للمحادثة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div class="chat-archive-list" id="chatArchiveList"></div>
-  </div>
 
   <div class="chat-suggestions" id="chatSuggestions">
     <button type="button">كام ساعة مادة الذكاء الاصطناعي؟</button>
@@ -343,6 +341,7 @@
   <div class="chat-hint">رد آلي من ذكاء اصطناعي وممكن يغلط أحيانًا — للمعلومات الرسمية راجع صفحة اللائحة</div>
 </aside>
 
+
 <button id="chatFab" class="chat-fab" title="اسأل TCSS" aria-label="افتح شات مساعد TCSS" aria-haspopup="dialog" aria-controls="chatDrawer" aria-expanded="false">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
 </button>
@@ -351,6 +350,6 @@
 <script src="assets/inapp.js?v=2.10.0"></script>
 <script src="assets/bg.js?v=2.10.0"></script>
 <script src="assets/shell.js?v=2.10.0"></script>
-<script src="assets/chat-drawer.js?v=2.13.0"></script>
+<script src="assets/chat-drawer.js?v=2.14.0"></script>
 </body>
 </html>

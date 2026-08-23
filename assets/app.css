@@ -216,7 +216,7 @@ input,select,textarea{ font-family:inherit; }
   padding:9px 14px; border-radius:11px;
   border:1px solid var(--line-hot); background:color-mix(in srgb, var(--cyan) 10%, var(--glass));
   color:var(--cyan); font-family:var(--font-display); font-weight:800; font-size:.83rem;
-  text-decoration:none; white-space:nowrap;
+  text-decoration:none; white-space:nowrap; cursor:pointer;
   transition:.2s var(--ease);
 }
 .ask-ai-btn:hover{ background:color-mix(in srgb, var(--cyan) 18%, var(--glass)); box-shadow:0 6px 20px -10px var(--cyan); }

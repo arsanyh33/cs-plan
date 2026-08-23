@@ -43,6 +43,8 @@
 <meta name="twitter:description" content="دليل مقررات قسم الرياضيات وعلوم الحاسب.">
 <meta name="twitter:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <link rel="stylesheet" href="assets/app.css?v=2.11.0">
+<link rel="stylesheet" href="assets/chat.css?v=2.11.0">
+<link rel="stylesheet" href="assets/chat-widget.css?v=2.12.0">
 
 <!-- ═══════════════════════════════════════════════════════════════════
      📊 عداد زيارات خفيف (اختياري) — Plausible / Cloudflare Web Analytics
@@ -102,9 +104,9 @@
     <div class="appbar-grow"></div>
 
     <div class="appbar-tools">
-      <a class="ask-ai-btn" href="chat.html" target="_blank" rel="noopener" title="اسأل الشات بوت عن أي حاجة في خطتك">
-        <span aria-hidden="true">🤖</span><span>اسأل الشات بوت</span>
-      </a>
+      <button type="button" class="ask-ai-btn" id="chatHeaderBtn" title="اسأل TCSS عن أي حاجة في خطتك" aria-haspopup="dialog" aria-controls="chatDrawer" aria-expanded="false">
+        <span aria-hidden="true">🤖</span><span>اسأل TCSS</span>
+      </button>
 
       <a class="quick-plans" href="#plans" id="quickPlans" title="روح مباشرة للخطط">
         <span>الخطط</span><span aria-hidden="true">↓</span>
@@ -276,9 +278,59 @@
 </div>
 <button id="devFab" title="معاينة على جهاز مختلف" aria-label="معاينة على جهاز مختلف" aria-haspopup="dialog">📂</button>
 
+<!-- ============ شات بوت "اسأل TCSS": زرار عائم + لوحة جانبية ============ -->
+<div id="chatDrawerOverlay" class="chat-drawer-overlay"></div>
+
+<aside id="chatDrawer" class="chat-drawer" role="dialog" aria-modal="true" aria-labelledby="chatDrawerTitle" aria-hidden="true">
+  <div class="chat-drawer-head">
+    <div class="chat-shell-title">
+      <span class="chat-shell-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </span>
+      <div>
+        <h2 id="chatDrawerTitle">اسأل TCSS</h2>
+        <p>بيجاوب من بيانات خطط القسم فعليًا — مش تخمين</p>
+      </div>
+    </div>
+    <div class="chat-drawer-actions">
+      <button class="chat-drawer-action" id="chatClearBtn" type="button" title="ابدأ محادثة جديدة" aria-label="ابدأ محادثة جديدة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+      <a class="chat-drawer-action" id="chatExpandBtn" href="chat.html" target="_blank" rel="noopener" title="فتح في صفحة كاملة" aria-label="فتح الشات في صفحة كاملة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </a>
+      <button class="chat-drawer-action" id="chatDrawerClose" type="button" title="إغلاق" aria-label="إغلاق لوحة الشات">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+
+  <div class="chat-suggestions" id="chatSuggestions">
+    <button type="button">كام ساعة مادة الذكاء الاصطناعي؟</button>
+    <button type="button">شروط دخول السبيشيال إيه؟</button>
+    <button type="button">إزاي أحسب المعدل التراكمي؟</button>
+    <button type="button">إيه المتطلب السابق لمادة قواعد البيانات؟</button>
+  </div>
+
+  <form class="chat-input-row" id="chatForm">
+    <textarea id="chatInput" placeholder="اكتب سؤالك هنا…" rows="1"></textarea>
+    <button type="submit" id="chatSendBtn" aria-label="إرسال">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+    </button>
+  </form>
+  <div class="chat-hint">رد آلي من ذكاء اصطناعي وممكن يغلط أحيانًا — للمعلومات الرسمية راجع صفحة اللائحة</div>
+</aside>
+
+<button id="chatFab" class="chat-fab" title="اسأل TCSS" aria-label="افتح شات مساعد TCSS" aria-haspopup="dialog" aria-controls="chatDrawer" aria-expanded="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+</button>
+
 <script src="assets/store.js?v=2.10.0"></script>
 <script src="assets/inapp.js?v=2.10.0"></script>
 <script src="assets/bg.js?v=2.10.0"></script>
 <script src="assets/shell.js?v=2.10.0"></script>
+<script src="assets/chat-drawer.js?v=2.12.0"></script>
 </body>
 </html>

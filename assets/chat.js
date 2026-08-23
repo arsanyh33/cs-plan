@@ -556,18 +556,9 @@
   }
 
   function initSidebarDefaultState() {
-    if (!sidebarHostEl) return;
-    // في الصفحة الكاملة، الشريط بيبقى مفتوح افتراضيًا على الشاشات
-    // الواسعة (Push layout)، ومقفول على الموبايل (Overlay). في اللوحة
-    // الجانبية (chat-drawer) بيفضل مقفول افتراضيًا في الحالتين — لأنه
-    // أصلاً Overlay فوق مساحة ضيقة.
-    if (sidebarHostEl.id === "chatLayout") {
-      try {
-        if (window.matchMedia && window.matchMedia("(min-width:861px)").matches) {
-          sidebarHostEl.classList.add("sidebar-open");
-        }
-      } catch (e) {}
-    }
+    // الشريط الجانبي بيفضل مقفول افتراضيًا دايمًا — في الصفحة الكاملة
+    // وفي اللوحة الجانبية (chat-drawer) على حد سواء، موبايل أو ديسكتوب.
+    // المستخدم هو اللي بيفتحه براحته من زرار sidebarToggleBtn.
   }
 
   function init() {

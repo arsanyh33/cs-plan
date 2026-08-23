@@ -27,7 +27,7 @@
     if (engineLoaded) { done(); return; }
     engineLoaded = true;
     var s = document.createElement("script");
-    s.src = "assets/chat.js?v=2.14.0";
+    s.src = "assets/chat.js?v=2.14.1";
     s.onload = done;
     document.body.appendChild(s);
   }

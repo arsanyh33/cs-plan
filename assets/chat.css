@@ -19,13 +19,27 @@
 .chat-shell{
   width:100%; max-width:760px;
   display:flex; flex-direction:column;
-  min-height:0;
+  min-height:0; position:relative;
   height:calc(100dvh - var(--bar-h) - 38px);
 }
 
+/* ---------- تنبيه صغير مؤقت (Toast) — "اتنسخ ✓" ونحوها ---------- */
+.chat-toast{
+  position:absolute; top:8px; left:50%; z-index:40;
+  transform:translate(-50%, -14px);
+  background:var(--panel2); border:1px solid var(--line-hot);
+  color:var(--text); font-size:.8rem; font-weight:700;
+  padding:8px 16px; border-radius:999px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.5);
+  opacity:0; pointer-events:none;
+  transition:opacity .22s var(--ease), transform .22s var(--ease);
+  white-space:nowrap;
+}
+.chat-toast.show{ opacity:1; transform:translate(-50%, 0); }
+
 /* ---------- header row of the shell ---------- */
 .chat-shell-head{
-  display:flex; align-items:center; gap:12px;
+  display:flex; align-items:center; flex-wrap:wrap; gap:12px;
   padding-bottom:14px; margin-bottom:14px;
   border-bottom:1px solid var(--line);
 }
@@ -42,6 +56,33 @@
   font-family:var(--font-display); font-weight:900; font-size:1.15rem; line-height:1.3;
 }
 .chat-shell-title p{ color:var(--dim); font-size:.85rem; margin-top:2px; }
+
+/* ---------- صف أزرار الأدوات (خط، مشاركة، أرشيف) — مشترك بين الصفحة
+   الكاملة واللوحة الجانبية ---------- */
+.chat-shell-actions{
+  display:flex; align-items:center; gap:6px; flex:none;
+}
+.chat-shell-action, .chat-drawer-action{
+  flex:none; width:34px; height:34px; border-radius:10px;
+  display:grid; place-items:center;
+  border:1px solid var(--line); background:var(--glass); color:var(--dim);
+  cursor:pointer; transition:.2s var(--ease); text-decoration:none;
+}
+.chat-shell-action:hover, .chat-drawer-action:hover{
+  border-color:var(--line-hot); color:var(--cyan); background:var(--glass2);
+}
+.chat-shell-action svg, .chat-drawer-action svg{ width:16px; height:16px; }
+.chat-shell-action.txt, .chat-drawer-action.txt{
+  font-family:var(--font-display); font-weight:800; font-size:.72rem;
+}
+.chat-shell-action.flash-ok, .chat-drawer-action.flash-ok{
+  color:var(--cyan); border-color:var(--line-hot);
+  background:color-mix(in srgb, var(--cyan) 14%, var(--glass));
+}
+.chat-shell-action.flash-fail, .chat-drawer-action.flash-fail{
+  color:var(--magenta); border-color:color-mix(in srgb, var(--magenta) 40%, var(--line));
+}
+.chat-font-group{ display:flex; align-items:center; gap:3px; }
 
 .chat-clear-btn{
   flex:none; display:flex; align-items:center; gap:6px;
@@ -60,6 +101,9 @@
   display:flex; flex-direction:column; gap:12px;
   padding:6px 2px 14px;
   scrollbar-width:thin;
+  /* بيتضبط ديناميكيًا من أزرار A−/A+ في الهيدر (chat.js)، ومحفوظ في
+     localStorage. القيمة الافتراضية زي ما كانت بالظبط (.96rem تقريبًا). */
+  --chat-font-size: 16px;
 }
 .chat-messages::-webkit-scrollbar{ width:6px; }
 .chat-messages::-webkit-scrollbar-thumb{ background:var(--line2); border-radius:99px; }
@@ -68,7 +112,7 @@
   max-width:82%;
   padding:12px 15px;
   border-radius:var(--radius-sm);
-  font-size:.96rem; line-height:1.85;
+  font-size:var(--chat-font-size, .96rem); line-height:1.85;
   word-break:break-word;
   animation:chatIn .28s var(--ease);
 }
@@ -120,6 +164,27 @@
   color:var(--text);
 }
 
+/* ---------- نسخ + تقييم تحت كل رد فعلي من البوت ---------- */
+.chat-msg-actions{
+  display:flex; align-items:center; gap:4px;
+  margin-top:10px; padding-top:8px;
+  border-top:1px solid var(--line);
+}
+.chat-msg-action{
+  flex:none; width:28px; height:28px; border-radius:8px;
+  display:grid; place-items:center;
+  border:1px solid transparent; background:transparent; color:var(--dim2);
+  cursor:pointer; transition:.2s var(--ease);
+}
+.chat-msg-action svg{ width:14px; height:14px; }
+.chat-msg-action:hover{ background:var(--glass); color:var(--cyan); }
+.chat-msg-action.flash-ok{ color:var(--cyan); }
+.chat-msg-action.active{ color:var(--cyan); background:var(--glass); border-color:var(--line-hot); }
+.chat-msg-action:disabled{ cursor:default; }
+.chat-msg-action:disabled:not(.active){ opacity:.4; }
+.chat-msg-action:disabled:hover{ background:transparent; }
+.chat-msg-action.active:hover{ background:var(--glass); }
+
 .chat-msg.typing{ display:flex; align-items:center; gap:5px; padding:14px 16px; }
 .chat-msg.typing span{
   width:6px; height:6px; border-radius:50%; background:var(--dim);
@@ -166,4 +231,81 @@
 
 .chat-hint{
   text-align:center; color:var(--dim2); font-size:.75rem; margin-top:10px;
+}
+
+/* ==========================================================================
+   أرشيف المحادثات القديمة — بيبدّل مكان الرسائل/الاقتراحات/حقل الكتابة
+   لما يتفتح (زرار "المحادثات" في الهيدر)، بدل ما يفتح صفحة تالتة.
+   ========================================================================== */
+.chat-archive{ display:none; flex-direction:column; flex:1; min-height:0; }
+.chat-shell.archive-open .chat-messages,
+.chat-shell.archive-open .chat-suggestions,
+.chat-shell.archive-open .chat-input-row,
+.chat-shell.archive-open .chat-hint,
+.chat-drawer.archive-open .chat-messages,
+.chat-drawer.archive-open .chat-suggestions,
+.chat-drawer.archive-open .chat-input-row,
+.chat-drawer.archive-open .chat-hint{
+  display:none;
+}
+.chat-shell.archive-open .chat-archive,
+.chat-drawer.archive-open .chat-archive{
+  display:flex;
+}
+
+.chat-archive-head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding-bottom:12px; margin-bottom:8px;
+}
+.chat-archive-head h3{
+  font-family:var(--font-display); font-weight:800; font-size:1rem;
+}
+.chat-archive-close{
+  flex:none; width:30px; height:30px; border-radius:9px;
+  display:grid; place-items:center;
+  border:1px solid var(--line); background:var(--glass); color:var(--dim);
+  cursor:pointer; transition:.2s var(--ease);
+}
+.chat-archive-close:hover{ border-color:var(--line-hot); color:var(--cyan); }
+.chat-archive-close svg{ width:14px; height:14px; }
+
+.chat-archive-list{
+  flex:1; min-height:0; overflow-y:auto;
+  display:flex; flex-direction:column; gap:8px;
+  scrollbar-width:thin;
+}
+.chat-archive-list::-webkit-scrollbar{ width:6px; }
+.chat-archive-list::-webkit-scrollbar-thumb{ background:var(--line2); border-radius:99px; }
+
+.chat-archive-empty{
+  text-align:center; color:var(--dim); font-size:.88rem; line-height:1.8;
+  padding:36px 12px;
+}
+
+.chat-archive-item{
+  display:flex; align-items:stretch; gap:6px;
+}
+.chat-archive-item-main{
+  flex:1; min-width:0; text-align:start;
+  display:flex; flex-direction:column; gap:3px;
+  padding:11px 14px; border-radius:var(--radius-sm);
+  border:1px solid var(--line); background:var(--panel2);
+  cursor:pointer; transition:.2s var(--ease);
+}
+.chat-archive-item-main:hover{ border-color:var(--line-hot); background:var(--glass2); }
+.chat-archive-item-title{
+  font-size:.92rem; font-weight:700; color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.chat-archive-item-date{ font-size:.76rem; color:var(--dim2); }
+.chat-archive-item-del{
+  flex:none; width:40px; border-radius:var(--radius-sm);
+  display:grid; place-items:center;
+  border:1px solid var(--line); background:var(--panel2); color:var(--dim2);
+  cursor:pointer; transition:.2s var(--ease);
+}
+.chat-archive-item-del svg{ width:15px; height:15px; }
+.chat-archive-item-del:hover{
+  border-color:color-mix(in srgb, var(--magenta) 45%, var(--line));
+  color:var(--magenta);
 }

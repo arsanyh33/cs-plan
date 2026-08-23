@@ -91,7 +91,8 @@ html.chat-drawer-locked{ overflow:hidden; }
 }
 .chat-drawer-head .chat-shell-title p{ color:var(--dim); font-size:.8rem; margin-top:2px; }
 
-.chat-drawer-actions{ display:flex; align-items:center; gap:6px; flex:none; padding-top:2px; }
+.chat-drawer-actions{ display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:6px; flex:none; padding-top:2px; }
+.chat-drawer-font-group{ display:flex; align-items:center; gap:3px; }
 .chat-drawer-action{
   width:32px; height:32px; border-radius:10px; display:grid; place-items:center;
   border:1px solid var(--line); background:var(--glass); color:var(--dim);

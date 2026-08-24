@@ -463,37 +463,45 @@
     send();
   });
 
-  async function send() {
-    var text = inputEl.value.trim();
-    if (!text || isSending) return;
+  function sleep(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
 
-    hideSuggestions();
-    isSending = true;
-    sendBtn.disabled = true;
-    addUserMessage(text);
-    history.push({ role: "user", text: text });
-    persistActiveConversation();
-    inputEl.value = "";
-    autoGrow();
-    addTyping();
-
+  /* ⭐ (أغسطس 2026، جولة 12) — محاولة إرسال واحدة (Fetch + قراءة الـ
+     Stream). بترجّع Promise بترفض (reject) بس لو فشل الاتصال قبل ما
+     يوصل أي حرف خالص (مشكلة شبكة/سيرفر) — أي رد فعلي بييجي من السيرفر
+     (حتى لو رسالة "البوت مزنوق" اللي بيرجّعها الـ Worker نفسه بعد ما
+     يفشل مع Gemini) بييجي هنا كـ delta عادي، مش Exception، فمش بيتلمس
+     بمنطق إعادة المحاولة تحت — ده مقصود، عشان إعادة المحاولة من
+     المتصفح مفيدة بس في حالة فشل الاتصال الحقيقي، مش لما السيرفر نفسه
+     أصلاً رد (حتى لو برسالة اعتذار)، لأن إعادة المحاولة في الحالة دي
+     مش هتفرق وهتزوّد ضغط من غير داعي. */
+  async function attemptSend(text) {
     var accumulated = "";
     var bubble = null;
     var gotAnyChunk = false;
 
+    // ⚠️ فشل في الخطوتين دول (الاتصال نفسه لسه ما بدأش يقرأ حاجة) —
+    // ده اللي المفروض يترمي كـ Exception ويستأهل إعادة محاولة كاملة،
+    // لأن مفيش أي جزء رد اتبعت للطالب لسه خالص.
+    var res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: text,
+        history: history.slice(-MAX_SEND_HISTORY)
+      })
+    });
+
+    if (!res.ok || !res.body) throw new Error("bad status " + res.status);
+
+    // قراءة الرد كـ Stream (Server-Sent Events) بدل ما ننتظر الرد كامل.
+    // ⚠️ من هنا لغاية آخر الحلقة، أي خطأ بيتلقط جوّه (مش بيترمي براها)
+    // — لو جزء من الرد كان وصل فعلًا قبل ما الاتصال يتقطع، منسيبوش
+    // ونعتبره فشل كامل يستأهل إعادة إرسال السؤال تاني، ده هيبقى رد
+    // مكرر ومربك. بدل كده بنرجّع اللي وصل زي ما هو (streamError:true).
+    var streamError = null;
     try {
-      var res = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: text,
-          history: history.slice(-MAX_SEND_HISTORY)
-        })
-      });
-
-      if (!res.ok || !res.body) throw new Error("bad status " + res.status);
-
-      // قراءة الرد كـ Stream (Server-Sent Events) بدل ما ننتظر الرد كامل
       var reader = res.body.getReader();
       var decoder = new TextDecoder();
       var buffer = "";
@@ -526,28 +534,62 @@
           }
         }
       }
+    } catch (e) {
+      streamError = e;
+    }
+
+    return { accumulated: accumulated, bubble: bubble, gotAnyChunk: gotAnyChunk, streamError: streamError };
+  }
+
+  async function send() {
+    var text = inputEl.value.trim();
+    if (!text || isSending) return;
+
+    hideSuggestions();
+    isSending = true;
+    sendBtn.disabled = true;
+    addUserMessage(text);
+    history.push({ role: "user", text: text });
+    persistActiveConversation();
+    inputEl.value = "";
+    autoGrow();
+    addTyping();
+
+    try {
+      var result;
+      try {
+        result = await attemptSend(text);
+      } catch (firstErr) {
+        // 🔁 (جولة 12) فشل اتصال حقيقي قبل ما يوصل أي حرف خالص (fetch
+        // نفسه رمى خطأ، أو الرد رجع status مش ok) — نجرب مرة واحدة بس
+        // تانية بعد تأخير قصير، بدل ما نظهر رسالة خطأ فورًا. لو النت
+        // فعلاً واقع أو المشكلة مستمرة، المحاولة التانية هتفشل برضه
+        // وهنعرض رسالة الخطأ زي الأول — بس لو كانت مشكلة شبكة لحظية
+        // بسيطة، الطالب مش هيحس إن حاجة اتقطعت خالص.
+        await sleep(2000);
+        result = await attemptSend(text);
+      }
 
       removeTyping();
 
-      if (!gotAnyChunk || !accumulated.trim()) {
-        addBotMessage("معلش، مقدرتش أفهم رد الخادم. جرّب تسأل تاني.", true);
-      } else {
-        setBotBubbleText(bubble, accumulated, false); // شيل مؤشر الكتابة النهائي
-        attachBotActions(bubble);
-        history.push({ role: "assistant", text: accumulated });
+      if (result.gotAnyChunk && result.accumulated.trim()) {
+        // وصل رد فعلي (كامل أو جزء منه لو حصل streamError نص الطريق) —
+        // في الحالتين نسيب اللي وصل للطالب زي ما هو، من غير أي إعادة
+        // محاولة أو تكرار للسؤال (تجنب ردود مكررة).
+        setBotBubbleText(result.bubble, result.accumulated, false); // شيل مؤشر الكتابة النهائي
+        attachBotActions(result.bubble);
+        history.push({ role: "assistant", text: result.accumulated });
         persistActiveConversation();
+      } else if (result.streamError) {
+        // مفيش أي حرف وصل والستريم نفسه فشل (مش بس رجع فاضي) — رسالة
+        // اتصال واضحة بدل رسالة "مقدرتش أفهم الرد" المضلّلة.
+        addBotMessage("معلش، حصلت مشكلة في الاتصال 🙏 اتأكد إن النت شغال وجرّب تاني كمان شوية.", true);
+      } else {
+        addBotMessage("معلش، مقدرتش أفهم رد الخادم. جرّب تسأل تاني.", true);
       }
     } catch (err) {
       removeTyping();
-      if (bubble && accumulated) {
-        // اتقطع الاتصال في نص الرد — سيب اللي وصل وبس شيل مؤشر الكتابة
-        setBotBubbleText(bubble, accumulated, false);
-        attachBotActions(bubble);
-        history.push({ role: "assistant", text: accumulated });
-        persistActiveConversation();
-      } else {
-        addBotMessage("معلش، حصلت مشكلة في الاتصال 🙏 اتأكد إن النت شغال وجرّب تاني كمان شوية.", true);
-      }
+      addBotMessage("معلش، حصلت مشكلة في الاتصال 🙏 اتأكد إن النت شغال وجرّب تاني كمان شوية.", true);
     } finally {
       isSending = false;
       sendBtn.disabled = false;

@@ -180,8 +180,21 @@
 .chat-shell-badge svg{ width:22px; height:22px; }
 .chat-shell-title h1{
   font-family:var(--font-display); font-weight:900; font-size:1.15rem; line-height:1.3;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.chat-shell-title p{ color:var(--dim); font-size:.85rem; margin-top:2px; }
+.chat-shell-title p{
+  color:var(--dim); font-size:.85rem; margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* على الموبايل: العنوان والوصف كانوا بينزنقوا في عمود ضيق جدًا (كل كلمة في
+   سطر لوحدها) لأن صف الأزرار (.chat-shell-actions) كان بياخد عرض ثابت
+   ومايصغرش، فمكانش بيفضل مساحة كفاية للعنوان. الحل: صف الأزرار يتحط في سطر
+   لوحده تحت العنوان بدل ما يزاحمه في نفس السطر — كده العنوان بياخد العرض
+   الكامل تقريبًا وبيفضل سطر أو اتنين بس، والهيدر كله بيرجع شريط رفيع فوق. */
+@media (max-width:640px){
+  .chat-shell-actions{ flex-basis:100%; justify-content:flex-end; }
+}
 
 /* ---------- صف أزرار الأدوات (خط، مشاركة، أرشيف) — مشترك بين الصفحة
    الكاملة واللوحة الجانبية ---------- */

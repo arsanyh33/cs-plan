@@ -88,10 +88,22 @@ html.chat-drawer-locked{ overflow:hidden; }
 .chat-drawer-head .chat-shell-title{ flex:1; min-width:0; }
 .chat-drawer-head .chat-shell-title h2{
   font-family:var(--font-display); font-weight:900; font-size:1.05rem; line-height:1.3;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.chat-drawer-head .chat-shell-title p{ color:var(--dim); font-size:.8rem; margin-top:2px; }
+.chat-drawer-head .chat-shell-title p{
+  color:var(--dim); font-size:.8rem; margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 
-.chat-drawer-actions{ display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:6px; flex:none; padding-top:2px; }
+/* نفس مشكلة .chat-shell-actions في chat.css بالظبط: صف الأزرار (5 أزرار)
+   كان flex:none وماينزنقش، فكان بياخد جزء كبير ثابت من عرض اللوحة الضيقة
+   أصلًا على الموبايل، وبيسيب للعنوان (.chat-shell-title، flex:1 min-width:0)
+   مساحة صغيرة جدًا فيخليه يلف كلمة كلمة في عمود طويل. الحل: نجبر صف الأزرار
+   ياخد سطر كامل لوحده تحت العنوان بدل ما يتنافس معاه في نفس السطر. */
+.chat-drawer-actions{
+  display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:6px;
+  flex:none; flex-basis:100%; padding-top:6px;
+}
 .chat-drawer-font-group{ display:flex; align-items:center; gap:3px; }
 .chat-drawer-action{
   width:32px; height:32px; border-radius:10px; display:grid; place-items:center;

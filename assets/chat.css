@@ -30,7 +30,6 @@
   width:100%; max-width:1040px;
   display:flex; align-items:stretch; min-height:0;
   position:relative;
-  height:calc(100dvh - var(--bar-h) - 38px);
 }
 
 .chat-shell{

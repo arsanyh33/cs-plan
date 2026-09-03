@@ -27,27 +27,9 @@
 <link rel="icon" href="assets/icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/app.css?v=2.11.0">
-<link rel="stylesheet" href="assets/chat.css?v=2.16.10">
+<link rel="stylesheet" href="assets/chat.css?v=2.16.12">
 </head>
 <body class="chat-body">
-
-<header class="appbar" id="appbar">
-  <div class="appbar-in">
-    <a class="logo" href="index.html">
-      <span class="logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.6 8.2L10.6 15.4M16.4 8.2L13.4 15.4M8 7H16"/></svg>
-      </span>
-      <span class="logo-tx">
-        <b>Top Computer Science Students</b>
-        <small>جامعة الإسكندرية · كلية العلوم</small>
-      </span>
-    </a>
-    <div class="appbar-grow"></div>
-    <a class="quick-plans" href="index.html" title="رجوع للصفحة الرئيسية">
-      <span>My Home</span><span aria-hidden="true">↩</span>
-    </a>
-  </div>
-</header>
 
 <main class="chat-page">
   <div class="chat-layout" id="chatLayout">
@@ -77,6 +59,9 @@
           </div>
         </div>
         <div class="chat-shell-actions">
+          <a class="chat-shell-action" id="chatHomeBtn" href="index.html" title="الرئيسية" aria-label="الرجوع للصفحة الرئيسية">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg>
+          </a>
           <div class="chat-font-group">
             <button class="chat-shell-action txt" id="chatFontDecBtn" type="button" title="تصغير خط الشات" aria-label="تصغير خط الشات">A−</button>
             <button class="chat-shell-action txt" id="chatFontIncBtn" type="button" title="تكبير خط الشات" aria-label="تكبير خط الشات">A+</button>

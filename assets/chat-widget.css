@@ -80,7 +80,7 @@ html.chat-drawer-locked{ overflow:hidden; }
 
 /* ------------------------------- رأس اللوحة ------------------------------- */
 .chat-drawer-head{
-  display:flex; align-items:flex-start; gap:10px;
+  display:flex; align-items:flex-start; flex-wrap:wrap; gap:10px;
   padding-bottom:14px; margin-bottom:8px;
   border-bottom:1px solid var(--line);
   flex:none;
@@ -99,7 +99,14 @@ html.chat-drawer-locked{ overflow:hidden; }
    كان flex:none وماينزنقش، فكان بياخد جزء كبير ثابت من عرض اللوحة الضيقة
    أصلًا على الموبايل، وبيسيب للعنوان (.chat-shell-title، flex:1 min-width:0)
    مساحة صغيرة جدًا فيخليه يلف كلمة كلمة في عمود طويل. الحل: نجبر صف الأزرار
-   ياخد سطر كامل لوحده تحت العنوان بدل ما يتنافس معاه في نفس السطر. */
+   ياخد سطر كامل لوحده تحت العنوان بدل ما يتنافس معاه في نفس السطر.
+   ⚠️ ملحوظة اتصلحت (سبتمبر 2026): flex-basis:100% هنا لوحدها مش كانت كافية —
+   لازم الأب (.chat-drawer-head) يكون عنده flex-wrap:wrap كمان، وإلا الأزرار
+   مبترجعش سطر جديد أصلًا وبتتزنق مع العنوان (كلمة "TCSS" كانت بتتراكب مع
+   الأيقونات). القاعدة دي كانت ناقصة flex-wrap فعليًا (chat.css الأصلية عندها
+   flex-wrap:wrap على .chat-shell-head المكافئة، وهنا كان ناقص). *الحل النهائي
+   محتاج الاتنين مع بعض: flex-wrap:wrap على الأب + flex-basis:100% على صف
+   الأزرار.* */
 .chat-drawer-actions{
   display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:6px;
   flex:none; flex-basis:100%; padding-top:6px;

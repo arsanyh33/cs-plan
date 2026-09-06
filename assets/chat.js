@@ -36,6 +36,12 @@
   var sendBtn = document.getElementById("chatSendBtn");
   var newChatBtn = document.getElementById("chatNewChatBtn");
 
+  var attachBtn = document.getElementById("chatAttachBtn");
+  var imageInputEl = document.getElementById("chatImageInput");
+  var imagePreviewEl = document.getElementById("chatImagePreview");
+  var imagePreviewImgEl = document.getElementById("chatImagePreviewImg");
+  var imageRemoveBtn = document.getElementById("chatImageRemoveBtn");
+
   var fontDecBtn = document.getElementById("chatFontDecBtn");
   var fontIncBtn = document.getElementById("chatFontIncBtn");
   var shareBtn = document.getElementById("chatShareBtn");
@@ -162,8 +168,17 @@
   }
 
   /* ------------------------------ الرسائل ------------------------------ */
-  function addUserMessage(text) {
-    messagesEl.appendChild(el("div", { class: "chat-msg user" }, [document.createTextNode(text)]));
+  function addUserMessage(text, imageDataUrl) {
+    var children = [];
+    if (imageDataUrl) {
+      var img = document.createElement("img");
+      img.className = "chat-msg-img";
+      img.src = imageDataUrl;
+      img.alt = "الصورة المرفقة";
+      children.push(img);
+    }
+    children.push(document.createTextNode(text));
+    messagesEl.appendChild(el("div", { class: "chat-msg user" }, children));
     scrollToEnd();
   }
   function createBotBubble(isError) {
@@ -341,7 +356,11 @@
     messagesEl.innerHTML = "";
     hideSuggestions();
     history.forEach(function (m) {
-      if (m.role === "user") addUserMessage(m.text);
+      if (m.role === "user") {
+        // ⚠️ الصور مبتتخزنش في أرشيف المحادثات (تقيل جدًا على localStorage)،
+        // فبنعرض بس إشارة نصية إنه كان فيه صورة مرفقة وقت الإرسال الأصلي.
+        addUserMessage(m.hasImage ? "📷 (صورة مرفقة) " + m.text : m.text);
+      }
       else addFinalBotMessage(m.text);
     });
     renderSidebarList();
@@ -432,6 +451,113 @@
     });
   }
 
+  /* ==========================================================================
+     ⭐ إرفاق صورة واحدة مع السؤال (v2.17.0)
+     الموديلات المستخدمة (gemini-3.6-flash / gemini-3.5-flash-lite) بتقرا
+     صور فعليًا (Multimodal) — نفس فكرة إرفاق ملف اللائحة PDF عندنا بالظبط،
+     بس هنا الصورة بتتبعت مرفقة مع رسالة المستخدم الحالية بس (مش مع كل
+     تاريخ المحادثة). قبل ما نبعتها لازم نصغّرها ونضغطها في المتصفح نفسه
+     (Canvas) عشان: 1) الموقع أصلًا بيعاني من سقف توكنز الباقة المجانية
+     (شايف تعليق جولة 7 فوق) والصور الكبيرة بتاكل توكنز كتير، 2) سرعة
+     الرفع للطالب صاحب نت بطيء. الهدف حجم نهائي صغير (عادة أقل من 200-300
+     كيلوبايت) من غير ما يأثر على وضوح المحتوى (سكرين شوت جدول/صفحة مثلاً).
+     ========================================================================== */
+  var MAX_IMAGE_DIMENSION = 1280; // أقصى عرض/ارتفاع بعد التصغير (بكسل)
+  var IMAGE_JPEG_QUALITY = 0.72;
+  var MAX_ORIGINAL_IMAGE_MB = 15; // حماية بسيطة — نرفض نقرأ ملف أكبر من كده أصلًا
+
+  var pendingImage = null; // { mimeType, base64, dataUrl } | null
+
+  function readFileAsDataUrl(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result); };
+      reader.onerror = function () { reject(new Error("file read failed")); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function loadImageElement(dataUrl) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { reject(new Error("image decode failed")); };
+      img.src = dataUrl;
+    });
+  }
+
+  /* بتاخد ملف الصورة الأصلي وبترجّع نسخة مصغّرة/مضغوطة (JPEG) جاهزة
+     للإرسال، عن طريق رسمها على <canvas> بحجم أصغر بدل ما تتبعت زي ما هي. */
+  function compressImageFile(file) {
+    return readFileAsDataUrl(file).then(function (originalDataUrl) {
+      return loadImageElement(originalDataUrl);
+    }).then(function (img) {
+      var scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(img.naturalWidth, img.naturalHeight));
+      var w = Math.max(1, Math.round(img.naturalWidth * scale));
+      var h = Math.max(1, Math.round(img.naturalHeight * scale));
+
+      var canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext("2d");
+      // خلفية بيضا الأول (لو الصورة الأصلية PNG بشفافية، JPEG مالوش شفافية).
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+
+      var dataUrl = canvas.toDataURL("image/jpeg", IMAGE_JPEG_QUALITY);
+      var base64 = dataUrl.split(",")[1] || "";
+      return { mimeType: "image/jpeg", base64: base64, dataUrl: dataUrl };
+    });
+  }
+
+  function showImagePreview(dataUrl) {
+    if (!imagePreviewEl || !imagePreviewImgEl) return;
+    imagePreviewImgEl.src = dataUrl;
+    imagePreviewEl.classList.remove("hidden");
+    if (attachBtn) attachBtn.classList.add("has-image");
+  }
+
+  function clearPendingImage() {
+    pendingImage = null;
+    if (imagePreviewEl) imagePreviewEl.classList.add("hidden");
+    if (imagePreviewImgEl) imagePreviewImgEl.src = "";
+    if (attachBtn) attachBtn.classList.remove("has-image");
+    if (imageInputEl) imageInputEl.value = "";
+  }
+
+  if (attachBtn && imageInputEl) {
+    attachBtn.addEventListener("click", function () { imageInputEl.click(); });
+
+    imageInputEl.addEventListener("change", function () {
+      var file = imageInputEl.files && imageInputEl.files[0];
+      if (!file) return;
+
+      if (file.type.indexOf("image/") !== 0) {
+        showChatToast("الملف ده مش صورة — اختار صورة (JPG/PNG/WEBP)");
+        imageInputEl.value = "";
+        return;
+      }
+      if (file.size > MAX_ORIGINAL_IMAGE_MB * 1024 * 1024) {
+        showChatToast("الصورة كبيرة جدًا — اختار صورة أصغر من " + MAX_ORIGINAL_IMAGE_MB + " ميجا");
+        imageInputEl.value = "";
+        return;
+      }
+
+      compressImageFile(file).then(function (result) {
+        pendingImage = result;
+        showImagePreview(result.dataUrl);
+      }).catch(function () {
+        showChatToast("معلش، مقدرتش أقرأ الصورة دي — جرّب صورة تانية");
+        imageInputEl.value = "";
+      });
+    });
+  }
+
+  if (imageRemoveBtn) {
+    imageRemoveBtn.addEventListener("click", function () { clearPendingImage(); });
+  }
+
   /* ------------------------------ حقل الإدخال ------------------------------ */
   function autoGrow() {
     inputEl.style.height = "auto";
@@ -476,10 +602,20 @@
      المتصفح مفيدة بس في حالة فشل الاتصال الحقيقي، مش لما السيرفر نفسه
      أصلاً رد (حتى لو برسالة اعتذار)، لأن إعادة المحاولة في الحالة دي
      مش هتفرق وهتزوّد ضغط من غير داعي. */
-  async function attemptSend(text) {
+  async function attemptSend(text, image) {
     var accumulated = "";
     var bubble = null;
     var gotAnyChunk = false;
+
+    var body = {
+      message: text,
+      history: history.slice(-MAX_SEND_HISTORY)
+    };
+    // ⭐ (v2.17.0) لو فيه صورة مرفقة مع السؤال ده، بتتبعت زيادة (base64 +
+    // نوعها) — الـ Worker هو اللي بيتحقق منها ويرفقها فعليًا لـ Gemini.
+    if (image) {
+      body.image = { mimeType: image.mimeType, data: image.base64 };
+    }
 
     // ⚠️ فشل في الخطوتين دول (الاتصال نفسه لسه ما بدأش يقرأ حاجة) —
     // ده اللي المفروض يترمي كـ Exception ويستأهل إعادة محاولة كاملة،
@@ -487,10 +623,7 @@
     var res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: text,
-        history: history.slice(-MAX_SEND_HISTORY)
-      })
+      body: JSON.stringify(body)
     });
 
     if (!res.ok || !res.body) throw new Error("bad status " + res.status);
@@ -543,22 +676,30 @@
 
   async function send() {
     var text = inputEl.value.trim();
-    if (!text || isSending) return;
+    var imageToSend = pendingImage; // نسخة ثابتة من الصورة وقت الإرسال ده بالظبط
+    if (!text && !imageToSend) return;
+    if (isSending) return;
+    // ⭐ (v2.17.0) لو المستخدم رفق صورة من غير ما يكتب سؤال، نبعت نص
+    // افتراضي بسيط عشان الموديل يعرف يرد عليها بدل ما نرفض الإرسال.
+    if (!text && imageToSend) {
+      text = "وصف الصورة دي واشرحلي اللي فيها بالتفصيل.";
+    }
 
     hideSuggestions();
     isSending = true;
     sendBtn.disabled = true;
-    addUserMessage(text);
-    history.push({ role: "user", text: text });
+    addUserMessage(text, imageToSend ? imageToSend.dataUrl : null);
+    history.push({ role: "user", text: text, hasImage: !!imageToSend });
     persistActiveConversation();
     inputEl.value = "";
     autoGrow();
+    clearPendingImage();
     addTyping();
 
     try {
       var result;
       try {
-        result = await attemptSend(text);
+        result = await attemptSend(text, imageToSend);
       } catch (firstErr) {
         // 🔁 (جولة 12) فشل اتصال حقيقي قبل ما يوصل أي حرف خالص (fetch
         // نفسه رمى خطأ، أو الرد رجع status مش ok) — نجرب مرة واحدة بس
@@ -567,7 +708,7 @@
         // وهنعرض رسالة الخطأ زي الأول — بس لو كانت مشكلة شبكة لحظية
         // بسيطة، الطالب مش هيحس إن حاجة اتقطعت خالص.
         await sleep(2000);
-        result = await attemptSend(text);
+        result = await attemptSend(text, imageToSend);
       }
 
       removeTyping();

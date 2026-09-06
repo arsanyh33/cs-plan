@@ -373,3 +373,62 @@
 .chat-hint{
   text-align:center; color:var(--dim2); font-size:.75rem; margin-top:10px;
 }
+
+/* ---------- شاشات ضيقة جدًا (موبايل، وخصوصًا اللوحة الجانبية الضيقة في
+   index.html اللي بتاخد عرض أصغر من صفحة chat.html الكاملة) — زرار
+   الإرفاق الجديد + زرار الإرسال مع بعض كانوا ممكن ياخدوا مساحة ثابتة كبيرة
+   من صف الإدخال الضيق ويزنقوا الـ textarea لعرض صغير جدًا. الحل: نصغّر
+   الزرارين شوية ونقلل الفراغات بينهم بس على الشاشات الضيقة، من غير ما
+   نلمس شكلهم على الديسكتوب أو التابلت. ⚠️ القاعدة دي عامة على .chat-input-row
+   (مش خاصة بصفحة واحدة) عشان تتطبق في الحالتين: chat.html وdrawer index.html. */
+@media (max-width:480px){
+  .chat-input-row{ gap:6px; padding:8px; }
+  .chat-input-row textarea{ padding:8px 2px; }
+  .chat-input-row button{ width:36px; height:36px; border-radius:10px; }
+  .chat-input-row button svg{ width:16px; height:16px; }
+  /* #chatAttachBtn معرّف بـ ID فوق (specificity أعلى من .chat-input-row button
+     كـ class+element) فلازم يتكتب هنا صراحة بنفس الطريقة عشان القاعدة دي
+     تقدر تلغيه فعلًا جوه الميديا كويري دي، وإلا كان هيفضل 40px زي الأصل. */
+  #chatAttachBtn{ width:36px; height:36px; border-radius:10px; }
+  #chatAttachBtn svg{ width:16px; height:16px; }
+  .chat-image-preview{ padding:6px 8px; gap:8px; }
+  .chat-image-preview img{ width:42px; height:42px; }
+}
+
+/* ---------- زرار إرفاق الصورة (📎) — جوه صف الإدخال، شكله زي زرار
+   الإرسال بس بلون شفاف (مش الأساسي) عشان مايلفتش نفس قد زرار الإرسال ---------- */
+#chatAttachBtn{
+  flex:none; width:40px; height:40px; border-radius:12px;
+  display:grid; place-items:center; cursor:pointer;
+  border:1px solid var(--line); background:var(--glass); color:var(--dim);
+  transition:.2s var(--ease);
+}
+#chatAttachBtn:hover{ border-color:var(--line-hot); color:var(--cyan); background:var(--glass2); }
+#chatAttachBtn.has-image{ color:var(--cyan); border-color:var(--line-hot); background:var(--glass2); }
+#chatAttachBtn svg{ width:18px; height:18px; }
+
+/* ---------- معاينة الصورة المرفقة قبل الإرسال ---------- */
+.chat-image-preview{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px; margin-bottom:8px; border-radius:var(--radius-sm);
+  background:var(--panel2); border:1px solid var(--line);
+}
+.chat-image-preview.hidden{ display:none; }
+.chat-image-preview img{
+  width:52px; height:52px; object-fit:cover; border-radius:8px;
+  border:1px solid var(--line);
+}
+.chat-image-remove{
+  margin-inline-start:auto; flex:none; width:28px; height:28px; border-radius:8px;
+  display:grid; place-items:center; cursor:pointer;
+  border:1px solid transparent; background:transparent; color:var(--dim2);
+  transition:.2s var(--ease);
+}
+.chat-image-remove:hover{ background:color-mix(in srgb, var(--magenta) 18%, transparent); color:var(--magenta); }
+.chat-image-remove svg{ width:14px; height:14px; }
+
+/* ---------- صورة مصغّرة داخل فقاعة رسالة المستخدم اللي أرفقها ---------- */
+.chat-msg.user .chat-msg-img{
+  display:block; max-width:100%; max-height:220px; border-radius:10px;
+  margin-bottom:8px; object-fit:cover;
+}

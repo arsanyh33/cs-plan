@@ -3867,5 +3867,141 @@ loadLocal();
 <script src="../../assets/store.js"></script>
 <script src="../../assets/inapp.js"></script>
 <script src="../../assets/bridge.js"></script>
+
+<!-- إصلاح رعشة الشريط العلوي عند السكرول: تثبيت ارتفاع الصفحة أثناء تصغير/تكبير الشريط (مفيش أي تغيير في البيانات) -->
+<style>
+html,body{overflow-anchor:none;}
+#tbScrollPad{height:0; pointer-events:none; flex:none;}
+@media print{#tbScrollPad{display:none !important;}}
+</style>
+<script>
+(function(){
+  var tb = document.querySelector('.topbar');
+  if(!tb) return;
+  var pad = document.createElement('div');
+  pad.id = 'tbScrollPad'; pad.setAttribute('aria-hidden','true');
+  document.body.appendChild(pad);
+  var cur = 0, busy = false;
+  var MIN_BAR = 60;      // أقل ارتفاع ممكن للشريط وهو مصغّر (تقدير متحفظ)
+  var MIN_SCROLL = 100;  // أقل مساحة سكرول نضمنها حتى لو القسم قصير
+  function sync(){
+    busy = false;
+    var de = document.documentElement;
+    var contentH = de.scrollHeight - cur - tb.offsetHeight;
+    var want = Math.max(0, Math.ceil(window.innerHeight + MIN_SCROLL - MIN_BAR - contentH));
+    if(want !== cur){ cur = want; pad.style.height = want + 'px'; }
+  }
+  function schedule(){ if(!busy){ busy = true; requestAnimationFrame(sync); } }
+  if(window.ResizeObserver){
+    var ro = new ResizeObserver(schedule);
+    ro.observe(document.body);
+    ro.observe(tb);
+  }
+  window.addEventListener('resize', schedule);
+  window.addEventListener('load', schedule);
+  sync();
+})();
+</script>
+
+<!-- أبعاد الشاشة: الوضع الافتراضي fluid (ياخد عرض الشاشة كله) + معاينة Mobile/Tablet/Laptop بعرض الجهاز الحقيقي -->
+<style>
+/* ---- الوضع الافتراضي: من غير سقف 1180px، والهوامش بتتناسب مع عرض الشاشة ---- */
+main, footer, .topbar-inner, .tabs, .sticky-progress{max-width:none !important;}
+main{padding-inline:clamp(14px, 2.6vw, 56px);}
+footer{padding-inline:clamp(14px, 2.6vw, 56px);}
+.topbar-inner, .tabs, .topbar.shrink .topbar-inner, .topbar.compact .topbar-inner,
+.topbar.shrink .tabs, .topbar.compact .tabs, .sticky-progress{padding-inline:clamp(12px, 2.6vw, 56px);}
+/* ---- معاينة الأجهزة ---- */
+#devEmu{position:fixed; inset:0; z-index:9750; display:none; flex-direction:column; direction:ltr;
+  background:var(--bg2, #0b0d1a); color:var(--text, #fff);}
+#devEmu.open{display:flex;}
+#devEmu .de-bar{flex:none; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  padding:8px 14px; border-bottom:1px solid var(--line-strong, rgba(255,255,255,.2)); background:var(--surface, #14162a);
+  font:600 13px/1.4 system-ui, sans-serif; direction:rtl;}
+#devEmu .de-bar select, #devEmu .de-bar button{font:inherit; padding:6px 12px; border-radius:9px; cursor:pointer;
+  border:1px solid var(--line-strong, rgba(255,255,255,.25)); background:var(--surface2, #1d2040); color:inherit;}
+#devEmu .de-bar button:hover{border-color:var(--accent, #4aa3ff);}
+#devEmu .de-stage{flex:1; min-height:0; overflow:auto; display:flex; justify-content:center; align-items:flex-start; padding:12px;}
+#devEmu .de-wrap{position:relative; flex:none; overflow:hidden; background:#fff;
+  border:1px solid var(--line-strong, rgba(255,255,255,.25)); box-shadow:0 24px 70px -10px rgba(0,0,0,.6);}
+#devEmu .de-frame{position:absolute; top:0; left:0; border:0; transform-origin:0 0; background:#fff;}
+/* داخل المعاينة نفسها: نخفي أدوات اختيار الجهاز عشان مفيش معاينة جوه معاينة */
+html.dev-emulating #devFab{display:none !important;}
+html.is-embedded #deviceSelect, html.is-embedded #devFab, html.is-embedded #devModalOverlay{display:none !important;}
+html.is-embedded #deviceSelect + .tool-divider, html.is-embedded #deviceSelect + .ctrl-divider{display:none !important;}
+@media print{#devEmu{display:none !important;}}
+</style>
+<script>
+(function(){
+  var embedded = /[?&]embed=1(&|$)/.test(location.search);
+  var root = document.documentElement;
+  if(embedded) root.classList.add('is-embedded');
+  var orig = window.applyDeviceMode;
+  var DEV = {
+    mobile:{w:390,  h:844,  r:26, label:'📱 Mobile'},
+    tablet:{w:768,  h:1024, r:18, label:'📲 Tablet'},
+    laptop:{w:1366, h:768,  r:10, label:'💻 Laptop'}
+  };
+  var emu = null, cur = null;
+  function build(){
+    emu = document.createElement('div'); emu.id = 'devEmu';
+    emu.setAttribute('role','dialog'); emu.setAttribute('aria-label','معاينة على جهاز مختلف');
+    emu.innerHTML =
+      '<div class="de-bar"><span class="de-title"></span><span>' +
+      '<select class="de-sel" aria-label="اختيار الجهاز"><option value="mobile">📱 Mobile</option><option value="tablet">📲 Tablet</option><option value="laptop">💻 Laptop</option></select> ' +
+      '<button type="button" class="de-close">رجوع للوضع الافتراضي ✕</button></span></div>' +
+      '<div class="de-stage"><div class="de-wrap"><iframe class="de-frame" title="معاينة الصفحة"></iframe></div></div>';
+    document.body.appendChild(emu);
+    emu.querySelector('.de-close').addEventListener('click', function(){ setMode('auto'); });
+    emu.querySelector('.de-sel').addEventListener('change', function(){ setMode(this.value); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && cur) setMode('auto'); });
+    window.addEventListener('resize', fit);
+  }
+  function fit(){
+    if(!emu || !cur) return;
+    var d = DEV[cur];
+    var stage = emu.querySelector('.de-stage');
+    var availW = Math.max(120, window.innerWidth - 24);
+    var availH = Math.max(160, window.innerHeight - emu.querySelector('.de-bar').offsetHeight - 24);
+    var scale = Math.min(1, availW / d.w);
+    var h = scale < 1 ? availH / scale : Math.min(d.h, availH);
+    var wrap = emu.querySelector('.de-wrap'), fr = emu.querySelector('.de-frame');
+    wrap.style.width = Math.round(d.w * scale) + 'px';
+    wrap.style.height = Math.round(h * scale) + 'px';
+    wrap.style.borderRadius = d.r + 'px';
+    fr.style.width = d.w + 'px';
+    fr.style.height = Math.round(h) + 'px';
+    fr.style.transform = 'scale(' + scale + ')';
+    emu.querySelector('.de-title').textContent = d.label + ' · ' + d.w + '×' + Math.round(h) + (scale < 1 ? ' (مصغّر ' + Math.round(scale*100) + '%)' : '');
+  }
+  function open(mode){
+    if(!emu) build();
+    var first = !cur;
+    cur = mode;
+    emu.querySelector('.de-sel').value = mode;
+    emu.classList.add('open');
+    root.style.overflow = 'hidden'; root.classList.add('dev-emulating');
+    fit();
+    if(first){
+      var u = new URL(location.href); u.searchParams.set('embed','1'); u.hash = '';
+      emu.querySelector('.de-frame').src = u.toString();
+    }
+  }
+  function close(){
+    if(emu){ emu.classList.remove('open'); emu.querySelector('.de-frame').src = 'about:blank'; }
+    cur = null; root.style.overflow = ''; root.classList.remove('dev-emulating');
+  }
+  function setMode(value){
+    var sel = document.getElementById('deviceSelect');
+    if(sel) sel.value = value;
+    window.applyDeviceMode(value);
+  }
+  window.applyDeviceMode = function(value){
+    if(typeof orig === 'function') orig('auto');   // نرجّع الصفحة الأصلية لوضعها الطبيعي دايمًا
+    if(embedded || !DEV[value]){ close(); return; }
+    open(value);
+  };
+})();
+</script>
 </body>
 </html>

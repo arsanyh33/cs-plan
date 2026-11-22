@@ -150,7 +150,7 @@
       a.innerHTML = `
         <span class="mod-glare"></span>
         <div class="mod-top">
-          <div class="mod-ic">${mod.icon || '<svg viewBox="0 0 24 24" class="ic-svg"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'}</div>
+          <div class="mod-ic${mod.img ? ' has-img' : ''}">${mod.img ? `<img src="${mod.img}" alt="" width="88" height="88" decoding="async" onerror="this.parentNode.classList.remove('has-img');this.remove()">` : ''}<span class="mod-ic-svg">${mod.icon || '<svg viewBox="0 0 24 24" class="ic-svg"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'}</span></div>
           <div class="mod-h">
             <b>${mod.title}</b>
             <small>${(mod.tags || []).slice(0, 3).join(' • ')}</small>

@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.18.2",
+    "version": "2.19.0",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -44,7 +44,8 @@
         "132 ساعة",
         "خريطة المتطلبات",
         "حاسبة المعدل"
-      ]
+      ],
+      "img": "assets/img/cs-stat.webp"
     },
     {
       "id": "cs-special",
@@ -72,7 +73,8 @@
         "132 ساعة",
         "شروط الالتحاق",
         "مرتبة الشرف"
-      ]
+      ],
+      "img": "assets/img/cs-special.webp"
     },
     {
       "id": "stat-hasib",
@@ -102,7 +104,8 @@
         "132 ساعة",
         "خريطة المتطلبات",
         "حاسبة المعدل"
-      ]
+      ],
+      "img": "assets/img/stat-hasib.webp"
     },
     {
       "id": "transfer-guide",
@@ -134,7 +137,8 @@
         "الشروط",
         "خطوات التقديم",
         "معادلة المواد"
-      ]
+      ],
+      "img": "assets/img/transfer-guide.webp"
     },
     {
       "id": "cs-tracks",
@@ -163,7 +167,8 @@
         "16 تراك",
         "رودماب",
         "كويز"
-      ]
+      ],
+      "img": "assets/img/cs-tracks.webp"
     },
     {
       "id": "bachelor-regulations",
@@ -188,7 +193,8 @@
       "chips": [
         "إصدار 2018",
         "PDF"
-      ]
+      ],
+      "img": "assets/img/bachelor-regulations.webp"
     }
   ]
 }

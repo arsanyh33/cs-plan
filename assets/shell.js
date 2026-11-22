@@ -157,6 +157,7 @@
           </div>
         </div>
         <p class="mod-desc">${mod.desc || ''}</p>
+        ${(mod.chips || []).length ? `<div class="mod-chips">${mod.chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div>` : ''}
         ${s.hasData ? `<div class="bar" title="${Math.round(pct)}%"><i data-w="${pct}"></i></div>` : ''}
         <div class="mod-foot">${pills.join('')}<span class="mod-go">افتح <span>←</span></span></div>`;
       a.addEventListener('click', (e) => {

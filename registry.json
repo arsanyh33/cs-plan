@@ -4,7 +4,7 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.18.1",
+    "version": "2.18.2",
     "repo": "arsanyh33/cs-plan",
     "url": "https://arsanyh33.github.io/cs-plan/"
   },
@@ -39,7 +39,12 @@
         "متطلبات سابقة"
       ],
       "cache": true,
-      "category": "college"
+      "category": "college",
+      "chips": [
+        "132 ساعة",
+        "خريطة المتطلبات",
+        "حاسبة المعدل"
+      ]
     },
     {
       "id": "cs-special",
@@ -62,7 +67,12 @@
         "132 ساعة"
       ],
       "cache": true,
-      "category": "college"
+      "category": "college",
+      "chips": [
+        "132 ساعة",
+        "شروط الالتحاق",
+        "مرتبة الشرف"
+      ]
     },
     {
       "id": "stat-hasib",
@@ -87,7 +97,12 @@
         "متطلبات سابقة"
       ],
       "cache": true,
-      "category": "college"
+      "category": "college",
+      "chips": [
+        "132 ساعة",
+        "خريطة المتطلبات",
+        "حاسبة المعدل"
+      ]
     },
     {
       "id": "transfer-guide",
@@ -114,7 +129,12 @@
         "أوراق التقديم"
       ],
       "cache": true,
-      "category": "college"
+      "category": "college",
+      "chips": [
+        "الشروط",
+        "خطوات التقديم",
+        "معادلة المواد"
+      ]
     },
     {
       "id": "cs-tracks",
@@ -138,7 +158,12 @@
         "غير جامعي"
       ],
       "cache": true,
-      "category": "general"
+      "category": "general",
+      "chips": [
+        "16 تراك",
+        "رودماب",
+        "كويز"
+      ]
     },
     {
       "id": "bachelor-regulations",
@@ -159,7 +184,11 @@
         "رسمي"
       ],
       "cache": true,
-      "category": "college"
+      "category": "college",
+      "chips": [
+        "إصدار 2018",
+        "PDF"
+      ]
     }
   ]
 }

@@ -145,7 +145,6 @@
         if (s.gradedCount) pills.push(`<span class="pill"><svg viewBox="0 0 24 24" class="ic-svg"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M6.5 10v5c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3v-5"/></svg> <span class="mono-num">${s.gradedCount}</span> تقدير</span>`);
         if (s.realTerms)   pills.push(`<span class="pill"><svg viewBox="0 0 24 24" class="ic-svg"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg> <span class="mono-num">${s.realTerms}</span> ترم فعلي</span>`);
       } else {
-        pills.push(`<span class="pill">لسه مابدأتش — افتحها</span>`);
       }
 
       a.innerHTML = `
@@ -178,7 +177,6 @@
       });
 
       host.appendChild(a);
-      tilt3D(a);
     });
     revealScan();
     growBars(host);
@@ -791,7 +789,7 @@
   /* ---------------------------------------------------------------- boot */
   function boot() {
     tuneDevice();
-    applyTheme(prefs().theme || 'dark');
+    applyTheme(prefs().theme || 'light');
 
     if (global.UniInApp) {
       const info = global.UniInApp.guard();
@@ -815,7 +813,6 @@
     wireSettingsMenu();
     wireScrollProgress();
     wireSpotlight();
-    wireMagnets();
     wireFontSize();
     wireDevice();
     wireToTop();

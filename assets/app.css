@@ -1210,3 +1210,61 @@ html.reduce-fx .hero-h1 .w{ transform:none; opacity:1; transition:none; }
 
 /* dvh بدل vh — بيحسب المتصفح فعليًا (شريط العنوان بيختفي ويظهر) */
 .boot{ min-height:100dvh; }
+
+
+/* ==================== v2.18.0 — واجهة هادية (الخطط نفسها مش متلمسة) ==================== */
+/* الخلفية المتحركة سايبينها زي ما هي. هنا بس بنهدّي الكروت والأزرار. */
+.rv{ opacity:1; transform:none; transition:none; }
+.mods{ perspective:none; }
+#modHost, #modHostGeneral{ display:grid; gap:18px; }
+#modHost{ grid-template-columns:repeat(6,minmax(0,1fr)); }
+#modHost > .mod:nth-child(-n+3){ grid-column:span 2; }
+#modHost > .mod:nth-child(n+4){ grid-column:span 3; }
+#modHostGeneral{ grid-template-columns:minmax(0,1fr); }
+@media (max-width:980px){
+  #modHost{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #modHost > .mod:nth-child(n){ grid-column:auto; }
+  #modHost > .mod:nth-child(3){ grid-column:1 / -1; }
+}
+@media (max-width:620px){
+  #modHost{ grid-template-columns:minmax(0,1fr); }
+  #modHost > .mod:nth-child(n){ grid-column:auto; }
+}
+.mod{
+  transform-style:flat; will-change:auto; backdrop-filter:none; -webkit-backdrop-filter:none;
+  background:var(--panel); border:1px solid var(--line2); box-shadow:var(--shadow);
+  transition:border-color .2s, background-color .2s;
+}
+.mod::before, .mod::after, .mod-glare{ display:none; }
+.mod:hover{ transform:none; border-color:var(--cyan); box-shadow:var(--shadow); }
+.mod:focus-visible{ outline:2px solid var(--cyan); outline-offset:3px; }
+.mod-top, .mod-desc, .mod-foot{ transform:none; }
+.mod-ic{
+  color:var(--cyan); background:var(--panel2); border:1px solid var(--line2); box-shadow:none;
+  transition:none;
+}
+.mod:hover .mod-ic{ transform:none; }
+.mod-desc{ color:var(--dim); }
+.mod-go{ color:var(--cyan); }
+.mod:hover .mod-go span{ transform:translateX(-4px); }
+.mod-new-badge{ animation:none; }
+.btn:hover{ transform:none; }
+.btn.primary:hover{ box-shadow:none; }
+.icon-btn.mag, .fs-btn.mag, .to-top.mag{ transform:none !important; }
+.to-top:hover, #devFab:hover{ transform:none; box-shadow:var(--shadow); }
+.stat:hover{ transform:none; }
+
+
+/* ==================== v2.18.1 — لمسات أخيرة ==================== */
+.mod-h small::before{
+  content:''; display:inline-block; width:7px; height:7px; border-radius:50%;
+  background:var(--c1); margin-inline-end:7px; vertical-align:middle;
+}
+.mod-new-badge{ background:var(--cyan); color:#fff; box-shadow:none; }
+html[data-theme="dark"] .mod-new-badge{ color:#05060b; }
+html #chatFab, html #devFab{ box-shadow:var(--shadow); animation:none; }
+html #chatFab::before, html #chatFab::after, html #devFab::before, html #devFab::after{ animation:none; }
+#devFab .ic-svg{ stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.ask-ai-btn .ic-svg{ stroke:currentColor; fill:none; stroke-width:1.9; stroke-linejoin:round; vertical-align:-3px; }
+.ask-ai-btn:hover{ box-shadow:none; }
+html .chat-fab:hover{ transform:none; box-shadow:var(--shadow); }

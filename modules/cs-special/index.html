@@ -4003,12 +4003,20 @@ html.is-embedded #deviceSelect + .tool-divider, html.is-embedded #deviceSelect +
   };
 })();
 </script>
-<!-- إصلاح الشريط العلوي على الموبايل: يفضل ثابت صف التابات بس، وباقي الأدوات (الخط/الجهاز/الثيم/البحث...) تتسحب مع السكرول (مفيش أي تغيير في المحتوى أو البيانات) -->
+<!-- إصلاح الشريط العلوي على الموبايل: يفضل ثابت صف التابات بس (ومعاه شريط التقدم لو جوه الشريط)، وباقي الأدوات (الخط/الجهاز/الثيم/البحث...) تتسحب مع السكرول، وشريط التقدم بيلزق تحت التابات مباشرة (مفيش أي تغيير في المحتوى أو البيانات) -->
 <style>
 @media (max-width:700px){
   .tabs, .topbar.shrink .tabs, .topbar.compact .tabs{flex-wrap:nowrap !important; overflow-x:auto; gap:6px; scrollbar-width:none; -webkit-overflow-scrolling:touch;}
   .tabs::-webkit-scrollbar{display:none;}
   .tab{flex:none;}
+  /* شريط التقدم اللي جوه <main> (cs-stat / cs-special): يلزق تحت صف التابات الفعلي مش تحت ارتفاع الشريط الكامل */
+  main .sticky-progress{top:var(--tb-stuck, 60px) !important;}
+  /* شريط التقدم اللي جوه الشريط العلوي نفسه (stat-hasib): ينزل تحت التابات عشان يفضل ثابت معاها */
+  .topbar:has(> .sticky-progress){display:flex; flex-direction:column;}
+  .topbar:has(> .sticky-progress) > .topbar-inner{order:1; margin:0; width:100%; box-sizing:border-box;}
+  .topbar:has(> .sticky-progress) > .tabs{order:2; margin:0; width:100%; min-width:0; box-sizing:border-box;}
+  .topbar:has(> .sticky-progress) > .sticky-progress{order:3; margin:0; width:100%; box-sizing:border-box; padding-top:2px;}
+  .tabs, .topbar.shrink .tabs, .topbar.compact .tabs{justify-content:flex-start;}
 }
 </style>
 <script>
@@ -4016,7 +4024,9 @@ html.is-embedded #deviceSelect + .tool-divider, html.is-embedded #deviceSelect +
   var tb = document.querySelector('.topbar');
   var tabs = document.getElementById('tabs');
   if(!tb || !tabs || !window.matchMedia) return;
+  var pg = tb.querySelector('.sticky-progress');
   var mq = window.matchMedia('(max-width:700px)');
+  var root = document.documentElement;
   var busy = false;
   function strip(){
     if(!mq.matches) return;
@@ -4028,19 +4038,34 @@ html.is-embedded #deviceSelect + .tool-divider, html.is-embedded #deviceSelect +
     busy = false;
     if(mq.matches){
       strip();
-      var hidden = tb.offsetHeight - tabs.offsetHeight;
+      var stuck = tabs.offsetHeight + (pg ? pg.offsetHeight : 0);
+      var hidden = tb.offsetHeight - stuck;
       tb.style.top = (hidden > 0 ? -hidden : 0) + 'px';
+      root.style.setProperty('--tb-stuck', tabs.offsetHeight + 'px');
     } else {
       tb.style.top = '';
+      root.style.removeProperty('--tb-stuck');
     }
   }
   function schedule(){ if(!busy){ busy = true; requestAnimationFrame(sync); } }
+  /* على الموبايل: لما التاب النشط يتغيّر، نحرّك صف التابات أفقيًا عشان يبان التاب النشط */
+  function centerActive(){
+    if(!mq.matches) return;
+    var a = tabs.querySelector('.tab.active');
+    if(!a) return;
+    var tr = tabs.getBoundingClientRect(), ar = a.getBoundingClientRect();
+    var delta = (ar.left + ar.right)/2 - (tr.left + tr.right)/2;
+    if(Math.abs(delta) > 2){ try{ tabs.scrollTo({left: tabs.scrollLeft + delta, behavior:'smooth'}); }catch(e){ tabs.scrollLeft += delta; } }
+  }
+  if(window.MutationObserver){
+    new MutationObserver(function(){ centerActive(); }).observe(tabs, {attributes:true, attributeFilter:['class'], subtree:true});
+  }
   if(window.MutationObserver){
     new MutationObserver(function(){ if(mq.matches){ strip(); schedule(); } }).observe(tb, {attributes:true, attributeFilter:['class']});
   }
   if(window.ResizeObserver){
     var ro = new ResizeObserver(schedule);
-    ro.observe(tb); ro.observe(tabs);
+    ro.observe(tb); ro.observe(tabs); if(pg) ro.observe(pg);
   }
   window.addEventListener('resize', schedule);
   window.addEventListener('load', schedule);

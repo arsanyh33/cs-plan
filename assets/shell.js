@@ -381,7 +381,8 @@
       if (on !== last) { bar.classList.toggle('stuck', on); last = on; }
     };
     upd();
-    global.addEventListener('scroll', upd, { passive: true });
+    let raf = 0;
+    global.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; upd(); }); }, { passive: true });
   }
 
 
@@ -820,16 +821,16 @@
       const daysSince = st.lastBackupAt ? Math.floor((Date.now() - st.lastBackupAt) / 86400000) : null;
 
       host.innerHTML = `
-        <div class="kv"><span>التخزين المحلي</span><b>${st.localStorageOK ? '<span style="color:var(--green)">شغال ✓</span>' : '<span style="color:var(--rose)">مقفول ✕</span>'}</b></div>
-        <div class="kv"><span>النسخة التلقائية (IndexedDB)</span><b>${st.indexedDBOK ? '<span style="color:var(--green)">شغالة ✓</span>' : '<span style="color:var(--amber)">مش متاحة</span>'}</b></div>
-        <div class="kv"><span>تخزين دائم</span><b>${st.persisted === true ? '<span style="color:var(--green)">مفعّل ✓</span>' : st.persisted === false ? '<span style="color:var(--amber)">غير مضمون</span>' : '—'}</b></div>
+        <div class="kv"><span>التخزين المحلي</span><b>${st.localStorageOK ? '<span style="color:var(--green)">شغال<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-inline-start:4px"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>' : '<span style="color:var(--rose)">مقفول<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-inline-start:4px"><path d="M6 6l12 12M18 6L6 18"/></svg></span>'}</b></div>
+        <div class="kv"><span>النسخة التلقائية (IndexedDB)</span><b>${st.indexedDBOK ? '<span style="color:var(--green)">شغالة<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-inline-start:4px"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>' : '<span style="color:var(--amber)">مش متاحة</span>'}</b></div>
+        <div class="kv"><span>تخزين دائم</span><b>${st.persisted === true ? '<span style="color:var(--green)">مفعّل<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-inline-start:4px"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>' : st.persisted === false ? '<span style="color:var(--amber)">غير مضمون</span>' : 'غير معروف'}</b></div>
         <div class="kv"><span>المستخدم من مساحة المتصفح</span><b>${mb(st.usage)}${st.quota ? ` من ${mb(st.quota)}` : ''}</b></div>
         <div class="kv"><span>ملفات بياناتك المحفوظة</span><b>${st.keysPresent.length} من ${st.keysPresent.length + st.keysMissing.length}</b></div>
         <div class="kv"><span>آخر نسخة احتياطية</span><b>${lastB ? `${lastB}${daysSince > 14 ? ' <span style="color:var(--amber)">(بقالها كتير!)</span>' : ''}` : '<span style="color:var(--amber)">ماعملتش ولا واحدة</span>'}</b></div>
         ${risks.length ? `<div class="note warn" style="margin-top:14px"><b>خد بالك:</b><ul style="margin:8px 18px 0;line-height:1.9">${risks.map((r) => `<li>${r}</li>`).join('')}</ul></div>` : ''}
         <div class="btn-row" style="margin-top:16px">
-          <button class="btn primary sm" id="dlBackup">⤓ نزّل نسخة احتياطية</button>
-          <a class="btn ghost sm" href="diagnostics.html">🩺 التشخيص الكامل</a>
+          <button class="btn primary sm" id="dlBackup">نزّل نسخة احتياطية<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-inline-start:4px"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></button>
+          <a class="btn ghost sm" href="diagnostics.html">التشخيص الكامل<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-inline-start:4px"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></a>
         </div>`;
 
       const b = $('#dlBackup');

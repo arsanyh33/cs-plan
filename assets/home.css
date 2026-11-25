@@ -35,7 +35,7 @@ body.page-home{
   --text:#0b1020; --dim:#4f4c40; --dim2:#6f6a58;
   --cyan:#00786b; --cyan-deep:#00594f;
   --h-on-accent:#ffffff;
-  --h-title-from:#0b1020; --h-title-to:#5a5748;
+  --h-title-from:#000000; --h-title-to:#666666;
 
   font-family:var(--h-font);
   font-weight:400;
@@ -49,9 +49,12 @@ html[data-theme="dark"] body.page-home{
   --text:#f4f4f4; --dim:#b3b3b3; --dim2:#8c8c8c;
   --cyan:#12f0c0; --cyan-deep:#0a9c80;
   --h-on-accent:#000000;
-  --h-title-from:#ffffff; --h-title-to:#8c8c8c;
+  --h-title-from:#ffffff; --h-title-to:#9b9b9b;
 }
 body.page-home *{ letter-spacing:0; }
+/* Cairo بس على الهوم: أي Almarai أو mono جاي من app.css يرجع لـ Cairo */
+body.page-home, body.page-home *{ font-family:var(--h-font); }
+body.page-home button, body.page-home input, body.page-home textarea, body.page-home select{ font:inherit; }
 
 /* ---------------------------- الخلفية: الكانفاس بس ---------------------------- */
 body.page-home .bg-veil,
@@ -143,7 +146,7 @@ body.page-home .h-hero-title{
   font-family:var(--h-font); font-weight:600;
   font-size:var(--fs-3xl); line-height:1.3;               /* قرار K */
   max-width:680px; text-wrap:balance;
-  background:linear-gradient(180deg,var(--h-title-from) 25%,var(--h-title-to) 130%);
+  background:linear-gradient(to left,var(--h-title-from),var(--h-title-to));
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }

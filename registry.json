@@ -4,10 +4,27 @@
     "shortName": "TCSS",
     "faculty": "كلية العلوم — جامعة الإسكندرية",
     "department": "قسم الرياضيات وعلوم الحاسب",
-    "version": "2.19.0",
+    "version": "2.21.0",
     "repo": "arsanyh33/cs-plan",
-    "url": "https://arsanyh33.github.io/cs-plan/"
+    "url": "https://arsanyh33.github.io/cs-plan/",
+    "hero": {
+      "title1": "دليل مقررات قسم",
+      "title2": "الرياضيات وعلوم الحاسب",
+      "lede": "شجرة المقررات لكل تخصص، الإجبارية والاختيارية، الرئيسي والفرعي، مع المتطلبات السابقة لكل مقرر.",
+      "trust": "مبني على لائحة البكالوريوس 2018",
+      "trustHref": "modules/bachelor-regulations/index.html"
+    }
   },
+  "departments": [
+    {
+      "id": "math-cs",
+      "title": "قسم الرياضيات وعلوم الحاسب"
+    },
+    {
+      "id": "faculty",
+      "title": "على مستوى الكلية"
+    }
+  ],
   "_howToAddModule": [
     "عايز تضيف صفحة جديدة؟ 3 خطوات وخلاص:",
     "1) انسخ مجلد modules/_template وسمّيه باسم صفحتك، واكتب الـ HTML/CSS/JS جواه عادي.",
@@ -40,12 +57,14 @@
       ],
       "cache": true,
       "category": "college",
+      "department": "math-cs",
+      "blurb": "الخطة الكاملة لمن تخصصه الرئيسي الحاسب وتخصصه الفرعي الإحصاء.",
+      "isPlan": true,
       "chips": [
         "132 ساعة",
         "خريطة المتطلبات",
         "حاسبة المعدل"
-      ],
-      "img": "assets/img/cs-stat.webp"
+      ]
     },
     {
       "id": "cs-special",
@@ -69,12 +88,14 @@
       ],
       "cache": true,
       "category": "college",
+      "department": "math-cs",
+      "blurb": "خطة الشعبة الخاصة: شروط الالتحاق ومرتبة الشرف.",
+      "isPlan": true,
       "chips": [
         "132 ساعة",
         "شروط الالتحاق",
         "مرتبة الشرف"
-      ],
-      "img": "assets/img/cs-special.webp"
+      ]
     },
     {
       "id": "stat-hasib",
@@ -100,12 +121,14 @@
       ],
       "cache": true,
       "category": "college",
+      "department": "math-cs",
+      "blurb": "الخطة الكاملة لمن تخصصه الرئيسي الإحصاء وتخصصه الفرعي الحاسب.",
+      "isPlan": true,
       "chips": [
         "132 ساعة",
         "خريطة المتطلبات",
         "حاسبة المعدل"
-      ],
-      "img": "assets/img/stat-hasib.webp"
+      ]
     },
     {
       "id": "transfer-guide",
@@ -133,12 +156,13 @@
       ],
       "cache": true,
       "category": "college",
+      "department": "faculty",
+      "blurb": "الشروط والأوراق وخطوات التقديم ومعادلة المواد لطلاب التحويل.",
       "chips": [
         "الشروط",
         "خطوات التقديم",
         "معادلة المواد"
-      ],
-      "img": "assets/img/transfer-guide.webp"
+      ]
     },
     {
       "id": "cs-tracks",
@@ -163,12 +187,12 @@
       ],
       "cache": true,
       "category": "general",
+      "blurb": "دليل عام لـ16 تراك في البرمجة، مالوش علاقة بمنهج الكلية.",
       "chips": [
         "16 تراك",
         "رودماب",
         "كويز"
-      ],
-      "img": "assets/img/cs-tracks.webp"
+      ]
     },
     {
       "id": "bachelor-regulations",
@@ -190,11 +214,12 @@
       ],
       "cache": true,
       "category": "college",
+      "department": "faculty",
+      "blurb": "النص الرسمي للائحة (إصدار 2018) للعرض والتحميل PDF.",
       "chips": [
         "إصدار 2018",
         "PDF"
-      ],
-      "img": "assets/img/bachelor-regulations.webp"
+      ]
     }
   ]
 }

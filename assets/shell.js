@@ -30,6 +30,8 @@
   /* أيقونات SVG جاهزة الاستخدام لعناصر البحث (بدل 📘 🏷️ 🩺) */
   const ICON_DOC   = '<svg viewBox="0 0 24 24" class="ic-svg"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>';
   const ICON_TAG    = '<svg viewBox="0 0 24 24" class="ic-svg"><path d="M12.6 3.5h-4L3.5 8.6v4l9 9 5.1-5.1v-4z"/><circle cx="8.2" cy="8.2" r="1.1"/></svg>';
+  const ICON_DL     = '<svg viewBox="0 0 24 24" class="ic-svg"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
+  const ICON_UL     = '<svg viewBox="0 0 24 24" class="ic-svg"><path d="M12 16V5M7 9l5-5 5 5M5 20h14"/></svg>';
   const ICON_GAUGE  = '<svg viewBox="0 0 24 24" class="ic-svg"><path d="M4 15a8 8 0 1 1 16 0"/><path d="M12 15l3.5-4.5"/><circle cx="12" cy="15" r="1"/></svg>';
 
   function applyTheme(theme) {
@@ -39,6 +41,8 @@
     const btn = $('#themeBtn');
     const icon = $('#themeIcon');
     if (icon) icon.innerHTML = theme === 'light' ? ICON_MOON : ICON_SUN;
+    const lbl = $('#themeLabel');
+    if (lbl) lbl.textContent = theme === 'light' ? 'الوضع الليلي' : 'الوضع النهاري';
     if (btn) {
       btn.setAttribute('aria-label', theme === 'light' ? 'الوضع الليلي' : 'الوضع النهاري');
     }
@@ -60,7 +64,7 @@
     if (!el) return;
     const on = navigator.onLine;
     el.classList.toggle('off', !on);
-    el.innerHTML = `<i></i><span>${on ? 'متصل' : 'بدون نت — شغال'}</span>`;
+    el.innerHTML = `<i></i><span>${on ? 'متصل' : 'بدون نت'}</span>`;
   }
 
   /* -------------------------------------------------- summaries reading */
@@ -100,87 +104,181 @@
   }
 
   /* -------------------------------------------------------- module cards */
-  function renderModules() {
-    renderModuleGroup('#modHost', (mod) => (mod.category || 'college') === 'college');
-    renderModuleGroup('#modHostGeneral', (mod) => mod.category === 'general');
+  const TOTAL_HOURS = 132;
+  const SVG_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const SVG_CLOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+  const SVG_CAP   = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 4.5-9 4.5-9-4.5z"/><path d="M6.5 11v4.5c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3V11"/></svg>';
+  const SVG_CAL   = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg>';
+  const SVG_ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+  const SVG_DOC   = '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>';
+
+  /* بيحوّل أيقونة الـ registry (class='ic-svg') لأيقونة الكارت الجديد */
+  function planIcon(mod) {
+    return (mod.icon || SVG_DOC).replace(/\sclass=['"]ic-svg['"]/, '');
   }
 
-  function renderModuleGroup(hostSelector, filterFn) {
-    const host = $(hostSelector);
-    if (!host || !REG) return;
-    host.innerHTML = '';
+  function isNewModule(mod) {
+    if (!mod.addedAt) return false;
+    const t = new Date(mod.addedAt).getTime();
+    if (isNaN(t)) return false;
+    const days = (Date.now() - t) / 86400000;
+    return days >= 0 && days <= 30;
+  }
 
-    REG.modules.filter(filterFn).forEach((mod) => {
-      const s = moduleSummary(mod);
-      const totalH = 132;
-      const pct = s.doneHours ? Math.min(100, (s.doneHours / totalH) * 100)
-                : s.doneCount ? Math.min(100, (s.doneCount / 46) * 100) : 0;
-
-      const a = document.createElement('a');
-      a.className = 'mod';
-      a.href = mod.entry;
-      a.style.setProperty('--c1', mod.color1 || 'var(--accent)');
-      a.style.setProperty('--c2', mod.color2 || 'var(--accent2)');
-
-      /* شارة "جديد" — تلقائيًا لو addedAt موجود وعمره أقل من 30 يوم */
-      let isNew = false;
-      if (mod.addedAt) {
-        const addedTime = new Date(mod.addedAt).getTime();
-        if (!isNaN(addedTime)) {
-          const daysSince = (Date.now() - addedTime) / 86400000;
-          isNew = daysSince >= 0 && daysSince <= 30;
+  /* الكارت ينتقل لصفحته بعد تأثير خروج قصير + حدث GA4 زي الأول بالظبط */
+  function wireCardNav(a, mod) {
+    a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      e.preventDefault();
+      if (a.classList.contains('is-loading')) return;
+      a.classList.add('is-loading');
+      document.documentElement.classList.add('leaving');
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', 'select_content', { content_type: 'module', item_id: mod.id, item_name: mod.title });
         }
-      }
-      if (isNew) {
-        const badge = document.createElement('span');
-        badge.className = 'mod-new-badge';
-        badge.textContent = '✨ جديد';
-        a.appendChild(badge);
-      }
-
-      const pills = [];
-      if (s.hasData) {
-        if (s.doneCount)   pills.push(`<span class="pill ok">✓ <span class="mono-num">${s.doneCount}</span> مادة مخلّصة</span>`);
-        if (s.doneHours)   pills.push(`<span class="pill info"><span class="mono-num">${s.doneHours} / ${totalH}</span> ساعة</span>`);
-        if (s.gradedCount) pills.push(`<span class="pill"><svg viewBox="0 0 24 24" class="ic-svg"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M6.5 10v5c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3v-5"/></svg> <span class="mono-num">${s.gradedCount}</span> تقدير</span>`);
-        if (s.realTerms)   pills.push(`<span class="pill"><svg viewBox="0 0 24 24" class="ic-svg"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg> <span class="mono-num">${s.realTerms}</span> ترم فعلي</span>`);
-      } else {
-      }
-
-      a.innerHTML = `
-        <span class="mod-glare"></span>
-        <div class="mod-top">
-          <div class="mod-ic${mod.img ? ' has-img' : ''}">${mod.img ? `<img src="${mod.img}" alt="" width="88" height="88" decoding="async" onerror="this.parentNode.classList.remove('has-img');this.remove()">` : ''}<span class="mod-ic-svg">${mod.icon || '<svg viewBox="0 0 24 24" class="ic-svg"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'}</span></div>
-          <div class="mod-h">
-            <b>${mod.title}</b>
-            <small>${(mod.tags || []).slice(0, 3).join(' • ')}</small>
-          </div>
-        </div>
-        <p class="mod-desc">${mod.desc || ''}</p>
-        ${(mod.chips || []).length ? `<div class="mod-chips">${mod.chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div>` : ''}
-        ${s.hasData ? `<div class="bar" title="${Math.round(pct)}%"><i data-w="${pct}"></i></div>` : ''}
-        <div class="mod-foot">${pills.join('')}<span class="mod-go">افتح <span>←</span></span></div>`;
-      a.addEventListener('click', (e) => {
-        if (a.classList.contains('is-loading')) { e.preventDefault(); return; }
-        e.preventDefault();
-        a.classList.add('is-loading');
-        document.documentElement.classList.add('leaving');
-        try {
-          if (typeof gtag === 'function') {
-            gtag('event', 'select_content', {
-              content_type: 'module',
-              item_id: mod.id,
-              item_name: mod.title
-            });
-          }
-        } catch (err) { /* تتبع اختياري — أي خطأ هنا ما يوقفش التنقل */ }
-        setTimeout(() => { location.href = a.href; }, 220);
-      });
-
-      host.appendChild(a);
+      } catch (err) { /* تتبع اختياري: أي خطأ هنا ما يوقفش التنقل */ }
+      setTimeout(() => { location.href = a.href; }, 220);
     });
-    revealScan();
-    growBars(host);
+  }
+
+  function planCard(mod) {
+    const s = moduleSummary(mod);
+    const pct = s.doneHours ? Math.min(100, (s.doneHours / TOTAL_HOURS) * 100)
+              : s.doneCount ? Math.min(100, (s.doneCount / 46) * 100) : 0;
+    const a = document.createElement('a');
+    a.className = 'plan-card';
+    a.href = mod.entry;
+    a.style.setProperty('--c1', mod.color1 || 'var(--cyan)');
+
+    const st = [];
+    if (s.hasData) {
+      if (s.doneCount)   st.push(`<span>${SVG_CHECK}${s.doneCount} مادة مخلّصة</span>`);
+      if (s.doneHours)   st.push(`<span>${SVG_CLOCK}${s.doneHours} من ${TOTAL_HOURS} ساعة</span>`);
+      if (s.gradedCount) st.push(`<span>${SVG_CAP}${s.gradedCount} تقدير</span>`);
+      if (s.realTerms)   st.push(`<span>${SVG_CAL}${s.realTerms} ترم فعلي</span>`);
+    }
+    a.innerHTML = `
+      ${isNewModule(mod) ? '<span class="plan-new">جديد</span>' : ''}
+      <div class="plan-ic">${planIcon(mod)}</div>
+      <div>
+        <h3 class="plan-title">${mod.title}</h3>
+        <p class="plan-blurb">${mod.blurb || mod.desc || ''}</p>
+      </div>
+      <div class="plan-meta">
+        ${s.hasData && pct ? `<div class="plan-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}"><i data-w="${pct}"></i></div>` : ''}
+        ${st.length ? `<div class="plan-status">${st.join('')}</div>` : ''}
+        <span class="plan-go">افتح ${SVG_ARROW}</span>
+      </div>`;
+    wireCardNav(a, mod);
+    return a;
+  }
+
+  function guideCard(mod) {
+    const a = document.createElement('a');
+    a.className = 'guide-card';
+    a.href = mod.entry;
+    a.style.setProperty('--c1', mod.color1 || 'var(--cyan)');
+    a.innerHTML = `
+      <div class="plan-ic">${planIcon(mod)}</div>
+      <div class="guide-body"><b>${mod.title}</b><span>${mod.blurb || mod.desc || ''}</span></div>
+      ${SVG_ARROW.replace('<svg ', '<svg class="guide-arrow" ')}`;
+    wireCardNav(a, mod);
+    return a;
+  }
+
+  /* الأقسام (departments) بتتولّد من registry.json. أي قسم جديد بيتضاف هناك من غير تعديل في الهوم.
+     قسم مالوش موديولات مابيظهرش. */
+  function renderModules() {
+    if (!REG) return;
+    const host = $('#deptHost');
+    const college = REG.modules.filter((m) => (m.category || 'college') === 'college');
+    const depts = (REG.departments && REG.departments.length)
+      ? REG.departments.slice()
+      : [{ id: '_all', title: 'الخطط' }];
+    const firstId = depts[0].id;
+
+    if (host) {
+      host.innerHTML = '';
+      let n = 0;
+      depts.forEach((d) => {
+        const mods = college.filter((m) => d.id === '_all' || (m.department || firstId) === d.id);
+        if (!mods.length) return;
+        const sec = document.createElement('section');
+        sec.className = 'wrap h-sec';
+        sec.id = n === 0 ? 'plans' : 'dept-' + d.id;
+        const h = document.createElement('h2');
+        h.className = 'h-sec-title';
+        h.textContent = d.title;
+        const grid = document.createElement('div');
+        grid.className = 'plan-grid';
+        if (n === 0) grid.id = 'planHost';
+        mods.forEach((m) => grid.appendChild(planCard(m)));
+        sec.appendChild(h); sec.appendChild(grid);
+        host.appendChild(sec);
+        n++;
+      });
+      growBars(host);
+    }
+
+    const gHost = $('#modHostGeneral');
+    if (gHost) {
+      gHost.innerHTML = '';
+      const gm = REG.modules.filter((m) => m.category === 'general');
+      gm.forEach((m) => gHost.appendChild(guideCard(m)));
+      const gSec = $('#general');
+      if (gSec) gSec.hidden = !gm.length;
+    }
+  }
+
+  /* ------------------------------------------------------------ hero */
+  /* الزرار الرئيسي بيتغيّر حسب الزائر: جديد = "اختار خطتك"، عنده تقدّم محفوظ = "كمّل خطتك".
+     قراءة فقط من نفس القيم اللي بتتقرا للكروت، من غير أي مفتاح localStorage جديد. */
+  function pickResumePlan() {
+    if (!REG) return null;
+    let best = null;
+    REG.modules.filter((m) => m.isPlan).forEach((m) => {
+      const s = moduleSummary(m);
+      if (!s.hasData || !(s.doneHours || s.doneCount)) return;
+      if (!best || s.doneHours > best.s.doneHours ||
+          (s.doneHours === best.s.doneHours && s.doneCount > best.s.doneCount)) best = { m, s };
+    });
+    return best;
+  }
+
+  function renderHero() {
+    if (!REG) return;
+    const app = REG.app || {};
+    const hero = app.hero || {};
+    const set = (id, txt) => { const el = $(id); if (el && txt) el.textContent = txt; };
+    set('#heroT1', hero.title1); set('#heroT2', hero.title2); set('#heroLede', hero.lede);
+    set('#heroTrustText', hero.trust);
+    const tl = $('#heroTrustLink');
+    if (tl && hero.trustHref) tl.setAttribute('href', hero.trustHref);
+    if (!hero.trust) { const t = $('#heroTrust'); if (t) t.hidden = true; }
+    if (hero.title1 && hero.title2) document.title = hero.title1 + ' ' + hero.title2 + ' | جامعة الإسكندرية';
+
+    set('#footBrand', app.name);
+    set('#footName', app.name);
+    set('#footFaculty', app.faculty ? app.faculty.replace(' — ', '، ') : '');
+
+    const cta = $('#heroCta'), txt = $('#heroCtaText'), status = $('#heroStatus');
+    if (!cta || !txt) return;
+    const r = pickResumePlan();
+    if (r) {
+      txt.textContent = 'كمّل خطتك';
+      cta.setAttribute('href', r.m.entry);
+      const part = r.s.doneHours ? `${r.s.doneHours} من ${TOTAL_HOURS} ساعة` : `${r.s.doneCount} مادة مخلّصة`;
+      if (status) status.textContent = `${r.m.short || r.m.title}، ${part}`;
+      cta.onclick = () => {
+        try { if (typeof gtag === 'function') gtag('event', 'select_content', { content_type: 'hero_resume', item_id: r.m.id, item_name: r.m.title }); } catch (err) { void err; }
+      };
+    } else {
+      txt.textContent = 'اختار خطتك';
+      cta.setAttribute('href', '#plans');
+      cta.onclick = null;
+      if (status) status.textContent = '';
+    }
   }
 
 
@@ -264,12 +362,12 @@
     countUp(el, val);
   }
 
-  /** شرائط التقدم تكبر بعد ما تظهر */
+  /** شرائط التقدم: بنحرّك transform بس (مش width) */
   function growBars(scope) {
-    $$('.bar > i[data-w]', scope || document).forEach((bar) => {
-      const w = bar.getAttribute('data-w');
-      if (FX_OFF()) { bar.style.width = w + '%'; return; }
-      requestAnimationFrame(() => { setTimeout(() => { bar.style.width = w + '%'; }, 220); });
+    $$('.plan-bar > i[data-w]', scope || document).forEach((bar) => {
+      const k = (Number(bar.getAttribute('data-w')) / 100).toFixed(4);
+      if (FX_OFF()) { bar.style.transform = `scaleX(${k})`; return; }
+      requestAnimationFrame(() => { requestAnimationFrame(() => { bar.style.transform = `scaleX(${k})`; }); });
     });
   }
 
@@ -531,34 +629,10 @@
      إصدار 2.3 — تفاعلات مستوحاة من المواقع الفائزة عالميًا
      ================================================================== */
 
-  /** شاشة الدخول بعدّاد حقيقي مربوط بتقدّم الكاش */
-  let bootPct = 0, bootDone = false;
-  function setBoot(text, pct, finish) {
-    const sub = $('#bootSub'), bar = $('#bootBar i'), cnt = $('#bootCount');
-    if (text && sub) sub.textContent = text;
-    if (pct != null) {
-      bootPct = Math.max(bootPct, Math.min(100, pct));
-      if (bar) bar.style.width = bootPct + '%';
-      if (cnt) cnt.innerHTML = Math.round(bootPct) + '<span>%</span>';
-    }
-    if (finish && !bootDone) {
-      bootDone = true;
-      if (bar) bar.style.width = '100%';
-      if (cnt) cnt.innerHTML = '100<span>%</span>';
-      setTimeout(() => {
-        const el = $('#boot');
-        if (el) el.classList.add('done');
-        playHero();
-      }, 420);
-    }
-  }
-
-  /** ظهور كلمات العنوان واحدة واحدة */
-  function playHero() {
-    const h = $('.hero-h1');
-    if (h) requestAnimationFrame(() => h.classList.add('in'));
-    revealScan();
-  }
+  /* شاشة التحميل المزيفة اتشالت في 2.21.0: بدلها skeleton للكروت في index.html.
+     الدالتين دول سايبينهم no-op عشان أي كود قديم بينادي UniShell.setBoot / playHero ما يكسرش. */
+  function setBoot() {}
+  function playHero() {}
 
   /** شريط تقدّم القراءة أعلى الصفحة */
   function wireScrollProgress() {
@@ -668,8 +742,8 @@
       });
     });
     [
-      { t: 'نسخة احتياطية وتصدير البيانات', s: 'نزّل كل بياناتك ملف واحد', u: 'diagnostics.html', i: '⤓' },
-      { t: 'استيراد نسخة احتياطية', s: 'رجّع بياناتك من ملف', u: 'diagnostics.html', i: '⤒' },
+      { t: 'نسخة احتياطية وتصدير البيانات', s: 'نزّل كل بياناتك ملف واحد', u: 'diagnostics.html', i: ICON_DL },
+      { t: 'استيراد نسخة احتياطية', s: 'رجّع بياناتك من ملف', u: 'diagnostics.html', i: ICON_UL },
       { t: 'حالة التخزين والكاش', s: 'المساحة والملفات المحفوظة', u: 'diagnostics.html', i: ICON_GAUGE },
     ].forEach((p) => SEARCH_INDEX.push({
       kind: 'page', title: p.t, sub: p.s, url: p.u, icon: p.i, code: '',
@@ -717,7 +791,7 @@
       }
       host.innerHTML = hits.map(({ item }) => `
         <a class="res-item" href="${item.url}">
-          <span style="font-size:1.15rem">${item.icon}</span>
+          <span class="r-ic">${item.icon}</span>
           <span class="r-b"><b>${item.title}</b><span class="r-code">${item.sub}</span></span>
           <span style="color:var(--muted2)">←</span>
         </a>`).join('');
@@ -787,15 +861,24 @@
     setTimeout(() => { t.classList.remove('in'); setTimeout(() => t.remove(), 400); }, ms || 4200);
   }
 
+  /* ------------------------------ الخصوصية (dialog) ------------------------------ */
+  function wirePrivacy() {
+    const dlg = $('#privacyDlg'), open = $('#privacyBtn'), close = $('#privacyClose');
+    if (!dlg || !open) return;
+    open.addEventListener('click', () => {
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    });
+    const shut = () => { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); };
+    if (close) close.addEventListener('click', shut);
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) shut(); });
+  }
+
   /* ---------------------------------------------------------------- boot */
   function boot() {
     tuneDevice();
     applyTheme(prefs().theme || 'light');
 
-    if (global.UniInApp) {
-      const info = global.UniInApp.guard();
-      if (info.inApp) { const el = $('#boot'); if (el) el.classList.add('done'); }
-    }
+    if (global.UniInApp) global.UniInApp.guard();
 
     const tb = $('#themeBtn');
     if (tb) tb.addEventListener('click', () => {
@@ -848,14 +931,14 @@
         const v = $('#appVer');
         if (v && reg.app) v.textContent = 'إصدار ' + reg.app.version;
         renderModules();
+        renderHero();
         renderOverall();
         revealScan();
-        setBoot('جاهز', 100, true);
       })
       .catch(() => {
-        const host = $('#modHost');
-        if (host) host.innerHTML = '<div class="note bad">تعذّر تحميل قائمة الخطط. جرّب تحديث الصفحة.</div>';
-        setBoot('جاهز', 100, true);
+        const host = $('#planHost');
+        if (host) host.innerHTML = '<div class="h-error" role="alert">تعذّر تحميل قائمة الخطط. جرّب تحديث الصفحة.</div>';
+        const sec = $('#plans'); if (sec) sec.removeAttribute('aria-busy');
       });
 
     renderStorage();
@@ -864,30 +947,22 @@
       global.UniStore.restoreFromIDB().then((rec) => {
         if (rec && rec.length) {
           toast(`رجّعنا بياناتك من النسخة الاحتياطية (${rec.length} عناصر)`, 8000);
-          renderModules(); renderOverall(); renderStorage();
+          renderModules(); renderHero(); renderOverall(); renderStorage();
         }
       }).catch(() => {});
       global.UniStore.mirrorToIDB().catch(() => {});
     }
 
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) { renderModules(); renderOverall(); }
+      if (!document.hidden) { renderModules(); renderHero(); renderOverall(); }
     });
 
-    /* أمان: لو حصل أي خطأ، الشاشة الافتتاحية ماتقعدش عالقة */
-    /* تقدّم تدريجي مطمئن + أمان لو حصل أي خطأ */
-    let tick = 0;
-    const creep = setInterval(() => {
-      tick++;
-      if (bootDone) { clearInterval(creep); return; }
-      setBoot(null, Math.min(88, 12 + tick * 9));
-    }, 260);
-    setTimeout(() => { clearInterval(creep); setBoot('جاهز', 100, true); }, 2200);
+    wirePrivacy();
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else { boot(); }
 
-  global.UniShell = { toast, tilt3D, magnetize, playHero, setBoot, revealScan, countUp, applyFs, applyDevice, renderModules, renderOverall, renderStorage, prefs, applyTheme };
+  global.UniShell = { toast, tilt3D, magnetize, playHero, setBoot, revealScan, countUp, applyFs, applyDevice, renderModules, renderHero, renderOverall, renderStorage, prefs, applyTheme };
 })(typeof window !== 'undefined' ? window : this);

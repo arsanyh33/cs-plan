@@ -1,0 +1,225 @@
+{
+  "app": {
+    "name": "Top Computer Science Students",
+    "shortName": "TCSS",
+    "faculty": "كلية العلوم — جامعة الإسكندرية",
+    "department": "قسم الرياضيات وعلوم الحاسب",
+    "version": "2.21.0",
+    "repo": "arsanyh33/cs-plan",
+    "url": "https://arsanyh33.github.io/cs-plan/",
+    "hero": {
+      "title1": "دليل مقررات قسم",
+      "title2": "الرياضيات وعلوم الحاسب",
+      "lede": "شجرة المقررات لكل تخصص، الإجبارية والاختيارية، الرئيسي والفرعي، مع المتطلبات السابقة لكل مقرر.",
+      "trust": "مبني على لائحة البكالوريوس 2018",
+      "trustHref": "modules/bachelor-regulations/index.html"
+    }
+  },
+  "departments": [
+    {
+      "id": "math-cs",
+      "title": "قسم الرياضيات وعلوم الحاسب"
+    },
+    {
+      "id": "faculty",
+      "title": "على مستوى الكلية"
+    }
+  ],
+  "_howToAddModule": [
+    "عايز تضيف صفحة جديدة؟ 3 خطوات وخلاص:",
+    "1) انسخ مجلد modules/_template وسمّيه باسم صفحتك، واكتب الـ HTML/CSS/JS جواه عادي.",
+    "2) ضيف object جديد في مصفوفة modules تحت (انسخ أي واحد وعدّل فيه). ضيف addedAt بتاريخ اليوم (مثال: 2026-08-21) عشان تظهر عليه شارة 'جديد' تلقائيًا لمدة 30 يوم.",
+    "3) زوّد رقم version فوق (مثلاً 1.0.1) — بيظهر في فوتر الموقع.",
+    "خلاص — هتظهر في الداشبورد، وتدخل في البحث تلقائيًا."
+  ],
+  "modules": [
+    {
+      "id": "cs-stat",
+      "title": "حاسب (رئيسي) + إحصاء (فرعي)",
+      "short": "حاسب + إحصاء",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><rect x='3' y='3' width='7' height='7' rx='1.5'/><rect x='14' y='3' width='7' height='7' rx='1.5'/><rect x='3' y='14' width='7' height='7' rx='1.5'/><path d='M17.5 14v3.5M14 17.5h7'/></svg>",
+      "desc": "الخطة الكاملة للتخصص المزدوج (132 ساعة): إجباري الحاسب والإحصاء واختياراتهم، مع خريطة المتطلبات السابقة وحاسبة المعدل.",
+      "entry": "modules/cs-stat/index.html",
+      "color1": "#12f0c0",
+      "color2": "#12f0c0",
+      "storageKeys": [
+        "csStatPlanState_v1",
+        "csStatRealPlan_v1"
+      ],
+      "tags": [
+        "حاسب",
+        "إحصاء",
+        "رئيسي",
+        "فرعي",
+        "132 ساعة",
+        "GPA",
+        "متطلبات سابقة"
+      ],
+      "cache": true,
+      "category": "college",
+      "department": "math-cs",
+      "blurb": "الخطة الكاملة لمن تخصصه الرئيسي الحاسب وتخصصه الفرعي الإحصاء.",
+      "isPlan": true,
+      "chips": [
+        "132 ساعة",
+        "خريطة المتطلبات",
+        "حاسبة المعدل"
+      ]
+    },
+    {
+      "id": "cs-special",
+      "title": "علوم الحاسب — سبيشيال",
+      "short": "سبيشيال",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><circle cx='12' cy='8.5' r='5.3'/><path d='M8.3 13.1l-2.6 6.9 3.9-1.3L12 21l2.4-2.3 3.9 1.3-2.6-6.9'/></svg>",
+      "desc": "خطة الشعبة الخاصة (132 ساعة): شروط الالتحاق، المواد المقفولة على ترمات محددة، وحساب مرتبة الشرف.",
+      "entry": "modules/cs-special/index.html",
+      "color1": "#ffb020",
+      "color2": "#ffb020",
+      "storageKeys": [
+        "csSpecialPlan_v1",
+        "csActualPlan_v1"
+      ],
+      "tags": [
+        "سبيشيال",
+        "علوم الحاسب",
+        "مرتبة الشرف",
+        "شروط الالتحاق",
+        "132 ساعة"
+      ],
+      "cache": true,
+      "category": "college",
+      "department": "math-cs",
+      "blurb": "خطة الشعبة الخاصة: شروط الالتحاق ومرتبة الشرف.",
+      "isPlan": true,
+      "chips": [
+        "132 ساعة",
+        "شروط الالتحاق",
+        "مرتبة الشرف"
+      ]
+    },
+    {
+      "id": "stat-hasib",
+      "title": "إحصاء (رئيسي) + حاسب (فرعي)",
+      "short": "إحصاء + حاسب",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M4 19h16'/><rect x='6' y='11' width='3' height='8' rx='1'/><rect x='11' y='7' width='3' height='12' rx='1'/><rect x='16' y='13' width='3' height='6' rx='1'/></svg>",
+      "desc": "الخطة الكاملة للتخصص المزدوج (132 ساعة): إجباري الإحصاء والحاسب واختياراتهم، مع خريطة المتطلبات السابقة وحاسبة المعدل.",
+      "entry": "modules/stat-hasib/index.html",
+      "color1": "#9c6fff",
+      "color2": "#9c6fff",
+      "storageKeys": [
+        "csStatHasibPlanState_v1",
+        "csStatHasibActualRegState_v1"
+      ],
+      "tags": [
+        "إحصاء",
+        "حاسب",
+        "رئيسي",
+        "فرعي",
+        "132 ساعة",
+        "GPA",
+        "متطلبات سابقة"
+      ],
+      "cache": true,
+      "category": "college",
+      "department": "math-cs",
+      "blurb": "الخطة الكاملة لمن تخصصه الرئيسي الإحصاء وتخصصه الفرعي الحاسب.",
+      "isPlan": true,
+      "chips": [
+        "132 ساعة",
+        "خريطة المتطلبات",
+        "حاسبة المعدل"
+      ]
+    },
+    {
+      "id": "transfer-guide",
+      "title": "دليل تحويل كلية العلوم",
+      "short": "قسم المحولين",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M4 12h13'/><path d='M13 6l6 6-6 6'/><path d='M4 5v14'/></svg>",
+      "desc": "كل اللي محتاجه عشان تتحول لكلية العلوم: الشروط والأهلية، الأوراق، خطوات التقديم، معادلة المواد، والتايم لاين.",
+      "entry": "modules/transfer-guide/index.html",
+      "color1": "#284cdc",
+      "color2": "#284cdc",
+      "storageKeys": [
+        "csTransferGuideTab_v1",
+        "csTransferGuideTheme_v1",
+        "csTransferGuideFsIndex_v1",
+        "csTransferGuideDevice_v1",
+        "csTransferGuideGpaRows_v1",
+        "csTransferGuideScale5Rows_v1"
+      ],
+      "tags": [
+        "تحويل",
+        "المحولين",
+        "معادلة مواد",
+        "شروط الالتحاق",
+        "أوراق التقديم"
+      ],
+      "cache": true,
+      "category": "college",
+      "department": "faculty",
+      "blurb": "الشروط والأوراق وخطوات التقديم ومعادلة المواد لطلاب التحويل.",
+      "chips": [
+        "الشروط",
+        "خطوات التقديم",
+        "معادلة المواد"
+      ]
+    },
+    {
+      "id": "cs-tracks",
+      "title": "تراكات ومسارات مهنية في البرمجة",
+      "short": "تراكات ومسارات",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M4 6h16M4 12h10M4 18h16'/><circle cx='19' cy='12' r='2'/></svg>",
+      "desc": "دليل تفاعلي لـ16 تراك في البرمجة: رودماب ومرتبات وشهادات وكويز يساعدك تختار مسارك. دليل عام مالوش علاقة بمنهج الكلية.",
+      "entry": "modules/cs-tracks/index.html",
+      "color1": "#ff5fa2",
+      "color2": "#7c5cff",
+      "storageKeys": [
+        "csTrackGuideDeviceMode_v1",
+        "csTrackGuideFontSize_v1"
+      ],
+      "tags": [
+        "تراكات",
+        "مسارات مهنية",
+        "برمجة",
+        "مرتبات",
+        "رودماب",
+        "غير جامعي"
+      ],
+      "cache": true,
+      "category": "general",
+      "blurb": "دليل عام لـ16 تراك في البرمجة، مالوش علاقة بمنهج الكلية.",
+      "chips": [
+        "16 تراك",
+        "رودماب",
+        "كويز"
+      ]
+    },
+    {
+      "id": "bachelor-regulations",
+      "addedAt": "2026-08-21",
+      "title": "لائحة البكالوريوس — علوم الإسكندرية",
+      "short": "لائحة البكالوريوس",
+      "icon": "<svg viewBox='0 0 24 24' class='ic-svg'><path d='M7 3h8l4 4v14H7z'/><path d='M15 3v4h4'/><path d='M9 12h6M9 16h6'/></svg>",
+      "desc": "اللائحة الرسمية لكلية العلوم — جامعة الإسكندرية (إصدار 2018، معدّلة) — عرض مباشر داخل الصفحة وإمكانية التحميل بصيغة PDF.",
+      "entry": "modules/bachelor-regulations/index.html",
+      "color1": "#e05252",
+      "color2": "#e05252",
+      "storageKeys": [],
+      "tags": [
+        "لائحة",
+        "بكالوريوس",
+        "PDF",
+        "قواعد",
+        "رسمي"
+      ],
+      "cache": true,
+      "category": "college",
+      "department": "faculty",
+      "blurb": "النص الرسمي للائحة (إصدار 2018) للعرض والتحميل PDF.",
+      "chips": [
+        "إصدار 2018",
+        "PDF"
+      ]
+    }
+  ]
+}

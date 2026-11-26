@@ -54,9 +54,9 @@
 <meta name="twitter:description" content="الخطط الدراسية والمتطلبات السابقة وحاسبة المعدل في مكان واحد.">
 <meta name="twitter:image" content="https://arsanyh33.github.io/cs-plan/assets/icons/og.png">
 <link rel="preload" href="assets/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/fonts/fonts-home.css?v=2.21.1">
+<link rel="stylesheet" href="assets/fonts/fonts-home.css?v=2.24.0">
 <link rel="stylesheet" href="assets/app.css?v=2.19.0">
-<link rel="stylesheet" href="assets/home.css?v=2.21.1">
+<link rel="stylesheet" href="assets/home.css?v=2.24.0">
 <link rel="stylesheet" href="assets/chat.css?v=2.17.0">
 <link rel="stylesheet" href="assets/chat-widget.css?v=2.16.15">
 
@@ -76,6 +76,9 @@
 
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"دليل مقررات قسم الرياضيات وعلوم الحاسب","alternateName":"Top Computer Science Students","url":"https://arsanyh33.github.io/cs-plan/","inLanguage":"ar","publisher":{"@type":"CollegeOrUniversity","name":"كلية العلوم، جامعة الإسكندرية"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"إيه الفرق بين الخطط التلاتة؟","acceptedAnswer":{"@type":"Answer","text":"الموقع فيه تلاتة خطط دراسية لقسم الرياضيات وعلوم الحاسب: حاسب (رئيسي) + إحصاء (فرعي)، الخطة المزدوجة الكاملة (132 ساعة) بإجبارية الحاسب والإحصاء واختيارياتهم. علوم الحاسب (سبيشيال)، خطة الشعبة الخاصة (132 ساعة) بإجبارية أساسية وإضافية مع شروط التحاق. إحصاء (رئيسي) + حاسب (فرعي)، نفس المزدوجة بترتيب عكسي للتخصص الرئيسي."}},{"@type":"Question","name":"إيه الفرق بين المتطلب السابق والمتطلب المصاحب؟","acceptedAnswer":{"@type":"Answer","text":"المتطلب السابق (Prerequisite) مادة لازم تعدّيها أولاً قبل ما تقدر تسجّل المادة التانية. المتطلب المصاحب (Corequisite) مادة بتتاخد في نفس الترم مع المادة اللي هي متطلب ليها، ومش لازم تخلّص الأولى الأول."}},{"@type":"Question","name":"إزاي بيتحسب المعدل التراكمي؟","acceptedAnswer":{"@type":"Answer","text":"المعدل التراكمي (CGPA) بيتحسب بضرب نقاط التقدير في ساعات كل مادة، وجمع الناتج، وتقسيمه على إجمالي الساعات المعتمدة. المواد المعفاة (Transfer Credit) بتتحسب في الساعات الكلية بس مش في المعدل. الحد الأدنى للتخرج 2.0."}},{"@type":"Question","name":"إيه شروط الالتحاق بالشعبة الخاصة (سبيشيال)؟","acceptedAnswer":{"@type":"Answer","text":"اللائحة بتحدد إن التقدم على الدرجة الخاصة أو السبيشيال لازم يكون قبل بداية الفصل الدراسي الخامس، بموافقة المرشد الأكاديمي والقسم. التفاصيل الكاملة عن شروط الالتحاق وحساب مرتبة الشرف موجودة في خطة السبيشيال في الموقع."}},{"@type":"Question","name":"هل الطالب المحوّل يقدر يسجّل مواد التخصص من أول ترم؟","acceptedAnswer":{"@type":"Answer","text":"لا يتم قبول الطالب المحوّل في تخصص الحاسب الآلي إلا بعد دراسة فصل دراسي كامل بعلوم الإسكندرية، وبيفضل رسميًا في مستوى أول لأن معادلته مش بتغطي الـ32 ساعة المطلوبة. بيسجّل مواد ساعات حرة ومواد حسب معادلته يدويًا مع المرشد الأكاديمي."}},{"@type":"Question","name":"فين بيتحفظ تقدمي وإزاي أعمل نسخة احتياطية؟","acceptedAnswer":{"@type":"Answer","text":"تقدمك وتقديراتك وتفضيلاتك بتتحفظ على جهازك بس (localStorage) ومابتتبعتش لأي سيرفر. عشان تعمل نسخة احتياطية، افتح قائمة الإعدادات واختار \"بياناتك ونسخة احتياطية\"، وهتلاقي زرار لتنزيل ملف JSON بكل بياناتك."}}]}
 </script>
 </head>
 <body class="page-home">
@@ -157,19 +160,66 @@
 <main>
   <!-- ============================ الهيرو ============================ -->
   <section class="wrap h-hero" id="top">
-    <h1 class="h-hero-title" id="heroTitle">
-      <span class="l" id="heroT1">دليل مقررات قسم</span>
-      <span class="l" id="heroT2">الرياضيات وعلوم الحاسب</span>
-    </h1>
-    <p class="h-hero-lede" id="heroLede">شجرة المقررات لكل تخصص، الإجبارية والاختيارية، الرئيسي والفرعي، مع المتطلبات السابقة لكل مقرر.</p>
-    <div class="h-hero-actions">
-      <a class="h-btn" id="heroCta" href="#plans">
-        <span id="heroCtaText">اختار خطتك</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
-      </a>
-      <p class="h-hero-status" id="heroStatus"></p>
-    </div>
-    <p class="h-trust" id="heroTrust"><span id="heroTrustText">مبني على لائحة البكالوريوس 2018</span> <a id="heroTrustLink" href="modules/bachelor-regulations/index.html">اقرأ اللائحة</a></p>
+    <div class="h-hero-inner">
+
+      <!-- جانب النص -->
+      <div class="h-hero-text">
+        <h1 class="h-hero-title" id="heroTitle">
+          <span class="l" id="heroT1">دليل مقررات قسم</span>
+          <span class="l" id="heroT2">الرياضيات وعلوم الحاسب</span>
+        </h1>
+        <p class="h-hero-lede" id="heroLede">شجرة المقررات لكل تخصص، الإجبارية والاختيارية، الرئيسي والفرعي، مع المتطلبات السابقة لكل مقرر.</p>
+        <div class="h-hero-actions">
+          <a class="h-btn" id="heroCta" href="#plans">
+            <span id="heroCtaText">اختار خطتك</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          </a>
+          <p class="h-hero-status" id="heroStatus"></p>
+        </div>
+        <p class="h-trust" id="heroTrust"><span id="heroTrustText">مبني على لائحة البكالوريوس 2018</span> <a id="heroTrustLink" href="modules/bachelor-regulations/index.html">اقرأ اللائحة</a></p>
+      </div><!-- /.h-hero-text -->
+
+      <!-- لوحة المعاينة: زخرفي — كله aria-hidden حتى يُقرأ التقدم الحقيقي من كروت الخطط -->
+      <div class="h-hero-visual" id="heroVisual" aria-hidden="true">
+
+        <!-- الحالة الافتراضية: زائر جديد — تُعرض ثابتة في HTML، تُخفى بـ JS لو في تقدّم محفوظ -->
+        <div class="h-vis-empty" id="heroVisEmpty">
+          <svg class="h-vis-svg" viewBox="0 0 220 130" fill="none"
+               xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- مخطط متطلبات سابقة بمربعات عامة فقط — لا أسماء مقررات حقيقية -->
+            <rect class="h-vis-box" x="4"   y="8"  width="64" height="34" rx="8"/>
+            <rect class="h-vis-box" x="78"  y="8"  width="64" height="34" rx="8"/>
+            <rect class="h-vis-box" x="152" y="8"  width="64" height="34" rx="8"/>
+            <line class="h-vis-line" x1="68"  y1="25" x2="78"  y2="25"/>
+            <line class="h-vis-line" x1="142" y1="25" x2="152" y2="25"/>
+            <rect class="h-vis-box" x="4"   y="72" width="64" height="34" rx="8"/>
+            <rect class="h-vis-box" x="78"  y="72" width="64" height="34" rx="8"/>
+            <line class="h-vis-line" x1="36"  y1="72" x2="36"  y2="42"/>
+            <line class="h-vis-line" x1="110" y1="72" x2="110" y2="42"/>
+            <text class="h-vis-label" x="36"  y="30" text-anchor="middle">متطلب سابق</text>
+            <text class="h-vis-label" x="110" y="30" text-anchor="middle">مقرر</text>
+            <text class="h-vis-label" x="184" y="30" text-anchor="middle">مقرر</text>
+            <text class="h-vis-label" x="36"  y="94" text-anchor="middle">متطلب سابق</text>
+            <text class="h-vis-label" x="110" y="94" text-anchor="middle">مقرر</text>
+          </svg>
+          <p class="h-vis-hint">علّم على المواد اللي خلّصتها وتقدمك هيظهر هنا.</p><!-- TODO-REVIEW -->
+        </div><!-- /.h-vis-empty -->
+
+        <!-- حالة التقدّم: تُعرض بـ JS لو في uniSummary_<id> -->
+        <div class="h-vis-progress" id="heroVisProgress" hidden>
+          <p class="h-vis-plan-label">خطتك الحالية</p>
+          <p class="h-vis-plan-title" id="heroVisPlanTitle"></p>
+          <div class="h-vis-bar-wrap">
+            <div class="plan-bar h-vis-bar" role="progressbar"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                 id="heroVisBar"><i id="heroVisBarFill"></i></div>
+            <span class="h-vis-pct" id="heroVisPct"></span>
+          </div>
+          <p class="h-vis-status-line" id="heroVisStatusLine"></p>
+        </div><!-- /.h-vis-progress -->
+
+      </div><!-- /.h-hero-visual -->
+    </div><!-- /.h-hero-inner -->
   </section>
 
   <!-- ============================ البحث ============================ -->
@@ -196,10 +246,122 @@
   </div>
 
   <!-- ====================== أدلة إضافية (مضغوط) ====================== -->
-  <section class="wrap h-sec" id="general" hidden>
+  <section class="wrap h-sec rv" id="general" hidden>
     <h2 class="h-sec-title">أدلة إضافية</h2>
     <p class="h-sec-note">أدلة عامة مالهاش علاقة بمنهج الكلية أو الساعات المعتمدة.</p>
     <div id="modHostGeneral"></div>
+  </section>
+
+  <!-- =================== إزاي تستخدم الدليل (Phase B) =================== -->
+  <section class="wrap h-sec h-howto rv" id="howto" aria-label="إزاي تستخدم الدليل">
+    <h3 class="h-sec-title">إزاي تستخدم الدليل</h3><!-- TODO-REVIEW -->
+    <ol class="h-steps" role="list">
+      <li class="h-step">
+        <span class="h-step-num" aria-hidden="true">1</span>
+        <h4 class="h-step-title">اختار خطتك</h4><!-- TODO-REVIEW -->
+      </li>
+      <li class="h-step">
+        <span class="h-step-num" aria-hidden="true">2</span>
+        <h4 class="h-step-title">علّم على المواد اللي خلّصتها</h4><!-- TODO-REVIEW -->
+        <p class="h-step-note">بتتحفظ على جهازك.</p><!-- TODO-REVIEW -->
+      </li>
+      <li class="h-step">
+        <span class="h-step-num" aria-hidden="true">3</span>
+        <h4 class="h-step-title">شوف معدلك والمتطلبات اللي فاضلة</h4><!-- TODO-REVIEW -->
+      </li>
+    </ol>
+  </section>
+
+  <!-- =================== Tagline reveal (Phase B) =================== -->
+  <section class="wrap h-tagline-wrap rv" id="tagline" aria-label="تعريف الدليل">
+    <!-- aria-label على الـ section بيخلي screen readers يقرأ العنوان. الـ spans مخبّيين -->
+    <p class="h-tagline"
+       aria-label="كل مقرر في خطتك، ومتطلباته السابقة، ومعدلك التراكمي. في مكان واحد."><!-- TODO-REVIEW -->
+      <span aria-hidden="true">كل</span>
+      <span aria-hidden="true">مقرر</span>
+      <span aria-hidden="true">في</span>
+      <span aria-hidden="true">خطتك،</span>
+      <span aria-hidden="true">ومتطلباته</span>
+      <span aria-hidden="true">السابقة،</span>
+      <span aria-hidden="true">ومعدلك</span>
+      <span aria-hidden="true">التراكمي.</span>
+      <span aria-hidden="true">في</span>
+      <span aria-hidden="true">مكان</span>
+      <span aria-hidden="true">واحد.</span>
+    </p>
+  </section>
+
+  <!-- =================== الأسئلة الشائعة (Phase B) =================== -->
+  <section class="wrap h-sec h-faq-sec rv" id="faq" aria-label="أسئلة شائعة">
+    <div class="h-faq-layout">
+      <div class="h-faq-intro">
+        <h3 class="h-sec-title">أسئلة شائعة</h3>
+        <p class="h-faq-desc">أكتر الأسئلة اللي الطلاب بيسألوها عن الخطط والمتطلبات والمعدل.</p>
+      </div>
+      <div class="h-faq-list">
+
+        <details class="h-faq-item"><!-- TODO-REVIEW -->
+          <summary class="h-faq-q">
+            <span>إيه الفرق بين الخطط التلاتة؟</span>
+            <svg class="h-faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="h-faq-a">
+            <p>الموقع فيه تلاتة خطط دراسية لقسم الرياضيات وعلوم الحاسب: <strong>حاسب (رئيسي) + إحصاء (فرعي)</strong>، الخطة المزدوجة الكاملة (132 ساعة) بإجبارية الحاسب والإحصاء واختيارياتهم. <strong>علوم الحاسب (سبيشيال)</strong>، خطة الشعبة الخاصة (132 ساعة) بإجبارية أساسية وإضافية مع شروط التحاق. <strong>إحصاء (رئيسي) + حاسب (فرعي)</strong>، نفس المزدوجة بترتيب عكسي للتخصص الرئيسي.</p>
+          </div>
+        </details>
+
+        <details class="h-faq-item"><!-- TODO-REVIEW -->
+          <summary class="h-faq-q">
+            <span>إيه الفرق بين المتطلب السابق والمتطلب المصاحب؟</span>
+            <svg class="h-faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="h-faq-a">
+            <p>المتطلب السابق (Prerequisite) مادة لازم تعدّيها أولاً قبل ما تقدر تسجّل المادة التانية. المتطلب المصاحب (Corequisite) مادة بتتاخد في نفس الترم مع المادة اللي هي متطلب ليها، ومش لازم تخلّص الأولى الأول.</p>
+          </div>
+        </details>
+
+        <details class="h-faq-item"><!-- TODO-REVIEW -->
+          <summary class="h-faq-q">
+            <span>إزاي بيتحسب المعدل التراكمي؟</span>
+            <svg class="h-faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="h-faq-a">
+            <p>المعدل التراكمي (CGPA) بيتحسب بضرب نقاط التقدير في ساعات كل مادة، وجمع الناتج، وتقسيمه على إجمالي الساعات المعتمدة. المواد المعفاة (Transfer Credit) بتتحسب في الساعات الكلية بس مش في المعدل. الحد الأدنى للتخرج 2.0.</p>
+          </div>
+        </details>
+
+        <details class="h-faq-item"><!-- TODO-REVIEW -->
+          <summary class="h-faq-q">
+            <span>إيه شروط الالتحاق بالشعبة الخاصة (سبيشيال)؟</span>
+            <svg class="h-faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="h-faq-a">
+            <p>اللائحة بتحدد إن التقدم على الدرجة الخاصة أو السبيشيال لازم يكون قبل بداية الفصل الدراسي الخامس، بموافقة المرشد الأكاديمي والقسم. التفاصيل الكاملة عن شروط الالتحاق وحساب مرتبة الشرف موجودة في خطة السبيشيال في الموقع.</p>
+          </div>
+        </details>
+
+        <details class="h-faq-item"><!-- TODO-REVIEW -->
+          <summary class="h-faq-q">
+            <span>هل الطالب المحوّل يقدر يسجّل مواد التخصص من أول ترم؟</span>
+            <svg class="h-faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="h-faq-a">
+            <p>لا يتم قبول الطالب المحوّل في تخصص الحاسب الآلي إلا بعد دراسة فصل دراسي كامل بعلوم الإسكندرية، وبيفضل رسميًا في مستوى أول لأن معادلته مش بتغطي الـ32 ساعة المطلوبة. بيسجّل مواد ساعات حرة ومواد حسب معادلته يدويًا مع المرشد الأكاديمي.</p>
+          </div>
+        </details>
+
+        <details class="h-faq-item"><!-- TODO-REVIEW -->
+          <summary class="h-faq-q">
+            <span>فين بيتحفظ تقدمي وإزاي أعمل نسخة احتياطية؟</span>
+            <svg class="h-faq-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="h-faq-a">
+            <p>تقدمك وتقديراتك وتفضيلاتك بتتحفظ على جهازك بس (localStorage) ومابتتبعتش لأي سيرفر. عشان تعمل نسخة احتياطية، افتح قائمة الإعدادات واختار "بياناتك ونسخة احتياطية"، وهتلاقي زرار لتنزيل ملف JSON بكل بياناتك.</p>
+          </div>
+        </details>
+
+      </div>
+    </div>
   </section>
 </main>
 </div>
@@ -341,7 +503,7 @@
 <script src="assets/store.js?v=2.10.0"></script>
 <script src="assets/inapp.js?v=2.10.0"></script>
 <script src="assets/bg.js?v=2.10.0"></script>
-<script src="assets/shell.js?v=2.21.1"></script>
+<script src="assets/shell.js?v=2.24.0"></script>
 <script src="assets/chat-drawer.js?v=2.17.0"></script>
 </body>
 </html>

@@ -142,6 +142,77 @@ body.page-home .scrollbar-top > i{ background:var(--cyan); box-shadow:none; }
 /* ---------------------------------- الهيرو ---------------------------------- */
 body.page-home .h-hero{ padding-block:var(--sp-48) var(--sp-32); }
 @media (min-width:768px){ body.page-home .h-hero{ padding-block:var(--sp-80) var(--sp-48); } }
+
+/* عمودان على الديسكتوب: نص على جانب القراءة، لوحة المعاينة على الجانب الآخر */
+body.page-home .h-hero-inner{
+  display:grid; grid-template-columns:1fr;
+  gap:var(--sp-48);
+  align-items:center;
+}
+@media (min-width:1024px){
+  body.page-home .h-hero-inner{
+    grid-template-columns:1fr minmax(0,22rem);
+    gap:var(--sp-64);
+  }
+}
+
+/* نص الهيرو: max-width بقى على المحتوى مش على الـ section */
+body.page-home .h-hero-text{ max-width:680px; }
+body.page-home .h-hero-text .h-hero-title{ max-width:none; }
+body.page-home .h-hero-text .h-hero-lede{ max-width:none; }
+
+/* لوحة المعاينة */
+body.page-home .h-hero-visual{
+  border:1px solid var(--line2); border-radius:var(--r-3xl); /* 24px */
+  padding:var(--sp-24); background:var(--panel);
+  min-height:11rem;
+  display:flex; flex-direction:column; justify-content:center;
+}
+/* على الموبايل (< 768px): اللوحة تُخفى تحت 480px لو بتدفع الزرار لأسفل */
+@media (max-width:479px){ body.page-home .h-hero-visual{ display:none; } }
+/* على التابلت والديسكتوب المتوسط (768-1023): اللوحة تظهر تحت الزرار */
+@media (min-width:480px) and (max-width:1023px){
+  body.page-home .h-hero-inner{ gap:var(--sp-32); }
+}
+
+/* مخطط المتطلبات SVG */
+body.page-home .h-vis-svg{
+  width:100%; height:auto; max-height:8rem;
+  margin-bottom:var(--sp-12);
+}
+body.page-home .h-vis-svg .h-vis-box{
+  stroke:var(--line2); stroke-width:1; fill:var(--panel2);
+}
+body.page-home .h-vis-svg .h-vis-line{
+  stroke:var(--line2); stroke-width:1;
+}
+body.page-home .h-vis-svg .h-vis-label{
+  fill:var(--dim2); font-family:var(--h-font); font-size:9px; font-weight:400;
+}
+body.page-home .h-vis-hint{
+  font-size:var(--fs-xs); line-height:1.6; color:var(--dim2); text-wrap:pretty;
+}
+
+/* حالة التقدم */
+body.page-home .h-vis-plan-label{
+  font-size:var(--fs-xs); font-weight:600; color:var(--dim2); letter-spacing:0;
+  margin-bottom:var(--sp-4);
+}
+body.page-home .h-vis-plan-title{
+  font-size:var(--fs-base); font-weight:600; color:var(--text); line-height:1.5;
+  margin-bottom:var(--sp-16); text-wrap:balance;
+}
+body.page-home .h-vis-bar-wrap{
+  display:flex; align-items:center; gap:var(--sp-8); margin-bottom:var(--sp-8);
+}
+body.page-home .h-vis-bar{ flex:1; height:.5rem; }
+body.page-home .h-vis-pct{
+  font-size:var(--fs-xs); font-weight:600; color:var(--cyan); flex:0 0 auto;
+}
+body.page-home .h-vis-status-line{
+  font-size:var(--fs-sm); color:var(--dim); line-height:1.6;
+}
+
 body.page-home .h-hero-title{
   font-family:var(--h-font); font-weight:600;
   font-size:var(--fs-3xl); line-height:1.3;               /* قرار K */
@@ -254,12 +325,61 @@ body.page-home .plan-go{
   display:inline-flex; align-items:center; gap:var(--sp-8); font-size:var(--fs-sm); font-weight:600; color:var(--tone);
 }
 body.page-home .plan-go svg{ width:1rem; height:1rem; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform var(--h-t-move) var(--h-ease); }
+/* RTL: السهم الأصلي في shell.js يشاور لليسار — في RTL نعكسه ليشاور لليمين */
 body.page-home .plan-card:hover .plan-go svg{ transform:translateX(-4px); }
 body.page-home .plan-new{
   position:absolute; top:var(--sp-16); inset-inline-end:var(--sp-16);
   font-size:var(--fs-xs); font-weight:600; padding:var(--sp-2) var(--sp-8); border-radius:var(--r-full);
   background:var(--cyan); color:var(--h-on-accent);
 }
+
+/* ============================================================
+   تخطيط الكروت الهرمي (Phase A — v2.22.0)
+   ============================================================ */
+
+/* بوجود تقدّم: كارت كبير + كارتان ضغوط */
+body.page-home .plan-grid--featured{
+  grid-template-columns:1fr;
+}
+@media (min-width:768px){
+  body.page-home .plan-grid--featured{
+    grid-template-columns:3fr 2fr;
+    align-items:start;
+  }
+  body.page-home .plan-grid--featured .plan-card--featured{
+    grid-row:span 2;
+  }
+}
+
+/* بدون تقدّم: أول كارت أوسع، الباقي ضغوط */
+body.page-home .plan-grid--asymmetric{
+  grid-template-columns:1fr;
+}
+@media (min-width:768px){
+  body.page-home .plan-grid--asymmetric{
+    grid-template-columns:3fr 2fr;
+    align-items:start;
+  }
+  body.page-home .plan-grid--asymmetric .plan-card:first-child{
+    grid-row:span 2;
+  }
+}
+
+/* الكارت الكبير: نص أكبر وشريط تقدم بارز */
+body.page-home .plan-card--featured .plan-title{
+  font-size:var(--fs-2xl); line-height:1.4;
+}
+body.page-home .plan-card--featured .plan-bar{ height:.5rem; }
+
+/* الكارت الضغوط: بلرب بـ 2 سطر */
+body.page-home .plan-card--compact .plan-blurb{
+  display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+
+/* المسافة بين الأقسام الرئيسية — بيبقى padding-top فقط (لا margin) */
+body.page-home .h-sec{ padding-block:var(--sp-48) var(--sp-16); }
+@media (min-width:768px){ body.page-home .h-sec{ padding-block:var(--sp-64) var(--sp-24); } }
 
 /* skeleton: بدل شاشة التحميل المزيفة */
 body.page-home .plan-skel{ padding:var(--sp-24); border-radius:var(--r-2xl); background:var(--panel); border:1px solid var(--line); display:flex; flex-direction:column; gap:var(--sp-16); min-height:12rem; }
@@ -354,5 +474,122 @@ body.page-home .dev-btn .dev-txt h4{ font-family:var(--h-font); font-weight:500;
   body.page-home .plan-skel i{ animation:none; }
   body.page-home .plan-bar > i{ transition:none; }
   body.page-home .plan-card:hover .plan-go svg{ transform:none; }
+  body.page-home .rv{ transform:none; transition:opacity var(--h-t-color) var(--h-ease); }
+  body.page-home .h-tagline span{ opacity:1; transition:none; }
+  body.page-home .h-faq-ic{ transition:none; }
 }
 html.reduce-fx body.page-home .plan-bar > i{ transition:none; }
+html.reduce-fx body.page-home .rv{ opacity:1; transform:none; transition:none; }
+html.reduce-fx body.page-home .h-tagline span{ opacity:1; transition:none; }
+
+/* ==========================================================================
+   Phase B (v2.23.0): إزاي تستخدم الدليل + Tagline + FAQ + Scroll reveal
+   ========================================================================== */
+
+/* ظهور الأقسام مع السكرول (الأقسام 4 إلى 9 فقط، مش الهيرو) */
+body.page-home .rv{
+  opacity:0; transform:translateY(var(--sp-32));
+  transition:opacity 700ms var(--h-ease), transform 700ms var(--h-ease);
+}
+body.page-home .rv.in{ opacity:1; transform:none; }
+
+/* إزاي تستخدم الدليل (3 خطوات) */
+body.page-home .h-steps{
+  list-style:none; padding:0; margin:0;
+  display:grid; grid-template-columns:1fr; gap:var(--sp-16);
+}
+@media (min-width:768px){
+  body.page-home .h-steps{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-24); }
+}
+body.page-home .h-step{
+  padding:var(--sp-24); border-radius:var(--r-2xl);
+  background:var(--panel); border:1px solid var(--line2);
+  display:flex; flex-direction:column; gap:var(--sp-8);
+}
+body.page-home .h-step-num{
+  font-size:var(--fs-xs); font-weight:600; line-height:1.33; color:var(--cyan);
+}
+body.page-home .h-step-title{
+  font-size:var(--fs-xl); font-weight:500; line-height:1.4; color:var(--text);
+  text-wrap:balance;
+}
+body.page-home .h-step-note{
+  font-size:var(--fs-base); line-height:1.6; color:var(--dim); text-wrap:pretty;
+}
+
+/* Tagline reveal */
+body.page-home .h-tagline-wrap{
+  padding-block:var(--sp-48);
+}
+@media (min-width:768px){
+  body.page-home .h-tagline-wrap{ padding-block:var(--sp-80); }
+}
+body.page-home .h-tagline{
+  max-width:680px; font-weight:600;
+  font-size:var(--fs-3xl); line-height:1.35; /* قرار K: سطر العربي */
+  color:var(--text); text-wrap:balance;
+}
+@media (min-width:768px){
+  body.page-home .h-tagline{ font-size:var(--fs-4xl); }
+}
+body.page-home .h-tagline span{
+  opacity:.28;
+  transition:opacity var(--h-t-move) var(--h-ease);
+}
+body.page-home .h-tagline span.is-lit{ opacity:1; }
+
+/* الأسئلة الشائعة (عمودان على الديسكتوب، قائمة نظيفة بدون كروت متكررة) */
+body.page-home .h-faq-layout{
+  display:grid; grid-template-columns:1fr; gap:var(--sp-32);
+  align-items:start;
+}
+@media (min-width:1024px){
+  body.page-home .h-faq-layout{
+    grid-template-columns:minmax(0,18rem) 1fr; gap:var(--sp-48);
+  }
+}
+body.page-home .h-faq-intro .h-sec-title{ margin-bottom:var(--sp-12); }
+body.page-home .h-faq-desc{
+  font-size:var(--fs-base); line-height:1.7; color:var(--dim); text-wrap:pretty;
+}
+body.page-home .h-faq-list{
+  border-top:1px solid var(--line);
+}
+body.page-home .h-faq-item{
+  border-bottom:1px solid var(--line);
+}
+body.page-home .h-faq-q{
+  list-style:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between; gap:var(--sp-16);
+  padding-block:var(--sp-16);
+  font-size:var(--fs-lg); font-weight:500; line-height:1.5; color:var(--text);
+  transition:color var(--h-t-color) var(--h-ease);
+}
+body.page-home .h-faq-q::-webkit-details-marker{ display:none; }
+body.page-home .h-faq-q:hover{ color:var(--cyan); }
+body.page-home .h-faq-q:active{ opacity:.8; }
+body.page-home .h-faq-q:focus-visible{
+  outline:2px solid var(--cyan); outline-offset:4px; border-radius:var(--r-sm);
+}
+body.page-home .h-btn:focus-visible,
+body.page-home .h-trust a:focus-visible,
+body.page-home .foot a:focus-visible,
+body.page-home .foot-link:focus-visible{
+  outline:2px solid var(--cyan); outline-offset:4px; border-radius:var(--r-sm);
+}
+body.page-home .h-faq-ic{
+  width:1.25rem; height:1.25rem; flex:0 0 1.25rem;
+  stroke:currentColor; fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round;
+  color:var(--dim2);
+  transition:transform var(--h-t-move) var(--h-ease), color var(--h-t-color) var(--h-ease);
+}
+body.page-home .h-faq-item[open] .h-faq-ic{
+  transform:rotate(45deg); color:var(--cyan);
+}
+body.page-home .h-faq-a{
+  padding-bottom:var(--sp-24); max-width:65ch;
+}
+body.page-home .h-faq-a p{
+  font-size:var(--fs-base); line-height:1.7; color:var(--dim); text-wrap:pretty;
+}
+body.page-home .h-faq-a strong{ font-weight:600; color:var(--text); }

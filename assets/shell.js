@@ -142,12 +142,14 @@
     });
   }
 
-  function planCard(mod) {
+  /* ---------------------------------------------------------------- card hierarchy (Phase A)
+     planCard بيقبل isFeatured: true = كارت كبير، false/undefined = كارت ضغوط */
+  function planCard(mod, isFeatured) {
     const s = moduleSummary(mod);
     const pct = s.doneHours ? Math.min(100, (s.doneHours / TOTAL_HOURS) * 100)
               : s.doneCount ? Math.min(100, (s.doneCount / 46) * 100) : 0;
     const a = document.createElement('a');
-    a.className = 'plan-card';
+    a.className = isFeatured ? 'plan-card plan-card--featured' : 'plan-card plan-card--compact';
     a.href = mod.entry;
     a.style.setProperty('--c1', mod.color1 || 'var(--cyan)');
 
@@ -189,6 +191,19 @@
 
   /* الأقسام (departments) بتتولّد من registry.json. أي قسم جديد بيتضاف هناك من غير تعديل في الهوم.
      قسم مالوش موديولات مابيظهرش. */
+
+  /* يرجع index الكارت اللي يتترقّى (أعلى doneHours/doneCount)، أو -1 لو مفيش تقدّم */
+  function pickFeaturedIndex(mods) {
+    let best = -1, bestScore = -1;
+    mods.forEach((m, i) => {
+      const s = moduleSummary(m);
+      if (!s.hasData) return;
+      const score = (s.doneHours || 0) * 1000 + (s.doneCount || 0);
+      if (score > bestScore) { bestScore = score; best = i; }
+    });
+    return best;
+  }
+
   function renderModules() {
     if (!REG) return;
     const host = $('#deptHost');
@@ -205,15 +220,23 @@
         const mods = college.filter((m) => d.id === '_all' || (m.department || firstId) === d.id);
         if (!mods.length) return;
         const sec = document.createElement('section');
-        sec.className = 'wrap h-sec';
+        sec.className = 'wrap h-sec rv';
         sec.id = n === 0 ? 'plans' : 'dept-' + d.id;
         const h = document.createElement('h2');
         h.className = 'h-sec-title';
         h.textContent = d.title;
         const grid = document.createElement('div');
-        grid.className = 'plan-grid';
         if (n === 0) grid.id = 'planHost';
-        mods.forEach((m) => grid.appendChild(planCard(m)));
+
+        /* تخطيط هرمي: نحدد أيه الكارت الكبير */
+        const featIdx = pickFeaturedIndex(mods);
+        grid.className = 'plan-grid ' + (featIdx >= 0 ? 'plan-grid--featured' : 'plan-grid--asymmetric');
+
+        mods.forEach((m, i) => {
+          const isFeat = (featIdx >= 0) ? (i === featIdx) : (i === 0);
+          grid.appendChild(planCard(m, isFeat));
+        });
+
         sec.appendChild(h); sec.appendChild(grid);
         host.appendChild(sec);
         n++;
@@ -279,6 +302,60 @@
       cta.onclick = null;
       if (status) status.textContent = '';
     }
+
+    /* ---- لوحة المعاينة (Phase A) ----
+       نفس نتيجة pickResumePlan فوق: مفيش مفاتيح localStorage جديدة.
+       ملاحظة: pickResumePlan بتفلتر بـ m.isPlan — لو الموديولات في registry.json
+       مالهاش الحقل ده، اللوحة هتفضل دايمًا في وضع الزائر الجديد. */
+    const visEmpty    = $('#heroVisEmpty');
+    const visProgress = $('#heroVisProgress');
+    if (!visEmpty || !visProgress) return;
+
+    if (r) {
+      /* حالة التقدّم */
+      const planTitle = $('#heroVisPlanTitle');
+      const bar       = $('#heroVisBar');
+      const barFill   = $('#heroVisBarFill');
+      const pctEl     = $('#heroVisPct');
+      const statusLn  = $('#heroVisStatusLine');
+
+      if (planTitle) planTitle.textContent = r.m.short || r.m.title;
+
+      /* الإجمالي: نستخدم totalHours من البيانات المحفوظة فقط — لو مش موجود نخبّي السطر */
+      const total = r.s.totalHours || null;
+      const pct   = r.s.doneHours && total
+        ? Math.min(100, Math.round((r.s.doneHours / total) * 100))
+        : r.s.doneCount ? Math.min(100, Math.round((r.s.doneCount / 46) * 100)) : 0;
+
+      if (bar) bar.setAttribute('aria-valuenow', pct);
+      if (pctEl) pctEl.textContent = pct + '%';
+
+      if (barFill) {
+        barFill.setAttribute('data-w', pct);
+        /* نحرّك الشريط بنفس آلية growBars: double-rAF */
+        const k = (pct / 100).toFixed(4);
+        if (FX_OFF()) {
+          barFill.style.transform = `scaleX(${k})`;
+        } else {
+          requestAnimationFrame(() => { requestAnimationFrame(() => { barFill.style.transform = `scaleX(${k})`; }); });
+        }
+      }
+
+      /* سطر الحالة: نعرضه بس لو الأرقام متوفرة */
+      if (statusLn) {
+        if (r.s.doneHours && total) {
+          statusLn.textContent = `${r.s.doneHours} من ${total} ساعة`;
+        } else if (r.s.doneCount) {
+          statusLn.textContent = `${r.s.doneCount} مادة مخلّصة`;
+        } else {
+          statusLn.textContent = '';
+        }
+      }
+
+      visEmpty.hidden    = true;
+      visProgress.hidden = false;
+    }
+    /* لو r === null: visEmpty يبقى ظاهر (الوضع الافتراضي في HTML) */
   }
 
 
@@ -874,6 +951,25 @@
     dlg.addEventListener('click', (e) => { if (e.target === dlg) shut(); });
   }
 
+  /* ------------------------------ Tagline reveal (Phase B) ------------------------------ */
+  function wireTaglineReveal() {
+    const words = $$('#tagline .h-tagline span');
+    if (!words.length) return;
+    if (FX_OFF() || !('IntersectionObserver' in global)) {
+      words.forEach((w) => w.classList.add('is-lit'));
+      return;
+    }
+    const tio = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          en.target.classList.add('is-lit');
+          tio.unobserve(en.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -40% 0px', threshold: 0 });
+    words.forEach((w) => tio.observe(w));
+  }
+
   /* ---------------------------------------------------------------- boot */
   function boot() {
     tuneDevice();
@@ -903,6 +999,7 @@
     wireToTop();
     wireShare();
     wireSearchShortcut();
+    wireTaglineReveal();
     revealScan();
 
     const si = $('#searchInput');
